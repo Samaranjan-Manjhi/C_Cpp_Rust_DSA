@@ -1,6 +1,7 @@
 # C_Cpp_Rust_DSA
 
-Data structures and algorithms practice in C/C++ and Rust.
+Data structures and algorithms practice in C/C++ and Rust, with the same
+step-wise structure in both languages.
 
-- `c_cpp_dsa/` : step-wise topic modules, solved problems from LeetCode, GFG and Coding Ninjas, theory notes and interview question banks
-- `rust_dsa/` : the same structure, built in Rust (in progress)
+- [`c_cpp_dsa/`](c_cpp_dsa) : C and C++ modules, solved problems, theory and interview questions
+- [`rust_dsa/`](rust_dsa) : the same topics in Rust (in progress)
