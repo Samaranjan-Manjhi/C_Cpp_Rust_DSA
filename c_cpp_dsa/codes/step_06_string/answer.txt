@@ -1,0 +1,1341 @@
+================================================================================
+     STRINGS (C-STYLE & std::string) — THEORY ANSWERS + TRICKY QUESTIONS
+     + FULL OPERATIONS/BUILT-IN FUNCTION REFERENCE
+================================================================================
+
+================================================================================
+SECTION 1A — C-STYLE STRINGS THEORY (ANSWERS)
+================================================================================
+
+Q1. What is a C-style string? How is it stored in memory?
+
+    - A C-style string is simply an array of `char` where the actual text
+      is followed by a special terminator byte `'\0'` (the null
+      character, value 0) marking where the string ENDS. There's no
+      separate length field — every function that processes a C-string
+      (strlen, printf %s, etc.) scans forward byte by byte until it hits
+      that `'\0'`.
+    - Memory: contiguous bytes, e.g. "hi" is stored as `{'h','i','\0'}` —
+      3 bytes total for a 2-character string.
+
+Q2. What is the difference between char s[] = "hello" and
+    char* s = "hello"?
+
+    - `char s[] = "hello";` creates a local ARRAY (on the stack, if local)
+      that is a MODIFIABLE COPY of the literal — you can do `s[0] = 'H';`
+      safely.
+    - `char* s = "hello";` creates a pointer that points directly at the
+      STRING LITERAL, which typically lives in read-only memory (the
+      program's text/rodata segment). Attempting `s[0] = 'H';` is
+      undefined behavior — it may crash (segfault) or silently corrupt
+      program state, since you're writing to memory the OS marked
+      read-only.
+
+Q3. What happens if you forget the null terminator in a C string?
+
+    - Any function that relies on scanning for `'\0'` (strlen, strcpy,
+      printf("%s", ...), etc.) has no way to know where the "string"
+      actually ends — it keeps reading (or writing, for functions that
+      copy) PAST the intended buffer, into whatever memory happens to
+      follow. This is undefined behavior: it may read garbage until it
+      randomly finds a zero byte somewhere else in memory, crash on
+      hitting unmapped memory, or (for writes) corrupt adjacent data — a
+      classic and dangerous class of bug.
+
+Q4. What is the difference between strlen and sizeof for a char array?
+
+    - `strlen(s)` is a RUNTIME function that scans the string byte-by-byte
+      counting characters UNTIL (but not including) the `'\0'` terminator
+      — O(N) time.
+    - `sizeof(s)` is a COMPILE-TIME operator (when `s` is a real array in
+      scope, not a decayed pointer) that returns the TOTAL SIZE of the
+      array in bytes, INCLUDING the null terminator and any unused
+      trailing space if the array was declared larger than the string it
+      holds. E.g. `char s[] = "hi";` gives `strlen(s) == 2` but
+      `sizeof(s) == 3` (2 chars + 1 null byte).
+
+Q5. What do the following C string functions do? (from <cstring>) strlen,
+    strcpy, strncpy, strcat, strncat, strcmp, strncmp, strchr, strstr
+
+    - strlen(s): returns length of s, not counting the null terminator.
+    - strcpy(dst, src): copies src (including its null terminator) into
+      dst. NO bounds checking — dst must already be large enough, or it
+      overflows.
+    - strncpy(dst, src, n): copies at most n characters from src into
+      dst. If src is shorter than n, PADS the rest of dst with '\0'
+      bytes. If src is n or longer, dst may end up WITHOUT a null
+      terminator at all — you must add one yourself in that case.
+    - strcat(dst, src): appends src onto the end of dst (finds dst's
+      existing null terminator, then copies src there). NO bounds
+      checking — dst must have enough spare capacity.
+    - strncat(dst, src, n): appends at most n characters from src onto
+      dst, and ALWAYS null-terminates the result (unlike strncpy) —
+      generally the safer of the two "n" functions.
+    - strcmp(s1, s2): lexicographically compares two null-terminated
+      strings; returns 0 if equal, negative if s1 < s2, positive if
+      s1 > s2.
+    - strncmp(s1, s2, n): same as strcmp but compares at most the first n
+      characters.
+    - strchr(s, c): returns a pointer to the FIRST occurrence of character
+      c in string s (or nullptr if not found).
+    - strstr(haystack, needle): returns a pointer to the first occurrence
+      of the substring needle within haystack (or nullptr if not found).
+
+Q6. What is the danger of strcpy? How does strncpy fix it?
+
+    - strcpy performs NO bounds checking whatsoever — if src is longer
+      than the space allocated for dst, strcpy will happily write past
+      the end of dst's buffer (a classic BUFFER OVERFLOW), corrupting
+      adjacent memory — historically one of the most exploited
+      vulnerabilities in C/C++ software (stack-smashing attacks).
+    - strncpy limits the copy to at most `n` characters, so it CAN'T
+      overflow a buffer of size >= n. However, it's not a perfect fix: if
+      src is exactly n characters or longer, strncpy does NOT
+      null-terminate dst at all, leaving you with a non-terminated
+      "string" unless you manually add `dst[n-1] = '\0';` afterward — a
+      common source of new bugs from people who assume strncpy is fully
+      safe by itself.
+
+Q7. What is a buffer overflow? How can unsafe string functions cause it?
+
+    - A buffer overflow is writing data PAST THE END of an allocated
+      buffer, overwriting whatever memory happens to follow it (other
+      variables, the stack's saved return address, heap metadata, etc.).
+    - Unsafe string functions (strcpy, strcat, gets, sprintf without a
+      size limit) cause this because they copy/write based ONLY on the
+      SOURCE data's length (stopping at its null terminator), with no
+      awareness of how large the DESTINATION buffer actually is — if the
+      source is attacker-controlled or just larger than expected, the
+      write runs past the destination's bounds. This is exactly the class
+      of bug that safer alternatives (strncpy, strncat, snprintf) and,
+      in modern C++, std::string (which manages its own capacity/growth)
+      are designed to prevent.
+
+Q8. What is the difference between strcmp returning 0, positive, and
+    negative?
+
+    - 0: the two strings are EQUAL (same characters in the same order).
+    - Negative: s1 is LEXICOGRAPHICALLY LESS than s2 (s1 would come first
+      in dictionary order) — technically, the value is the difference
+      between the first differing characters' values (as unsigned char),
+      s1's char minus s2's char, so a negative result means s1's char was
+      smaller.
+    - Positive: s1 is lexicographically GREATER than s2. Note: the exact
+      magnitude of the returned int is NOT standardized to mean anything
+      beyond its sign — only compare the result to 0 (`< 0`, `== 0`,
+      `> 0`), never rely on a specific numeric value.
+
+Q9. What is strdup? Does it allocate memory? Who is responsible for
+    freeing it?
+
+    - strdup(s) allocates a NEW block of memory (internally using
+      malloc-equivalent allocation) exactly big enough to hold a copy of
+      s (including its null terminator), copies s into it, and returns a
+      pointer to the new copy.
+    - Yes, it allocates heap memory — the CALLER is responsible for
+      calling `free()` on the returned pointer when done with it, since
+      strdup itself has no way of knowing when you're finished using the
+      copy. Forgetting to free it is a memory leak, just like forgetting
+      to free any other malloc'd block.
+
+Q10. What is strtok? How does it work? Is it thread-safe?
+
+    - strtok(str, delimiters) splits a string into tokens separated by
+      any of the given delimiter characters. On the FIRST call, you pass
+      the actual string to tokenize; strtok modifies it IN PLACE
+      (overwriting delimiter characters with '\0' to terminate each
+      token) and returns a pointer to the first token. On SUBSEQUENT
+      calls, you pass `NULL` as the first argument, and strtok resumes
+      from where it left off, using internal STATIC state to remember its
+      position between calls.
+    - It is NOT thread-safe (and not even safely reentrant within a
+      single thread if you try to tokenize two different strings
+      "interleaved," since there's only one shared static position
+      variable) — because of this shared internal state, calling strtok
+      concurrently from multiple threads (or nesting two tokenizations)
+      causes undefined/incorrect behavior. The thread-safe alternative is
+      `strtok_r` (POSIX), which takes an explicit "save pointer" argument
+      supplied by the caller instead of using hidden static state.
+
+Q11. What is atoi? What does it do on invalid input?
+
+    - atoi(str) converts a string representing an integer into an actual
+      `int` value (e.g. "123" -> 123), skipping leading whitespace and
+      handling an optional leading +/- sign.
+    - On invalid input (a string that doesn't start with a valid number
+      at all, e.g. "abc"), atoi simply returns 0 — with NO way to
+      distinguish "the input was actually the string \"0\"" from
+      "the input was garbage/unparseable" — this ambiguity is exactly why
+      atoi is considered unsafe/unreliable for real input validation, and
+      `strtol` (which gives you an explicit error signal) is preferred.
+
+Q12. What are the safer replacements for atoi, atof, etc. in modern C?
+     (strtol, strtod — they set errno and return endptr)
+
+    - strtol(str, &endptr, base) and strtod(str, &endptr) are the safer,
+      more informative alternatives. They:
+        - Set `endptr` to point to the FIRST character in str that was
+          NOT part of the parsed number — letting you check
+          `if (endptr == str)` to detect "nothing was parsed at all"
+          (i.e. genuinely invalid input), which atoi can't tell you.
+        - Set the global `errno` to `ERANGE` if the parsed value would
+          OVERFLOW the target type — atoi has undefined behavior on
+          overflow instead of a clear signal.
+        - strtol also lets you specify the numeric BASE (e.g. 16 for
+          hex, 0 to auto-detect from a "0x" prefix), which atoi cannot do
+          at all.
+
+Q13. What is sprintf? What is snprintf? Why is snprintf safer?
+
+    - sprintf(buffer, format, ...) formats data (numbers, strings, etc.)
+      according to a printf-style format string and writes the resulting
+      text into `buffer` — with NO limit on how much it writes, so if the
+      formatted output is longer than `buffer`'s actual size, it OVERFLOWS
+      the buffer (same class of danger as strcpy).
+    - snprintf(buffer, size, format, ...) takes an explicit `size`
+      parameter and NEVER writes more than `size - 1` characters plus a
+      null terminator — it TRUNCATES the output safely instead of
+      overflowing if the formatted result would be too long, and its
+      return value tells you how many characters WOULD have been written
+      (so you can detect truncation even happened). This makes snprintf
+      the recommended, safe default over sprintf in virtually all modern
+      C/C++ code.
+
+Q14. Can you use pointer arithmetic on a char* string? Show how to iterate
+     characters without using array indexing.
+
+    - Yes — since a C-string is just a contiguous array of chars, you can
+      walk through it with pointer arithmetic instead of indexing:
+          void printChars(const char* s) {
+              for (const char* p = s; *p != '\0'; ++p) {
+                  std::cout << *p;
+              }
+          }
+      Here `*p` dereferences the current character and `++p` advances the
+      pointer to the next one, stopping when the dereferenced value is
+      the null terminator. This is functionally identical to
+      `for (int i = 0; s[i] != '\0'; i++)` — indexing (`s[i]`) is itself
+      just syntactic sugar for pointer arithmetic (`*(s + i)`) under the
+      hood.
+
+================================================================================
+SECTION 1B — C++ std::string THEORY (ANSWERS)
+================================================================================
+
+Q1. What is the difference between C-style string and std::string? When
+    would you choose each?
+
+    - C-style string: a raw `char*`/`char[]` terminated by `'\0'`. No
+      automatic memory management, no bounds checking, fixed size unless
+      you manually reallocate, and every operation (concatenate, compare,
+      copy) requires calling a separate library function.
+    - std::string: a C++ class that OWNS and manages its own
+      heap-allocated (or small-buffer-optimized, see Q3) character
+      storage — automatically grows as needed, knows its own length in
+      O(1) (no need to scan for a terminator), supports operators
+      (`+`, `+=`, `==`, `<`, `[]`) and a rich set of member functions, and
+      cleans itself up automatically via RAII (no manual free needed).
+    - Choose C-style strings when: interfacing with C APIs/libraries that
+      require `const char*`, in performance-critical embedded/systems code
+      where you want precise, manual control over memory with zero
+      overhead, or when working directly with fixed-size buffers.
+      Otherwise (the vast majority of application-level C++ code),
+      std::string is the default, safer, more convenient choice.
+
+Q2. What is the time complexity of string concatenation using += in a
+    loop? Why is stringstream or reserve() better?
+
+    - Each `s += piece;` call may need to GROW s's internal buffer if
+      there isn't enough spare capacity — similar to std::vector's
+      push_back, this growth is amortized O(1) per character APPENDED
+      thanks to geometric capacity growth, so building up a string of
+      total length N via repeated += in a loop is amortized O(N) overall,
+      NOT O(N^2) as sometimes feared — BUT this assumes the string
+      implementation grows geometrically (which all major ones do) and
+      that you're not doing something that forces a full string COPY each
+      time (e.g. `s = s + piece;` in older/naive code paths can behave
+      worse depending on optimization).
+    - stringstream or `reserve()` are still recommended for BEST
+      performance because: reserve(totalExpectedLength) up front avoids
+      ANY reallocation during the loop entirely (you pay the allocation
+      cost exactly once, matching the vector `reserve()` pattern);
+      stringstream is convenient when you're building a string out of
+      MIXED types (numbers, strings, etc.) via `<<`, avoiding manual
+      `to_string()` calls and extra intermediate string objects for each
+      piece.
+
+Q3. How is std::string stored internally? What is small string
+    optimization (SSO)?
+
+    - Internally, std::string typically stores: a pointer to its
+      character buffer, a size (length), and a capacity — similar to
+      std::vector<char>, plus guaranteeing null-termination.
+    - Small String Optimization (SSO): for SHORT strings (commonly up to
+      15-22 characters depending on the standard library implementation),
+      the string stores the characters DIRECTLY INSIDE the std::string
+      OBJECT ITSELF (in a small fixed-size internal buffer, reusing the
+      space that would otherwise hold the heap pointer/capacity), avoiding
+      any heap allocation at all. Only when a string grows BEYOND that
+      small-buffer threshold does it fall back to heap allocation (like a
+      normal dynamic buffer). This is a major real-world performance
+      optimization since a huge fraction of strings in typical programs
+      are short (variable names, small labels, etc.) — SSO avoids the
+      heap allocator entirely for all of them.
+
+Q4. What is std::string_view? Why is it more efficient than const
+    string&?
+
+    - std::string_view (C++17) is a NON-OWNING "view" into existing
+      character data — internally just a pointer + length, with NO
+      ownership, NO allocation, and NO copying of the underlying
+      characters.
+    - It's more efficient than `const string&` in specific cases because
+      a `const string&` parameter still requires the ARGUMENT to actually
+      BE (or be converted into) a real std::string first — if you call
+      the function with a C-string literal or a substring you don't
+      already have as a std::string, an implicit std::string TEMPORARY
+      must be CONSTRUCTED (which may allocate on the heap if the string
+      is long enough to exceed SSO) just to bind to the reference.
+      std::string_view instead can be constructed directly from a
+      C-string, a std::string, or a substring RANGE with zero allocation
+      and zero copying, since it just stores the pointer+length pointing
+      at the ORIGINAL data. The trade-off: a string_view does NOT own its
+      data, so you must ensure the underlying string/buffer it points
+      into stays alive for as long as the view is used (a common bug:
+      returning a string_view into a temporary or local buffer that gets
+      destroyed).
+
+Q5. What is the difference between s.size() and s.length()?
+
+    - They are IDENTICAL — both return the number of characters in the
+      string as a `size_t`. `length()` exists for historical/naming
+      consistency reasons (std::string predates a unified STL container
+      naming convention); `size()` is preferred in modern code because
+      it's consistent with the naming used by every other STL container
+      (vector, map, etc.), making generic/template code more uniform.
+
+Q6. What does s.find() return when the substring is not found? (Returns
+    std::string::npos)
+
+    - It returns the special constant `std::string::npos`, which is
+      defined as `static_cast<size_t>(-1)` — i.e., the LARGEST possible
+      value of an UNSIGNED size_t (since size_t is unsigned, "-1" wraps
+      around to the max value). It is NOT simply "-1" as a normal signed
+      integer would be.
+    - This means comparing the result to a signed `-1` (e.g.
+      `if (pos == -1)`) is a BUG — `pos` (size_t, unsigned) will never
+      equal a signed -1 through normal comparison rules in the way a
+      programmer might expect; the correct check is always
+      `if (pos == std::string::npos)`.
+
+Q7. What is the difference between s.substr(pos, len) and s.substr(pos)?
+
+    - `s.substr(pos, len)` returns a NEW string containing at most `len`
+      characters STARTING AT index `pos` (fewer if the string doesn't
+      have that many characters left from pos onward).
+    - `s.substr(pos)` (the `len` argument omitted) returns everything from
+      `pos` all the way to the END of the string — equivalent to
+      `s.substr(pos, s.size() - pos)`.
+    - Both throw `std::out_of_range` if `pos > s.size()`.
+
+Q8. How do you convert int to string and string to int in C++? (to_string,
+    stoi, stol, stod, stringstream)
+
+    - int -> string: `std::to_string(n)` — simplest, most common approach
+      (also has overloads for long, float, double, etc.).
+    - string -> int: `std::stoi(s)` (returns int; throws
+      std::invalid_argument if no conversion could be performed, and
+      std::out_of_range if the value doesn't fit in an int). Related:
+      `std::stol` (long), `std::stoll` (long long), `std::stod`/`std::stof`
+      (double/float). All of these, unlike the C `atoi`, THROW EXCEPTIONS
+      on invalid/out-of-range input instead of silently returning 0 — a
+      much safer default for real validation.
+    - Alternative (more flexible, works for mixed formatting):
+      `std::stringstream ss; ss << n;` (int to string) or
+      `std::stringstream ss(s); int n; ss >> n;` (string to int).
+
+Q9. What is a string stream? When would you use stringstream?
+
+    - std::stringstream (from <sstream>) is a stream object that reads
+      from and/or writes to an in-memory std::string, using the exact
+      same `<<`/`>>` operator interface as cin/cout.
+    - Use cases: building a formatted string out of MIXED types (numbers,
+      strings, etc.) without manual to_string()/concatenation calls;
+      PARSING a string into multiple typed values easily (e.g., splitting
+      "42 3.14 hello" into an int, a double, and a word using repeated
+      `>>`); general-purpose string <-> other-type conversions when you
+      need more formatting control than to_string/stoi provide (e.g.,
+      controlling decimal precision with `std::setprecision`).
+
+Q10. Is std::string null-terminated? Can you rely on s.c_str()?
+
+    - Yes — since C++11, std::string is GUARANTEED to store its
+      characters in contiguous memory with an implicit null terminator
+      immediately after the last character (accessible via
+      `s[s.size()]`, which is guaranteed to be `'\0'`).
+    - `s.c_str()` returns a `const char*` pointing to this
+      null-terminated internal buffer — safe and reliable to pass to any
+      C API expecting a C-string. Caveat: the returned pointer is only
+      valid as long as the std::string itself is not modified/destroyed
+      afterward (any mutating operation on `s` may invalidate a
+      previously obtained `c_str()` pointer, since the internal buffer
+      could be reallocated).
+
+Q11. What is the time complexity of string comparison with ==?
+
+    - O(N), where N is the length of the shorter of the two strings being
+      compared (in the worst case, comparing all the way to the end, or
+      until a mismatch is found — whichever comes first). It is NOT O(1)
+      — a common misconception, since comparing two strings for equality
+      fundamentally requires checking their characters (though the
+      implementation can typically short-circuit immediately if the two
+      strings' LENGTHS differ, since equal strings must have equal
+      lengths — this quick length check is O(1) and often avoids the full
+      character-by-character scan).
+
+Q12. What is copy-on-write (COW) optimization for std::string? Is it
+     still used in modern C++? (Disallowed in C++11 due to threading)
+
+    - Copy-on-write was an older optimization strategy (used by some
+      pre-C++11 std::string implementations, notably older GCC) where
+      COPYING a string didn't immediately duplicate its character buffer
+      — instead, multiple string objects would SHARE the same underlying
+      buffer (with a reference count), and an actual physical copy only
+      happened lazily, the moment one of the copies was MODIFIED
+      ("write"), so the others weren't affected.
+    - It is NOT used in modern (C++11 and later) standard library
+      implementations — the C++11 standard's requirements around
+      iterator/reference validity and thread-safety for std::string
+      effectively made COW implementations non-conforming (COW requires
+      extra synchronization to be thread-safe when multiple threads might
+      read/copy a shared buffer, adding overhead that conflicts with the
+      standard's performance guarantees for simple operations like
+      `operator[]`). Modern std::string implementations use SSO instead
+      (see Q3), which achieves a similar "avoid unnecessary allocation"
+      goal without the threading pitfalls of COW.
+
+Q13. What is string immutability? Is std::string mutable or immutable?
+     (std::string IS mutable unlike Java/Python strings)
+
+    - String immutability (as in Java's String or Python's str) means
+      once a string object is created, its CONTENTS can never be changed
+      — any operation that "modifies" a string actually creates and
+      returns a brand-new string object, leaving the original untouched.
+    - std::string in C++ is MUTABLE — you can modify its contents
+      IN PLACE via `s[i] = 'x';`, `s.append(...)`, `s.replace(...)`,
+      `s += ...`, etc., without creating a new string object each time.
+      This is a meaningful difference from Java/Python programmers'
+      intuitions and matters for performance (in-place mutation avoids
+      repeated allocation) as well as correctness (aliasing — if you have
+      two references to the same std::string, mutating through one
+      affects what the other sees, unlike immutable strings where this
+      can never happen).
+
+Q14. What are the key methods of std::string you must know? (length/size,
+     substr, find, rfind, replace, insert, erase, push_back, pop_back,
+     append, compare, c_str, empty, clear, begin/end, at, operator[])
+
+    (Covered comprehensively in the dedicated built-in function reference,
+    Section 5 below — see the std::string function table there for full
+    usage, complexity, and notes on each.)
+
+Q15. What is the difference between s[i] and s.at(i)?
+
+    - `s[i]` gives direct, UNCHECKED access — if `i` is out of bounds,
+      it's undefined behavior (no exception, just potentially reading
+      garbage or crashing). Slightly faster in principle since there's no
+      bounds check, though modern compilers/CPUs make this difference
+      tiny in most real code.
+    - `s.at(i)` gives BOUNDS-CHECKED access — throws
+      `std::out_of_range` if `i >= s.size()`. Prefer `.at()` when the
+      index comes from potentially-untrusted or error-prone computation
+      (user input, complex indexing logic) where you'd rather fail loudly
+      than silently corrupt/crash; prefer `[]` in tight, already-verified
+      loops where the tiny bounds-check overhead genuinely matters.
+
+Q16. How do you reverse a string in C++? (std::reverse — std::string has
+     no .reverse() method — common trap!)
+
+    - std::string has NO built-in `.reverse()` member function (a very
+      common trap/mistake for people coming from other languages). The
+      correct way is to use the STL ALGORITHM:
+          std::reverse(s.begin(), s.end());
+      This reverses the string IN PLACE, O(N) time. (You could also
+      manually reverse with a two-pointer swap loop from both ends,
+      achieving the same result without the STL call — useful in
+      C-style/embedded contexts or when std::algorithm isn't available.)
+
+Q17. What is the difference between string::npos and -1? (npos = static
+     const size_t(-1) = very large unsigned number; comparing find()
+     result to -1 causes signed/unsigned comparison bug)
+
+    - `std::string::npos` is defined as the maximum possible value of
+      `size_t` (an UNSIGNED type) — effectively `(size_t)-1`, which due
+      to unsigned wraparound equals the largest representable size_t
+      value (e.g. 18446744073709551615 on a 64-bit system), NOT the
+      signed integer -1.
+    - Writing `if (s.find(x) == -1)` is a bug: the literal `-1` gets
+      implicitly converted to `size_t` for the comparison (since one side
+      is unsigned), which ALSO becomes the same huge value as npos — so
+      by coincidence this particular comparison actually WORKS correctly
+      in practice (both sides become the same huge unsigned value)! The
+      REAL danger is elsewhere: if you ever store the result of `find()`
+      in a SIGNED int (`int pos = s.find(x);`), the huge npos value gets
+      TRUNCATED/reinterpreted when narrowed to a signed int (implementation-
+      defined/often becomes -1 or some other unexpected value on
+      truncation), and further comparisons can behave unpredictably. The
+      safe, universally correct practice is: always store find()'s result
+      in `size_t` (or use `auto`), and always compare directly against
+      `std::string::npos`, never against a bare `-1`.
+
+================================================================================
+SECTION 1C — STRING ALGORITHMS THEORY (ANSWERS)
+================================================================================
+
+Q1. What is a suffix array? How does it differ from a suffix tree?
+
+    - A suffix array is a sorted array of all the STARTING INDICES of
+      every suffix of a string, ordered lexicographically by the suffix
+      they point to. E.g. for "banana", it stores indices in the order
+      that make their corresponding suffixes ("a", "ana", "anana",
+      "banana", "na", "nana") sorted alphabetically.
+    - A suffix tree is a TRIE-like tree structure representing all
+      suffixes explicitly as paths from the root, with common prefixes
+      shared as common paths — more powerful for some queries (can find
+      the longest repeated substring, etc. directly by tree structure)
+      but significantly more complex to build and typically uses more
+      memory. A suffix array (often paired with an LCP array, see Q7) can
+      answer most of the same queries with much simpler code and lower
+      memory overhead, which is why suffix arrays are generally preferred
+      in practice/competitive programming.
+
+Q2. What is the Z-function (Z-array)? When would you use it over KMP?
+
+    - The Z-array Z[i] for a string S gives the length of the longest
+      substring starting at index i that matches a PREFIX of S itself
+      (Z[0] is conventionally undefined/set to 0 or the full length,
+      depending on convention).
+    - It's used over KMP mainly as a matter of PREFERENCE/clarity for
+      certain problems — the Z-array is conceptually simpler to reason
+      about for some tasks (e.g., finding all occurrences of a pattern by
+      concatenating pattern + separator + text and looking for positions
+      where Z[i] equals the pattern's length), and is sometimes more
+      natural for problems directly about prefix-matching structure.
+      Both KMP and Z-algorithm run in O(N+M) for pattern matching — the
+      choice is often just which one the solver finds more intuitive for
+      a given problem's exact formulation.
+
+Q3. What is the KMP algorithm? What is the failure function (lps array)?
+
+    - KMP (Knuth-Morris-Pratt) is a pattern-matching algorithm that finds
+      occurrences of a pattern P within a text T in O(N+M) time (N =
+      text length, M = pattern length) — crucially, WITHOUT ever
+      backtracking the text pointer, unlike the naive O(N*M) approach
+      which re-scans from scratch after every failed partial match.
+    - The "failure function" (also called the LPS array — "Longest
+      Proper Prefix which is also Suffix") is precomputed for the
+      PATTERN alone, in O(M) time: `lps[i]` tells you the length of the
+      longest prefix of the pattern that is ALSO a suffix of the
+      pattern's first `i+1` characters. When a mismatch occurs during
+      matching, instead of restarting the pattern comparison from
+      scratch, KMP uses lps[] to jump the pattern pointer directly to the
+      next position that could still possibly match — skipping
+      re-comparisons that are guaranteed to fail based on what's already
+      known about the pattern's own internal structure.
+
+Q4. What is Rabin-Karp? What is a rolling hash?
+
+    - Rabin-Karp is a pattern-matching algorithm that computes a HASH of
+      the pattern, then computes hashes of every same-length substring
+      ("window") of the text, comparing hashes instead of raw characters
+      for a quick initial filter — only doing a full character-by-character
+      comparison to confirm a match when hashes happen to match (to
+      handle hash collisions). Average case O(N+M), though worst case
+      degrades to O(N*M) if there are many hash collisions.
+    - A rolling hash is the key trick that makes this efficient: instead
+      of recomputing a substring's hash from scratch for every new
+      window position (which would be O(M) per window, O(N*M) overall),
+      you can compute the NEXT window's hash from the PREVIOUS window's
+      hash in O(1), by removing the contribution of the character that's
+      leaving the window and adding the contribution of the character
+      entering it (using the mathematical structure of a polynomial hash
+      — see Q on string hashing below) — this is what makes Rabin-Karp's
+      average case O(N+M) instead of O(N*M).
+
+Q5. What is Manacher's algorithm? What does it compute?
+
+    - Manacher's algorithm finds the LENGTHS of the longest palindromic
+      substring centered at EVERY position in a string, for ALL positions
+      simultaneously, in O(N) total time — a huge improvement over the
+      naive O(N^2) "expand around every center" approach (or O(N^3) brute
+      force checking every substring).
+    - It achieves this by cleverly REUSING previously computed palindrome
+      information: when expanding around a new center that falls INSIDE
+      a previously found palindrome, it can use the mirror-symmetric
+      information already computed for the corresponding position on the
+      other side of that palindrome's center, avoiding redundant character
+      comparisons. A common preprocessing trick inserts separator
+      characters (e.g. '#') between every character (and at the ends) so
+      even-length and odd-length palindromes can be handled uniformly by
+      the same algorithm.
+
+Q6. What is lexicographic ordering of strings? How does strcmp /
+    operator< implement it?
+
+    - Lexicographic ("dictionary") ordering compares two strings
+      character by character from the start: the first position where
+      they DIFFER determines the ordering (whichever string has the
+      SMALLER character value at that position is considered "less"). If
+      one string is a PREFIX of the other (they match completely up to
+      the length of the shorter one), the SHORTER string is considered
+      "less" (e.g. "app" < "apple").
+    - Both strcmp (C) and std::string's `operator<` (C++) implement
+      exactly this rule — scanning left to right, comparing characters
+      (as unsigned char values) until a difference is found or one string
+      ends.
+
+Q7. What is the difference between a substring and a subsequence?
+    (Substring: contiguous; Subsequence: any subset maintaining order)
+
+    - A substring is a CONTIGUOUS run of characters taken from the
+      original string (no gaps) — e.g. for "abcde", "bcd" is a substring,
+      but "bd" is NOT (there's a gap where "c" was skipped).
+    - A subsequence is any subset of characters that preserves their
+      RELATIVE ORDER, but does NOT need to be contiguous — gaps are
+      allowed. E.g. for "abcde", "ace" is a valid subsequence (a, c, e
+      appear in that order, even though b and d were skipped), but it's
+      not a substring. Every substring is also a valid subsequence, but
+      not vice versa.
+
+Q8. What is anagram? How do you check if two strings are anagrams? (Same
+    characters, same frequency — sort both or use frequency array)
+
+    - Two strings are anagrams of each other if one can be rearranged
+      (using every character exactly once, no additions/removals) to form
+      the other — meaning they contain EXACTLY THE SAME CHARACTERS with
+      the SAME FREQUENCIES, just possibly in a different order.
+    - Checking: (1) SORT both strings and compare for equality — O(N log
+      N); or (2) build a FREQUENCY ARRAY/map for each string (count of
+      each character) and compare the two frequency arrays — O(N) time,
+      generally faster and the preferred approach for interviews when
+      the alphabet is small/known (e.g. 26 lowercase letters -> a
+      fixed-size int[26] array, compared in O(26) = O(1)).
+
+Q9. What is a palindrome? What is the most efficient way to check? (Two
+    pointers from both ends — O(N) time O(1) space)
+
+    - A palindrome is a string that reads identically forwards and
+      backwards (e.g. "racecar", "madam").
+    - Most efficient check: two pointers, one starting at the beginning
+      (left) and one at the end (right), comparing characters and moving
+      both pointers TOWARD each other, stopping (and returning false) as
+      soon as a mismatch is found, or succeeding once they meet/cross —
+      O(N) time, O(1) extra space (no need to build a reversed copy of
+      the string first, which would also work but use O(N) extra space).
+
+Q10. What is string hashing? Why is polynomial rolling hash used?
+
+    - String hashing computes a single numeric "fingerprint" value from
+      a string's characters, such that (with high probability) different
+      strings produce different hash values — enabling fast approximate
+      equality checks (compare hashes in O(1) instead of full strings in
+      O(N)), fast substring comparison, and efficient use of strings as
+      hashmap keys.
+    - A polynomial rolling hash treats the string's characters as
+      "digits" of a number in some base B, computing something like
+      hash = s[0]*B^(n-1) + s[1]*B^(n-2) + ... + s[n-1]*B^0 (mod some
+      large prime, to keep values bounded and reduce collisions). It's
+      preferred because this specific mathematical structure makes it a
+      ROLLING hash (see Rabin-Karp, Q4 above) — you can update the hash
+      of a sliding window in O(1) as the window moves one position,
+      rather than recomputing from scratch, which is essential for
+      efficient substring search algorithms like Rabin-Karp.
+
+Q11. What is the longest common prefix (LCP) of two strings? How is LCP
+     array used with suffix arrays?
+
+    - The longest common prefix of two strings is the longest string
+      that is a PREFIX of BOTH — e.g. LCP("interspecies", "interstellar")
+      is "inters".
+    - An LCP ARRAY (used alongside a suffix array) stores, for each pair
+      of ADJACENT suffixes in the sorted suffix array, the length of
+      their longest common prefix. This combination (suffix array + LCP
+      array) enables answering many string queries efficiently (e.g.
+      finding the longest repeated substring becomes "find the max value
+      in the LCP array," since the longest repeated substring must be a
+      common prefix of two suffixes that are adjacent once sorted) —
+      often computed together in O(N) using Kasai's algorithm once the
+      suffix array itself is built.
+
+Q12. What is the edit distance (Levenshtein distance)? What three
+     operations are allowed? What is the DP recurrence?
+
+    - Edit distance is the MINIMUM number of single-character edits
+      needed to transform one string into another.
+    - Three allowed operations: INSERT a character, DELETE a character,
+      REPLACE (substitute) a character.
+    - DP recurrence: let dp[i][j] = edit distance between the first i
+      characters of string A and first j characters of string B.
+          if A[i-1] == B[j-1]: dp[i][j] = dp[i-1][j-1]  (no edit needed)
+          else: dp[i][j] = 1 + min(
+                    dp[i-1][j],     // delete from A
+                    dp[i][j-1],     // insert into A
+                    dp[i-1][j-1]    // replace
+                )
+      Base cases: dp[0][j] = j (insert all of B), dp[i][0] = i (delete
+      all of A). Overall O(N*M) time and space (space reducible to O(min(
+      N,M)) by keeping only the previous row).
+
+Q13. What is a trie? When would you use it over a hashmap for strings?
+     (Prefix-based search, auto-complete — trie wins for prefix queries)
+
+    - A trie (prefix tree) is a tree structure where each node represents
+      one character, and paths from the root spell out strings —
+      shared prefixes among multiple strings share the same path/nodes
+      in the tree, only diverging where the strings actually differ.
+    - Prefer a trie over a hashmap when you need PREFIX-based operations:
+      finding all strings starting with a given prefix (autocomplete),
+      checking if any string in the set has a given prefix, or finding
+      the longest common prefix among a set of strings — a hashmap can
+      only do exact-match lookups in O(1) average, but has NO efficient
+      way to answer "does anything start with X" without scanning every
+      key (O(N) in the worst case), whereas a trie answers such prefix
+      queries in O(length of prefix), independent of how many strings are
+      stored.
+
+Q14. What is lexicographically smallest rotation of a string? Name the
+     O(N) algorithm. (Booth's algorithm or suffix array)
+
+    - Given a string, a "rotation" moves some prefix of the string to the
+      end (e.g. rotating "abcd" by 1 gives "bcda"). The lexicographically
+      smallest rotation is whichever rotation, among ALL possible
+      rotations of the string, comes first in dictionary order.
+    - Booth's algorithm finds this smallest rotation in O(N) time (using
+      a clever failure-function-like technique similar in spirit to KMP,
+      avoiding the naive O(N^2) approach of generating and comparing all
+      N rotations directly). Alternatively, building a suffix array of
+      the string concatenated with itself (or with a smaller sentinel
+      character appended) and finding the smallest suffix of length N
+      also solves this, typically in O(N log N) for standard suffix array
+      construction (or O(N) with more advanced suffix array construction
+      algorithms).
+
+================================================================================
+SECTION 1D — ADDITIONAL / TRICKY THEORY (ANSWERS)
+================================================================================
+
+Q1. What is the most vexing parse related to strings? (string s(); //
+    declares a function, not a string!)
+
+    - The "most vexing parse" is a C++ parsing ambiguity where something
+      INTENDED as a variable declaration with a (default/empty)
+      constructor call is instead parsed by the compiler as a FUNCTION
+      DECLARATION. Example: `string s();` — this looks like "declare a
+      std::string named s, default-constructed" but the compiler actually
+      parses it as "declare a function named s, taking no parameters,
+      returning a string" — because ANYTHING that CAN be parsed as a
+      function declaration, is, by the C++ grammar's rules. This is why
+      `s.size()` afterward gives a confusing compile error (s is a
+      function, not an object). Fix: use `string s;` (no parentheses at
+      all for default construction), or the "uniform initialization"
+      syntax `string s{};` (braces are never ambiguous with a function
+      declaration).
+
+Q2. What is the difference between find_first_of and find in
+    std::string? (find_first_of finds first occurrence of ANY char in the
+    argument set)
+
+    - `s.find(sub)` searches for the first occurrence of the ENTIRE
+      substring `sub` as a contiguous sequence — e.g.
+      `s.find("ab")` looks for the literal two-character sequence "ab".
+    - `s.find_first_of(chars)` instead treats its argument as a SET OF
+      INDIVIDUAL CHARACTERS to look for — it returns the position of the
+      first character in `s` that matches ANY ONE of the characters in
+      `chars`. E.g. `s.find_first_of("aeiou")` finds the first vowel
+      anywhere in s, treating "aeiou" as 5 separate candidate characters,
+      not as a literal 5-character substring to match exactly.
+
+Q3. How does getline work? What is the difference between cin >> s and
+    getline(cin, s)? (cin >> skips whitespace and stops at first space;
+    getline reads full line)
+
+    - `cin >> s` (for a std::string s) skips any LEADING whitespace, then
+      reads characters until it hits the NEXT whitespace character (space,
+      tab, or newline) — meaning it only ever reads ONE "word" at a time,
+      never a full line with spaces in it.
+    - `std::getline(cin, s)` reads an ENTIRE LINE of input (everything up
+      to, and consuming, the next newline character), including any
+      spaces within that line, storing the result (without the trailing
+      newline itself) into s. Use getline whenever you need to read
+      input that may contain spaces (full sentences, file paths with
+      spaces, etc.).
+
+Q4. What is cin.ignore() and when do you need it? (Clears the newline
+    left in buffer after cin >> before getline)
+
+    - `cin.ignore(n, delim)` discards up to `n` characters from the input
+      buffer, stopping early if it encounters the `delim` character
+      (commonly called as `cin.ignore(numeric_limits<streamsize>::max(),
+      '\n');` to discard everything up to and including the next
+      newline).
+    - It's needed because `cin >> x` (for a number or a single word) stops
+      reading right BEFORE the newline character that the user typed to
+      submit their input — that leftover `'\n'` still sits in the input
+      buffer. If you then call `getline(cin, s)` immediately after, it
+      will "successfully" read that leftover empty newline as an EMPTY
+      LINE, before the user gets a chance to type actual text — a very
+      common bug ("why does my getline read nothing after cin >>
+      worked?"). Calling `cin.ignore(...)` between them clears out that
+      leftover newline first.
+
+Q5. What is the difference between s.empty() and s.size() == 0?
+    (Equivalent — prefer s.empty() as it is O(1) and more expressive)
+
+    - They are logically EQUIVALENT — both correctly detect an empty
+      string. `.empty()` is preferred stylistically because it directly
+      expresses the INTENT ("is this empty?") more clearly than a size
+      comparison, and — while size() itself is already O(1) for
+      std::string (the length is stored, not computed by scanning) — using
+      `.empty()` is a more GENERAL good habit, since for SOME containers
+      (rare, but conceptually) checking emptiness can be cheaper or more
+      directly expressed than computing a full size, so `.empty()` is the
+      idiomatic choice across all STL containers uniformly.
+
+Q6. What are raw string literals in C++11? (R"(...)") (Avoids escape
+    sequences — useful for regex, file paths)
+
+    - A raw string literal, written as `R"(...)"`, tells the compiler to
+      treat everything between the parentheses LITERALLY — backslashes
+      and quotes inside it are NOT interpreted as escape sequences at
+      all. E.g. `R"(C:\Users\name)"` represents the literal text
+      `C:\Users\name` WITHOUT needing to double-escape backslashes
+      (`"C:\\Users\\name"` as you would with a normal string literal).
+    - Especially useful for regular expressions (which already use
+      backslashes heavily for their own syntax, e.g. `\d`, `\s`) — writing
+      `R"(\d+\.\d+)"` instead of the double-escaped `"\\d+\\.\\d+"` is far
+      more readable; also useful for Windows file paths, or any text
+      containing many literal backslashes or quotation marks.
+
+Q7. What is std::string::reserve()? When should you use it? (Pre-
+    allocates capacity to avoid repeated reallocations in a loop)
+
+    - `s.reserve(n)` pre-allocates enough internal buffer capacity to
+      hold at least `n` characters WITHOUT changing the string's current
+      size or content — purely a performance hint/pre-allocation, exactly
+      analogous to std::vector's reserve().
+    - Use it when you know (or can reasonably estimate) the FINAL length
+      of a string you're about to build up incrementally (e.g. via
+      repeated `+=` in a loop) — this avoids multiple reallocations/copies
+      as the string grows step by step, paying the allocation cost once
+      up front instead.
+
+Q8. What is isalpha, isdigit, isspace, isupper, islower, toupper, tolower?
+    (From <cctype>) (Classify and transform individual characters)
+
+    - isalpha(c): true if c is an alphabetic letter (a-z, A-Z).
+    - isdigit(c): true if c is a decimal digit (0-9).
+    - isspace(c): true if c is a whitespace character (space, tab,
+      newline, carriage return, etc.).
+    - isupper(c) / islower(c): true if c is an uppercase / lowercase
+      letter respectively.
+    - toupper(c) / tolower(c): return the uppercase / lowercase equivalent
+      of c if it's a letter (otherwise return c unchanged).
+    - IMPORTANT GOTCHA: all of these functions technically expect an
+      `int` argument that is either EOF or representable as `unsigned
+      char` — passing a plain (signed, on most platforms) `char` that
+      happens to hold a NEGATIVE value (e.g. from a byte >= 0x80 in a
+      non-ASCII/extended character set) is UNDEFINED BEHAVIOR. The safe
+      pattern is to cast first: `std::isalpha(static_cast<unsigned
+      char>(c))` — a subtle but real trap that even experienced C/C++
+      programmers sometimes miss.
+
+================================================================================
+SECTION 2 — TRICKY / GOTCHA QUESTIONS
+     (Sound right but aren't, or vice versa — classic string interview
+      traps, matching the style of your "new + free" example.)
+================================================================================
+
+1. "sizeof(s) and strlen(s) always give the same result for a C-style
+   string." TRICKY: FALSE — sizeof includes the null terminator AND any
+   unused trailing capacity if the array was declared larger than needed
+   (e.g. `char s[20] = "hi";` gives sizeof(s) == 20 but strlen(s) == 2);
+   they only coincidentally match for a tightly-sized array like
+   `char s[] = "hello";` (sizeof 6, strlen 5) where sizeof is exactly
+   strlen+1, and even THAT only holds while s is a real array in scope,
+   not a decayed pointer parameter.
+
+2. "std::string has a built-in .reverse() method, just like it has
+   .append() and .substr()." TRICKY: FALSE — this is one of the single
+   most common C++ interview traps. std::string has NO .reverse() member
+   function at all; you must use the free algorithm
+   `std::reverse(s.begin(), s.end())`.
+
+3. "Comparing string::find()'s result to -1 is always safe because npos
+   equals -1 anyway." TRICKY: Misleadingly true in the SPECIFIC case of
+   comparing directly (`if (s.find(x) == -1)` actually works, because -1
+   converts to the same huge unsigned value as npos) — but the moment you
+   store the result in a SIGNED type first (`int pos = s.find(x);`), that
+   huge unsigned value gets narrowed/truncated to some
+   implementation-defined signed value, and subsequent logic built on
+   that variable can behave unpredictably. The only truly safe habit is:
+   store find() results as size_t/auto, and always compare against
+   `std::string::npos` explicitly, never against a bare `-1`.
+
+4. "strncpy(dst, src, n) always produces a properly null-terminated
+   string in dst, since it's the 'safe' version of strcpy." TRICKY:
+   FALSE — if src's length is >= n, strncpy copies exactly n characters
+   and does NOT append a null terminator at all, leaving dst as a
+   non-terminated buffer unless you manually add `dst[n-1] = '\0';`
+   yourself afterward.
+
+5. "for (char c : s) { c = toupper(c); } will correctly uppercase every
+   character in the std::string s." TRICKY: FALSE — `c` here is a COPY of
+   each character (range-based for without `&`), so modifying `c` inside
+   the loop body has NO effect on the original string s at all. The fix
+   is `for (char& c : s) { c = toupper(c); }` (capturing by reference).
+
+6. "char* p = \"hello\"; is exactly equivalent to char p[] = \"hello\";
+   — both give you a modifiable string." TRICKY: FALSE — `char* p =
+   "hello";` points at a STRING LITERAL, typically stored in read-only
+   memory; attempting `p[0] = 'H';` is undefined behavior (commonly a
+   crash). Only `char p[] = "hello";` (a real, separate array copy) is
+   safely modifiable.
+
+7. "atoi(\"0\") and atoi(\"abc\") returning the same value (0) means
+   they're treated as the same kind of input." TRICKY: FALSE (a
+   deliberate ambiguity/danger of atoi) — atoi provides NO way to
+   distinguish "the string was legitimately the numeral 0" from "the
+   string couldn't be parsed as a number at all" — both cases silently
+   return 0. This is exactly why strtol (which gives you an endptr to
+   check) or std::stoi (which throws an exception on invalid input) are
+   the recommended alternatives whenever you actually need to validate
+   input.
+
+8. "strcmp returning a value like -2 vs -47 tells you something
+   meaningful about HOW different the two strings are." TRICKY: FALSE —
+   the C standard only guarantees the SIGN of strcmp's return value is
+   meaningful (negative / zero / positive); the actual magnitude is
+   implementation-defined (often just the numeric difference between the
+   first mismatched characters) and should never be interpreted as a
+   "distance" or "degree of difference" metric between the strings.
+
+9. "Since std::string manages its own memory, calling c_str() and then
+   modifying the string later is always fine — the returned pointer
+   stays valid." TRICKY: FALSE — the pointer returned by `.c_str()` is
+   only guaranteed valid until the NEXT operation that could modify or
+   reallocate the string's internal buffer (e.g. `+=`, `resize`,
+   `push_back`, or even just running out of the destructor's scope).
+   Holding onto a c_str() pointer and using it after further mutating the
+   original std::string is a classic dangling-pointer bug.
+
+10. "isalpha(c), isdigit(c), etc. are always safe to call directly with
+    any char value." TRICKY: FALSE — these <cctype> functions are only
+    well-defined for values representable as `unsigned char` (or EOF).
+    Passing a plain `char` that holds a negative value (common on
+    platforms where char is signed, for byte values >= 0x80) is undefined
+    behavior. Always cast: `isalpha(static_cast<unsigned char>(c))`.
+
+11. "Naive string concatenation with += in a loop is always O(N^2) and
+    should be avoided in favor of stringstream." TRICKY: Mostly
+    FALSE/overstated — modern std::string implementations grow their
+    buffer geometrically (like std::vector), so a loop of += calls
+    building up a string of final length N is amortized O(N) overall, not
+    O(N^2). reserve()/stringstream are still good practice for avoiding
+    even the amortized reallocation overhead, but the common claim that
+    "+= in a loop is quadratic" is an oversimplification of vector/string
+    growth behavior, not strictly true for standard-conforming
+    implementations.
+
+12. "strtok can safely be used to tokenize two different strings at the
+    same time by calling it in a nested loop." TRICKY: FALSE — strtok
+    keeps its position using a single shared INTERNAL STATIC variable;
+    nesting two tokenization loops (or using it from multiple threads)
+    corrupts that shared state, causing incorrect/undefined results. Use
+    `strtok_r` (which takes an explicit save-pointer argument) for
+    anything beyond the simplest single, non-nested use.
+
+13. "Since std::string is guaranteed null-terminated in C++11+, you never
+    need c_str() anymore — you can just pass a std::string directly to
+    any C function expecting a char*." TRICKY: FALSE — a std::string
+    object and a C function's expected `const char*`/`char*` parameter
+    are still DIFFERENT TYPES; you must still explicitly call `.c_str()`
+    (or `.data()`, in C++17+ where data() is also guaranteed
+    null-terminated and non-const-qualified for non-const strings) to get
+    an actual C-string pointer to pass — the guarantee only means the
+    underlying bytes ARE properly terminated once you do extract that
+    pointer, not that implicit conversion happens automatically.
+
+================================================================================
+END OF PART 1 — CONTINUED IN NEXT FILE SECTION (BUILT-IN FUNCTIONS,
+ALTERNATIVES, AND INTERVIEW-SPEED TRICKS)
+================================================================================
+================================================================================
+     SECTION 5 — STRING OPERATIONS IN C/C++: BUILT-IN FUNCTIONS,
+     MANUAL ALTERNATIVES (when restricted from using built-ins),
+     AND INTERVIEW SPEED TRICKS
+================================================================================
+
+--------------------------------------------------------------------------------
+5.1  C-STYLE STRING FUNCTIONS (<cstring> / <string.h>)
+--------------------------------------------------------------------------------
+
+  strlen(s)
+    - Use: get length of a null-terminated string.
+    - Complexity: O(N).
+    - When used: almost every C-string operation needs a length first.
+    - Manual alternative (if <cstring> is restricted):
+          int myStrlen(const char* s) {
+              int len = 0;
+              while (s[len] != '\0') len++;
+              return len;
+          }
+
+  strcpy(dst, src) / strncpy(dst, src, n)
+    - Use: copy a string into a buffer.
+    - Complexity: O(N).
+    - Danger: strcpy has no bounds check (buffer overflow risk); strncpy
+      may leave dst unterminated if src >= n chars — always manually
+      set dst[n-1] = '\0' as a safety net when using strncpy.
+    - Manual alternative:
+          void myStrcpy(char* dst, const char* src) {
+              int i = 0;
+              while (src[i] != '\0') { dst[i] = src[i]; i++; }
+              dst[i] = '\0';
+          }
+
+  strcat(dst, src) / strncat(dst, src, n)
+    - Use: append src onto the end of dst.
+    - Complexity: O(len(dst) + len(src)) — must first scan dst to find its
+      end, then copy src.
+    - Danger: same buffer overflow risk as strcpy if dst's buffer isn't
+      large enough for the combined result.
+    - Manual alternative:
+          void myStrcat(char* dst, const char* src) {
+              int i = 0;
+              while (dst[i] != '\0') i++;      // find end of dst
+              int j = 0;
+              while (src[j] != '\0') { dst[i++] = src[j++]; }
+              dst[i] = '\0';
+          }
+
+  strcmp(s1, s2) / strncmp(s1, s2, n)
+    - Use: lexicographic comparison; 0 = equal, <0 = s1<s2, >0 = s1>s2.
+    - Complexity: O(min(len(s1), len(s2))) — stops at first mismatch.
+    - Manual alternative:
+          int myStrcmp(const char* a, const char* b) {
+              while (*a && (*a == *b)) { a++; b++; }
+              return (unsigned char)*a - (unsigned char)*b;
+          }
+
+  strchr(s, c) / strrchr(s, c)
+    - Use: find first (strchr) / last (strrchr) occurrence of a character.
+    - Complexity: O(N).
+    - Manual alternative (strchr):
+          char* myStrchr(char* s, char c) {
+              while (*s) { if (*s == c) return s; s++; }
+              return (c == '\0') ? s : nullptr;
+          }
+
+  strstr(haystack, needle)
+    - Use: find first occurrence of a substring.
+    - Complexity: O(N*M) naive (used internally by most libc
+      implementations for typical short needles); can be O(N+M) with
+      KMP/Z-algorithm for guaranteed linear time on adversarial inputs.
+    - Manual alternative (naive):
+          char* myStrstr(char* haystack, char* needle) {
+              if (!*needle) return haystack;
+              for (; *haystack; haystack++) {
+                  char *h = haystack, *n = needle;
+                  while (*h && *n && *h == *n) { h++; n++; }
+                  if (!*n) return haystack;
+              }
+              return nullptr;
+          }
+    - Interview speed trick: if the interviewer restricts strstr, this is
+      also literally "implement KMP" territory if they want the O(N+M)
+      guarantee — mention both the naive fallback AND that KMP exists as
+      the optimal answer, to show you know the trade-off.
+
+  strdup(s)
+    - Use: heap-allocate a copy of a string.
+    - Complexity: O(N).
+    - Caller must free() the result — common leak if forgotten.
+    - Manual alternative (if unavailable): malloc(strlen(s)+1) then
+      strcpy into it yourself.
+
+  strtok(str, delim)
+    - Use: split a string into tokens by delimiter characters.
+    - Complexity: O(N) total across all calls for one string.
+    - Danger: not thread-safe (shared static state); use strtok_r for
+      concurrent/nested use.
+    - Manual alternative (two-pointer split, no mutation of static state):
+          // Scan for delimiter runs manually, extracting [start, end)
+          // substrings — trivial to hand-roll without strtok at all,
+          // and safer since you control your own state explicitly.
+
+  atoi(s) / atof(s)
+    - Use: quick string-to-number conversion.
+    - Danger: returns 0 on invalid input with no way to detect failure;
+      undefined behavior on overflow.
+    - Safer alternative: strtol(s, &endptr, base) / strtod(s, &endptr) —
+      check endptr != s to detect "nothing parsed," check errno ==
+      ERANGE to detect overflow.
+    - Manual alternative (implement atoi from scratch — a VERY common
+      interview question on its own):
+          int myAtoi(const char* s) {
+              int i = 0, sign = 1; long result = 0;
+              while (s[i] == ' ') i++;                 // skip leading spaces
+              if (s[i] == '+' || s[i] == '-')           // optional sign
+                  sign = (s[i++] == '-') ? -1 : 1;
+              while (isdigit(s[i])) {
+                  result = result * 10 + (s[i] - '0');
+                  if (sign * result > INT_MAX) return INT_MAX;
+                  if (sign * result < INT_MIN) return INT_MIN;
+                  i++;
+              }
+              return static_cast<int>(sign * result);
+          }
+
+  sprintf(buf, fmt, ...) / snprintf(buf, size, fmt, ...)
+    - Use: format data into a string buffer.
+    - Danger: sprintf has no size limit — overflow risk. Always prefer
+      snprintf, which truncates safely and tells you (via return value)
+      whether truncation occurred.
+
+--------------------------------------------------------------------------------
+5.2  <cctype> CHARACTER FUNCTIONS
+--------------------------------------------------------------------------------
+
+  isalpha, isdigit, isalnum, isspace, isupper, islower, ispunct
+    - Use: classify a single character.
+    - Complexity: O(1) each.
+    - GOTCHA: always cast to unsigned char first —
+      isalpha(static_cast<unsigned char>(c)) — passing a negative signed
+      char is undefined behavior.
+    - Manual alternative (if <cctype> is restricted — very common in
+      "implement from scratch" interview rounds):
+          bool myIsDigit(char c) { return c >= '0' && c <= '9'; }
+          bool myIsAlpha(char c) {
+              return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+          }
+          bool myIsSpace(char c) {
+              return c==' '||c=='\t'||c=='\n'||c=='\r'||c=='\f'||c=='\v';
+          }
+
+  toupper, tolower
+    - Use: convert case of a single character.
+    - Manual alternative:
+          char myToUpper(char c) {
+              return (c >= 'a' && c <= 'z') ? c - 'a' + 'A' : c;
+          }
+          char myToLower(char c) {
+              return (c >= 'A' && c <= 'Z') ? c - 'A' + 'a' : c;
+          }
+    - Interview speed trick: the ASCII offset trick above (`c - 'a' +
+      'A'`) works because 'a'..'z' and 'A'..'Z' are each contiguous
+      blocks in ASCII with a FIXED offset (32) between them — you can
+      also just do `c ^ 32` or `c - 32` / `c + 32` for even faster mental
+      math, but the `- base + base` form is clearer and safer to write
+      under interview pressure.
+
+--------------------------------------------------------------------------------
+5.3  std::string MEMBER FUNCTIONS — FULL REFERENCE
+--------------------------------------------------------------------------------
+
+  s.size() / s.length()
+    - Identical; O(1) (length is stored, not computed).
+    - Use: get character count. Prefer size() for consistency with other
+      STL containers.
+
+  s.empty()
+    - O(1). Use instead of `s.size() == 0` — clearer intent.
+
+  s[i]
+    - O(1), UNCHECKED. Use in hot loops where index is already verified.
+
+  s.at(i)
+    - O(1) + bounds check, throws std::out_of_range if i >= size().
+    - Use when index correctness isn't already guaranteed.
+
+  s.front() / s.back()
+    - O(1). Return first/last character. UB if string is empty — check
+      !s.empty() first.
+
+  s.c_str() / s.data()
+    - O(1). Returns const char* (c_str) or char*/const char* (data(),
+      non-const since C++17) to the null-terminated internal buffer.
+    - Use: interfacing with C APIs. CAUTION: pointer invalidated by any
+      subsequent mutating operation on the string.
+
+  s.substr(pos, len = npos)
+    - O(len) — allocates and returns a NEW string.
+    - Use: extract a portion of a string. Omitting len takes to the end.
+    - Alternative (avoid allocation): std::string_view s.substr(pos, len)
+      style views, or manual index-based processing without materializing
+      a new string, when performance matters in hot loops.
+
+  s.find(sub, pos = 0) / s.rfind(sub, pos = npos)
+    - O(N*M) worst case (naive substring search internally, though many
+      implementations optimize typical cases). find searches forward
+      from pos; rfind searches BACKWARD from pos (finds LAST occurrence
+      at or before pos).
+    - Returns std::string::npos if not found — NEVER compare to -1
+      directly if stored in a signed variable (see theory Q6/Q17 above).
+
+  s.find_first_of(chars) / s.find_last_of(chars)
+    - O(N * |chars|) worst case. Finds first/last position matching ANY
+      character in the given set (not a literal substring match).
+
+  s.find_first_not_of(chars) / s.find_last_not_of(chars)
+    - O(N * |chars|). Finds first/last position NOT matching any
+      character in the set — very useful for trimming whitespace:
+          size_t start = s.find_first_not_of(" \t\n");
+          size_t end   = s.find_last_not_of(" \t\n");
+          std::string trimmed = (start == std::string::npos)
+              ? "" : s.substr(start, end - start + 1);
+
+  s.replace(pos, len, newStr)
+    - O(N) (may need to shift remaining characters and/or reallocate).
+    - Use: replace a portion of the string with another string.
+
+  s.insert(pos, str) / s.insert(iterator, char)
+    - O(N) — must shift all characters after pos.
+
+  s.erase(pos, len) / s.erase(iterator)
+    - O(N) — must shift all characters after the erased range.
+    - s.erase(std::remove(s.begin(), s.end(), ch), s.end()) — classic
+      idiom to remove ALL occurrences of a character (see erase-remove
+      idiom, borrowed from vector usage).
+
+  s.push_back(c) / s.pop_back()
+    - Amortized O(1) / O(1). Append or remove a single character at the
+      end — same growth-strategy behavior as std::vector::push_back.
+
+  s.append(str) / s += str
+    - Amortized O(1) per appended character overall (geometric growth) —
+      NOT the commonly-feared O(N^2) for a full loop of appends.
+
+  s.compare(other)
+    - O(min(N,M)). Returns <0/0/>0 like strcmp; usually operator==/</> is
+      more readable for simple equality/ordering checks; compare() is
+      useful when you also need substring-range comparisons via its
+      overloads.
+
+  s.clear()
+    - O(N) (destroys characters) — size becomes 0, capacity UNCHANGED
+      (same gotcha as vector::clear()).
+
+  s.resize(n)
+    - O(|n - size|). Changes size to n — pads with '\0' (or a given
+      fill character) if growing, truncates if shrinking.
+
+  s.reserve(n)
+    - O(N) if it triggers reallocation, else O(1). Pre-allocates capacity
+      — use before a loop of known-length concatenation to avoid repeated
+      reallocation.
+
+  s.begin()/s.end(), s.rbegin()/s.rend()
+    - O(1). Iterators for use with STL algorithms (std::reverse,
+      std::sort, std::transform, etc.)
+
+--------------------------------------------------------------------------------
+5.4  COMMON STL ALGORITHMS USED WITH STRINGS
+--------------------------------------------------------------------------------
+
+  std::reverse(s.begin(), s.end())
+    - O(N). THE way to reverse a std::string (no built-in .reverse()).
+
+  std::sort(s.begin(), s.end())
+    - O(N log N). Sorts characters — useful for anagram checks (sort both
+      strings, compare for equality) or grouping anagrams (use sorted
+      string as a hashmap key).
+
+  std::transform(s.begin(), s.end(), s.begin(), ::toupper)
+    - O(N). Apply a function to every character in place — common
+      idiomatic way to uppercase/lowercase an entire string in one line.
+    - GOTCHA: pass ::toupper (global scope) or a lambda, not just
+      `toupper`, to avoid ambiguity with the <cctype> vs <locale>
+      overloads on some compilers; also cast to unsigned char inside a
+      lambda to avoid the same UB as the standalone isalpha/toupper trap:
+          std::transform(s.begin(), s.end(), s.begin(),
+              [](unsigned char c){ return std::toupper(c); });
+
+  std::count(s.begin(), s.end(), ch)
+    - O(N). Count occurrences of a specific character.
+
+  std::remove(s.begin(), s.end(), ch) + s.erase(...)
+    - O(N). The "erase-remove idiom" — remove() shifts all NON-matching
+      elements forward and returns a new logical end; erase() then
+      actually shrinks the string to that new size.
+
+  std::stringstream (build/parse mixed-type strings)
+    - O(N) for typical use. See theory Q9 above for use cases.
+
+--------------------------------------------------------------------------------
+5.5  INTERVIEW SPEED TRICKS — STRING PROBLEMS
+--------------------------------------------------------------------------------
+
+  1. ANAGRAM CHECK: use a fixed int freq[26] array instead of sorting.
+     Sorting is O(N log N); frequency array comparison is O(N) — always
+     mention frequency array as the "optimal" answer even if you also
+     show sorting as the "simple" one.
+
+  2. PALINDROME CHECK: two pointers from both ends, O(N) time O(1) space
+     — never build a reversed copy of the string unless the interviewer
+     specifically wants to see the "obvious" approach first.
+
+  3. SUBSTRING/WINDOW PROBLEMS ("longest substring without repeating
+     characters", "minimum window substring", etc.): default to the
+     SLIDING WINDOW technique with two pointers + a hashmap/frequency
+     array tracking the window's contents — almost always turns an
+     O(N^2) or O(N^3) brute force into O(N).
+
+  4. PATTERN MATCHING ("does X appear in Y"): mention the naive O(N*M)
+     approach first, then say "this can be optimized to O(N+M) with KMP
+     or the Z-algorithm" even if you don't fully implement it — shows
+     you know the theoretical ceiling.
+
+  5. STRING TO INTEGER / INTEGER TO STRING WITHOUT BUILT-INS: know the
+     digit-extraction trick both directions:
+         // int -> string: extract digits by repeated %10 and /10,
+         // building the result BACKWARDS then reversing (or building
+         // via recursion to get correct order without reversing).
+         // string -> int: result = result*10 + (c - '0') per digit,
+         // handling sign and overflow explicitly (see myAtoi above).
+
+  6. CHECKING IF TWO STRINGS ARE ROTATIONS OF EACH OTHER: classic O(N)
+     trick — s2 is a rotation of s1 if and only if s2 is a substring of
+     (s1 + s1). E.g. "abcd" rotated is always found inside "abcdabcd".
+     This turns an O(N^2) "try every rotation" approach into a single
+     substring search.
+
+  7. GROUP ANAGRAMS: use the SORTED version of each string (or a
+     frequency-count tuple/string) as a hashmap key, grouping all strings
+     that map to the same key — avoids pairwise O(N^2) comparison between
+     every string in the list.
+
+  8. CHECKING IF A STRING CAN BE REARRANGED INTO A PALINDROME: a string
+     can be rearranged into a palindrome if and only if AT MOST ONE
+     character has an ODD frequency count — a single frequency-array pass
+     answers this in O(N) without needing to try any actual rearrangement.
+
+  9. REVERSE WORDS IN A SENTENCE IN-PLACE (C-style, O(1) extra space):
+     reverse the ENTIRE string first, then reverse each individual word
+     back — two passes, both O(N), no extra buffer needed. (This exact
+     trick appears directly in your question bank as a C-style coding
+     question.)
+
+  10. WHEN RESTRICTED FROM USING std::string / STL ENTIRELY (common in
+      embedded/systems-style interviews, matching your background): fall
+      back to raw char arrays + manual index/pointer walking for
+      everything above — every std::string operation listed in 5.3 has a
+      direct, simple manual equivalent using a `char* `/fixed buffer and
+      a hand-rolled loop, as shown throughout Section 5.1's "manual
+      alternative" entries. Practicing "implement strlen/strcpy/strcmp/
+      atoi/strstr from scratch" is exactly this skill, and is very
+      commonly asked directly (as seen in your TCS/Wipro/Samsung/Sasken
+      question bank entries).
+
+================================================================================
+END OF FILE
+================================================================================

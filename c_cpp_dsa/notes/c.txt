@@ -1,0 +1,207 @@
+C Programming — Study Notes
+
+1. C Basics
+1.1 What is C Language
+1.2 History of C
+1.3 Features of C
+1.4 C as Mother / System / Procedural / Structured / Mid-Level Language
+1.5 How to Install C
+1.6 First C Program
+1.7 Compilation Process in C
+1.8 Flow of a C Program
+1.9 printf() / scanf()
+1.10 Variables in C
+1.11 Data Types in C
+1.12 Keywords in C
+1.13 Identifiers in C
+1.14 C Operators
+1.14.1 Arithmetic Operators
+1.14.2 Relational Operators
+1.14.3 Logical Operators
+1.14.4 Bitwise Operators
+1.14.5 Assignment Operators
+1.14.6 Miscellaneous Operators
+1.14.7 Shift Operators
+1.14.8 Operator Precedence & Associativity
+1.15 Comments in C
+1.16 Format Specifiers
+1.17 Escape Sequences
+1.18 ASCII Value in C
+1.19 Constants in C
+1.20 Literals in C
+1.21 Tokens in C
+1.22 C Boolean
+1.23 Static in C
+1.24 Programming Errors in C (Syntax/Runtime/Logical)
+1.25 Compile Time vs Runtime
+1.26 Conditional Operator in C
+1.27 Bitwise Operator in C
+1.28 2s Complement in C
+1.29 Compiler VS Interpreter
+1.30 Structure in C
+1.31 Programming Language
+
+
+
+
+
+
+2. Control Statements
+2.1 Decision-Making Statements Overview
+2.2 if-else
+2.3 Nested if-else
+2.4 switch
+2.5 if-else vs switch
+2.6 Loops Overview (Iteration)
+2.6.1 while Loop	
+2.6.2 do-while Loop
+2.6.3 for Loop
+2.6.4 Nested Loops
+2.6.5 Infinite Loop
+2.6.6 for vs while Loop
+2.7 break
+2.8 continue
+2.9 goto
+2.10 Branching / Jump Statements
+2.11 Type Casting
+
+
+
+
+
+
+3. Arrays
+3.1 One-Dimensional (1-D) Array
+3.2 Two-Dimensional (2-D) Array
+3.3 Multidimensional Array
+3.4 Passing Array to Function
+3.5 Returning an Array from Function
+3.6 Array of Strings
+3.7 Dynamic Array
+3.8 Array vs Pointer
+3.9 Return an Array in C
+3.10 Array to Function
+
+4. Functions
+4.1 Function Basics (Declaration, Definition, Call)
+4.2 Functions in C
+4.3 Call by Value vs Call by Reference
+4.4 Actual vs Formal Parameters
+4.5 Recursion
+4.6 Storage Classes
+4.7 Inter-Function Communication
+4.8 Reentrant Functions
+4.9 Library vs User-Defined Functions
+
+5. Pointers
+5.1 Pointer Basics
+5.2 Pointer to Pointer
+5.3 Pointer Arithmetic
+5.4 Pointer vs Array
+5.5 Null Pointer
+5.6 Void Pointer
+5.7 Dangling Pointer
+5.8 const Pointer
+5.9 Function Pointer
+5.10 Passing Function Pointer as Argument
+5.11 Dereferencing a Pointer
+5.12 sizeof() Operator
+5.13 Near, Far, and Huge Pointers
+
+6. Dynamic Memory Allocation
+6.1 malloc()
+6.2 calloc()
+6.3 realloc()
+6.4 free()
+6.5 Memory Leak
+6.6 Segmentation Fault
+6.7 Stack Overflow
+6.8 Memory Layout of a C Program (Data Segments)
+
+7. Strings
+7.1 String Basics in C
+7.2 gets() and puts()
+7.3 String Functions Overview
+7.4 strlen()
+7.5 strcpy()
+7.6 strcat()
+7.7 strcmp() / strcmpi() / strncmp()
+7.8 strrev()
+7.9 strlwr() / strupr()
+7.10 strstr() / strchr() / strrchr()
+7.11 strtok()
+7.12 strdup()
+7.13 Reversing / Comparing / Concatenating Strings (Programs)
+
+8. Math
+
+9. Structures & Unions
+9.1 Structure in C
+9.2 Accessing Structure Members
+9.3 Array of Structures
+9.4 Nested Structure
+9.5 Self-Referential Structure
+9.6 Structure Pointer
+9.7 Structure Padding
+9.8 Bit Fields
+9.9 typedef
+9.10 Union in C
+9.11 Structure vs Union
+9.12 Enum in C
+
+10. File Handling
+10.1 File Handling Basics (fopen, fclose)
+10.2 fprintf() / fscanf()
+10.3 fputc() / fgetc()
+10.4 fputs() / fgets()
+10.5 fread() / fwrite()
+10.6 fseek()
+10.7 rewind()
+10.8 ftell()
+10.9 feof()
+10.10 Random Access File
+
+11. Preprocessor
+11.1 Preprocessor Overview
+11.2 Macros (#define)
+11.3 Multiline Macros
+11.4 #include
+11.5 #undef
+11.6 #ifdef / #ifndef
+11.7 #if / #else
+11.8 #error
+11.9 #pragma
+11.10 Header Files (Standard & Custom)
+
+12. Command Line Arguments
+12.1 argc / argv
+
+13. Standard Library Headers
+13.1 stdio.h
+13.2 stdlib.h
+13.3 string.h
+13.4 math.h
+13.5 ctype.h
+13.6 conio.h
+
+14. Miscellaneous Concepts
+14.1 Type Qualifiers (const, volatile, restrict)
+14.2 Lvalue and Rvalue
+14.3 Sequence Points
+14.4 Integer Promotions
+14.5 size_t
+14.6 Garbage Value
+14.7 stdin / stdout / stderr
+14.8 Symbolic Constants
+14.9 Assert in C
+14.10 exit() vs return()
+14.11 System Function
+14.12 Multithreading in C (basics)
+
+15. Data Structures & Algorithms in C
+15.1 Linked List (Singly, Doubly)
+15.2 Stack
+15.3 Queue
+15.4 Searching (Linear, Binary, Interpolation)
+15.5 Sorting (Bubble, Insertion, Quick, Merge)
+15.6 Time Complexity Basics (Big O)

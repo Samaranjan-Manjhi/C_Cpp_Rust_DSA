@@ -1,0 +1,687 @@
+# C / C++ Interview Question Bank
+
+*Consolidated from Chella Software, Delta IoT Solutions, Network Marvels, Prescient Technologies, Smart Analytica, and the Opcito interview prep sets. Scope: C and C++ language & core CS fundamentals only (Qt, SQL, pure networking/OS, HR, aptitude, and DSA-only problems were left out — see the companion files: `Qt_Interview_Questions.md`, `Network_Interview_Questions.md`, `SQL_Interview_Questions.md`, `CPP_Coding_Problems.md`, `Miscellaneous_Puzzles_Aptitude.md`). Questions only for now — answers are a future pass.*
+
+## How to Use This Document
+
+- Section 1 is your self-introduction — fill in / tweak as your story evolves.
+- Sections 2–15 are C/C++ questions, grouped by topic, roughly beginner → advanced within each topic.
+- The last section is a generic set of questions to ask any interviewer, regardless of company or domain.
+- Add answers under each question in a future pass (e.g. as a `> Answer:` blockquote), so the numbering stays stable.
+
+---
+
+## 1. About Me (Self-Introduction)
+
+*Use/adapt this before every interview — keep it to ~45–60 seconds when spoken.*
+
+I'm currently a Systems and Cybersecurity Software Engineer, with about three years of experience specializing in building C/C++ production-grade endpoint security tools, kernel monitors, and Data Loss Prevention (DLP) engines across macOS and Linux. In my current role, I've designed and delivered multiple enterprise security modules — including a real-time antivirus scanning daemon using eBPF kernel tracing, an execution-gating framework built on kernel permission events, and a custom PAM module adding 2FA to SSH logins. My work has focused on cross-platform security daemons, with measurable wins on memory overhead and event-detection throughput.
+
+Moving forward, I'm looking to bring my depth in kernel-level monitoring, systems-level C/C++, and low-level architecture to a team tackling interesting high-scale engineering problems.
+
+
+---
+
+## 2. Language Fundamentals & Data Types
+
+1. What are the primary primitive data types available in C++?
+2. What is the typical physical byte size of an 'int', 'char', 'float', and 'double' on a 64-bit platform?
+3. How does the size of a 'long' integer vary between Windows (LLP64) and Linux (LP64) 64-bit operating systems?
+4. Explain the difference between 'signed' and 'unsigned' data type modifiers.
+5. What exact runtime phenomenon occurs when an 'unsigned int' holding 0 is decremented by 1?
+6. What is an implicit type conversion (coercion) versus an explicit type conversion (casting)?
+7. Why are traditional C-style typecasts (e.g., (int)variable) highly discouraged in modern C++?
+8. What is the syntax and functional difference between '#define MAX_LEN 100' and 'const int MAX_LEN = 100;'?
+9. Which approach between '#define' and 'const' variables provides better compiler type-safety and debugging tracking?
+10. What is Uniform Initialization (using curly braces {}), and what problem does it solve regarding narrowing conversions?
+11. How does a standard 'enum' differ from a C++11 scoped enum ('enum class')?
+12. Why do scoped enums prevent name clashes/pollution in large industrial codebases?
+13. What is the concrete purpose of a 'namespace' block in C++?
+14. Why is placing the statement 'using namespace std;' inside a global header file ('.h') considered an anti-pattern?
+15. Explain how the basic 'auto' keyword automatically deduces variable types at compile time.
+16. Does utilizing the 'auto' keyword turn C++ into a dynamically typed language at runtime?
+17. Differentiate completely between the prefix increment operator ('++x') and the postfix increment operator ('x++').
+18. Why is prefix increment ('++iter') generally more efficient than postfix increment for complex user-defined iterator types?
+19. Can a 'switch' statement evaluate a 'std::string' object directly in C++?
+20. What primitive types are strictly valid to be evaluated inside a 'switch-case' control block?
+21. What are bitwise operators ('&', '|', '^', '~', '<<', '>>'), and how do they function on integer data fields?
+22. How do you set, clear, and toggle a specific single bit inside an unsigned integer flag variable?
+23. What is the purpose of the 'sizeof' operator, and is it evaluated at compile time or runtime?
+24. What is the difference between a literal constant (e.g., 3.14f) and a symbolic constant variable?
+25. Explain the concept of operator precedence and associativity in complex mathematical expressions.
+26. What is short-circuit evaluation, and how does it safeguard logical expressions like 'if (ptr != nullptr && ptr->isValid())'?
+27. How does a ternary conditional operator ('condition ? expr1 : expr2') operate under the hood?
+28. What are the structural rules for declaring multi-dimensional arrays (e.g., 'int matrix[3][3]') on the stack?
+29. How is a 2D stack array physically laid out in raw linear memory addresses (Row-Major format)?
+30. What is the purpose of the 'typedef' keyword, and how does it compare to modern C++11 type aliases ('using')?
+31. Explain what a type trait is at a high level and what header it belongs to.
+32. What is the default initialization state of a primitive uninitialized local stack variable?
+33. What is the default initialization state of a primitive uninitialized global or static variable?
+34. Can a function definition contain multiple 'return' statements passing different types?
+35. What does the 'void' keyword mean when used as a function return type?
+36. What is an anonymous namespace, and how does it restrict variable linkage exclusively to its single translation unit?
+37. Explain the purpose of the 'comma operator (,)' when used inside a 'for' loop initialization step.
+38. What are escape sequences (e.g., '\n', '\t', '\0'), and what are their underlying character values?
+39. What is a raw string literal (introduced in C++11), and how does it simplify writing regular expressions?
+40. How does the compiler treat a boolean true/false state when casting it to a standard integer?
+41. What is the difference between character arrays ('char arr[] = "Hello"') and string literals ('const char* p = "Hello"') in memory?
+42. Where is the string literal data block physically pooled and protected inside an executable?
+43. Can you modify a character inside a string literal pointer ('char* p = "Test"; p[0] = 'M';')? What happens?
+44. What is a token in C++ compilation terminology?
+45. Explain how the preprocessor handles conditional compilation directives like '#ifndef', '#define', and '#endif'.
+46. What is the structural difference between writing '#include <vector>' and writing '#include "my_header.h"'?
+47. How do you declare a variable as read-only using the 'const' keyword?
+48. Can a 'const' variable value be determined at runtime based on user input?
+49. What are static assertions ('static_assert'), and how do they differ from runtime assertions ('assert')?
+50. Write a code example where a 'static_assert' validates the byte alignment size of a structural layout.
+
+---
+
+## 3. Pointers, References & Memory Alignment
+
+1. What is the literal definition of a pointer variable in C++?
+2. Explain the physical mechanics of the address-of operator ('&').
+3. Explain the physical mechanics of the dereference operator ('*').
+4. What occurs if you attempt to dereference an uninitialized, wild pointer?
+5. What is a Null pointer, and why is it highly dangerous to dereference one?
+6. What is a Dangling pointer, and how does one manifest when a block scope exits execution?
+7. What is a Void pointer ('void*'), and what can it store?
+8. Can you directly dereference a 'void*' generic pointer without applying a cast first?
+9. How do you safely convert a 'void*' back into its matching structural type pointer?
+10. Explain pointer arithmetic. What happens to the address value when you add 1 to an 'int*' pointer?
+11. How does the compiler evaluate the distance between two pointers subtracted from each other?
+12. Differentiate completely between a pointer to a constant ('const int* ptr') and a constant pointer ('int* const ptr').
+13. Write down the syntax for a constant pointer to a constant integer variable.
+14. What is a double pointer ('int** ptr'), and what is a practical use case for it?
+15. What is a Function Pointer, and what is its standard declaration syntax layout?
+16. Write a function pointer callback wrapper that takes two integers and returns a boolean value.
+17. How do function pointers enable basic polymorphic plug-in architectures in C systems?
+18. Can a function pointer point to a non-static class member function without tracking the object instance?
+19. What is a reference type ('int& ref'), and how does it differ fundamentally from a raw pointer?
+20. Can a reference be reassigned to target a different object location post-initialization?
+21. Can you create a null reference ('int& ref = *static_cast<int*>(nullptr);')? What type of behavior is this?
+22. What does 'sizeof' return when passed a reference type variable?
+23. Can you create an array of references (e.g., 'int& arr[5]')? Why or why not?
+24. How does a pointer to a stack array name operate under the hood?
+25. What is an array pointer ('int (*ptr)[5]') versus an array of pointers ('int* ptr[5]')?
+26. What is a Smart Pointer, and what standard paradigm does it automate?
+27. Explain the ownership profile of a 'std::unique_ptr'.
+28. Why is the copy constructor of 'std::unique_ptr' explicitly marked as deleted ('= delete')?
+29. How do you transfer resource ownership from one 'std::unique_ptr' instance to another using move semantics?
+30. What is the physical memory footprint size of a 'std::unique_ptr' containing a standard layout deleter?
+31. Explain the ownership profile of a 'std::shared_ptr'.
+32. How does a 'std::shared_ptr' maintain its reference count safely across multi-threaded applications?
+33. What are the two distinct pointers inside a 'std::shared_ptr' instance variable?
+34. What explicit data and metrics are stored inside a smart pointer's allocated Control Block?
+35. Explain the execution and allocation difference between 'std::shared_ptr<T>(new T())' and 'std::make_shared<T>()'.
+36. What is the major drawback of 'std::make_shared' regarding long-lived 'std::weak_ptr' instances?
+37. Why do we need 'std::weak_ptr', and what structural bug does it break when referencing objects?
+38. Can you directly extract or read fields from a 'std::weak_ptr' instance without locking it first?
+39. Explain how the '.lock()' operation converts a 'std::weak_ptr' into a strong 'std::shared_ptr'.
+40. What does inheriting from 'std::enable_shared_from_this<T>' allow an object method to execute safely?
+41. What is a pointer to a class data member ('int MyClass::*ptr'), and what is its application syntax?
+42. Explain memory structure alignment constraints (e.g., 4-byte or 8-byte boundaries).
+43. What is Structure Padding, and why does the compiler inject empty bytes into custom structures?
+44. How can reordering class fields from largest down to smallest optimize physical memory layouts?
+45. What is the 'alignof' operator, and what does it evaluate?
+46. How do you force a custom geometry structure to align to a 64-byte cache line boundary?
+47. Explain the risk of pointer type-punning via bad 'reinterpret_cast' setups.
+48. What is a wild pointer, and how does it differ from a standard null pointer?
+49. What does the standard memory allocation tracker do if a 'delete' call is missed?
+50. Write a short compilable function demonstrating how a custom deleter closes a file pointer inside a 'std::unique_ptr'.
+
+
+---
+
+## 4. Storage Classes, Scope, Linkage & Translation Units
+
+1. What is a C++ Storage Class, and what two properties does it define for a variable?
+2. Explain the lifetime, visibility, and memory location of the implicit 'auto' storage class modifier.
+3. How does a 'static' local variable inside a function maintain its state across subsequent function invocations?
+4. Where is a local 'static' variable physically stored in the compiled binary image?
+5. Is the initialization of a local 'static' variable thread-safe under the modern C++11 standard?
+6. What does the 'static' keyword do when applied to a global variable outside any functional block?
+7. How does a global 'static' variable restrict its visibility across other translation units?
+8. Explain the concrete purpose of the 'extern' keyword.
+9. What is the structural difference between a variable declaration and a variable definition using 'extern'?
+10. Can you initialize an 'extern' variable inside a header file layout safely?
+11. What was the historic purpose of the 'register' keyword?
+12. What is the semantic status of the 'register' keyword in C++17 and C++20 standards?
+13. Explain the 'mutable' keyword. Where is it applied, and what permission does it grant?
+14. Write a code sample showing how a 'mutable' variable updates inside a 'const' member function.
+15. What does the 'volatile' keyword instruct the compiler optimization engine to avoid?
+16. Is a 'volatile' variable thread-safe or atomic in concurrent C++ code execution?
+17. What is Thread-Local Storage ('thread_local'), and how does its lifecycle operate per thread?
+18. What is a Translation Unit (TU), and how does the preprocessor produce it from '.cpp' files?
+19. Explain what the One Definition Rule (ODR) means across an entire linked executable project.
+20. How does the compiler track inline functions without violating the One Definition Rule across translation units?
+21. What is the difference between Internal Linkage and External Linkage?
+22. Which storage classes or keywords enforce internal linkage on functions or variables?
+23. How does wrapping code inside an 'extern "C"' block affect function name mangling?
+24. Why is 'extern "C"' critical when linking C++ objects with legacy pure-C library binaries?
+25. What is Block Scope, and what happens to local objects when execution leaves that scope?
+26. Explain Function Scope and why label markers for 'goto' statements are bound to it.
+27. What is Class Scope, and how do member functions resolve variable targets inside it?
+28. What is the Static Initialization Order Fiasco, and how does it crash applications at startup?
+29. How does the "Meyers Singleton" pattern bypass the static initialization order bug using local static variables?
+30. What is the BSS memory segment, and what types of data blocks populate it?
+31. What is the Data memory segment, and how does it differ fundamentally from the BSS segment?
+32. How does stack frame allocation track local storage configurations during deep recursive steps?
+33. What is a memory map, and how do text segments isolate execution instructions from modification?
+34. Can a class data member be declared as both 'mutable' and 'static' at the same time?
+35. Explain the visibility of nested namespaces introduced in modern C++17 layouts.
+36. What happens if two separate translation units declare identical global variables without the 'static' or 'extern' markers?
+37. How does the linker flag a duplicate symbol error under the One Definition Rule guidelines?
+38. Can a static member function access a mutable instance data field inside a class blueprint?
+39. Why can a static member function never be invoked with a 'const' CV-qualifier?
+40. How do you initialize a static non-const data member inside a class definition prior to C++17?
+41. What are inline variables (introduced in C++17), and how do they ease header-only library design?
+42. What is the life duration profile of a heap-allocated memory sequence?
+43. What happens to static global data variables when an application process terminates?
+44. Explain how scope resolution operators ('::') let local code access obscured global identifiers.
+45. Can an anonymous namespace be declared inside another named namespace block?
+46. How does the compiler handle linkage properties for variables declared inside anonymous namespaces?
+47. What does the macro check '__cplusplus' evaluate to when scanning modern compilation lines?
+48. Explain the difference between compile-time constant expressions and runtime constant evaluations.
+49. Can a 'thread_local' variable be shared across two independent CPU cores concurrently?
+50. Write a short tracking layout proving that a local static variable maintains its value across three consecutive function calls.
+
+
+---
+
+## 5. Constructors, Destructors & Object Lifecycle
+
+1. What is the explicit technical definition of a constructor in a C++ class architecture?
+2. Does a constructor have a distinct return type or return statement layout?
+3. What is a Trivial Default Constructor, and when does the compiler generate one implicitly?
+4. If you write a custom parameterized constructor, does the compiler still auto-generate a default constructor?
+5. How do you explicitly force the compiler to restore a default constructor using modern syntax?
+6. What is a Parameterized Constructor, and what is its structural purpose?
+7. What is a Member Initializer List, and where is it physically positioned in a constructor definition?
+8. Provide three distinct reasons why member initializer lists are preferred over assignment blocks inside the constructor body.
+9. Why must 'const' member variables and Reference member variables be initialized strictly inside a Member Initializer List?
+10. In what exact order are class member variables initialized by the constructor? Is it the list order or declaration order?
+11. What is a Copy Constructor, and what is its canonical function signature layout?
+12. Why must the incoming parameter to a copy constructor be passed strictly by reference ('const ClassName&')?
+13. What occurs if you pass the copy constructor argument by value? Explain the compilation or execution error loop.
+14. What is a Trivial Shallow Copy, and how does the compiler-generated default copy constructor operate?
+15. Explain the danger of a shallow copy if a class maintains a raw pointer allocating heap resources.
+16. What is a Deep Copy Constructor, and how does it protect allocated memory references?
+17. Write a full C++ class containing a raw pointer field that safely implements a deep copy constructor.
+18. What is an Explicit Constructor, and what keyword is used to mark it?
+19. What type of bugs or implicit type conversions does the 'explicit' keyword prevent?
+20. Write a code sample where an implicit single-argument constructor causes an unintended conversion error.
+21. What is a Copy Assignment Operator, and what is its standard function signature?
+22. Why should a copy assignment operator check for self-assignment ('this == &other') before updating data pointers?
+23. What is the technical definition of a Destructor, and what prefix symbol represents it?
+24. Can a single class declaration contain multiple overloaded destructor variations?
+25. What is the explicit execution order of constructors and destructors inside a deep single-line inheritance chain?
+26. Can a destructor throw an unhandled exception safely? What occurs to the runtime environment if it does?
+27. Explain how the Stack Unwinding routine invokes destructors when an exception propagates out of local blocks.
+28. What are Private Constructors, and what architectural design patterns explicitly utilize them?
+29. What is a Deleted Constructor ('= delete'), and how does it restrict object creation workflows?
+30. Explain the structural concept behind a Move Constructor (introduced in C++11).
+31. What is the exact function signature of a standard move constructor layout?
+32. Why should move constructors always be marked with the 'noexcept' keyword?
+33. What is a Move Assignment Operator, and how does it safely swap resource ownership between targets?
+34. Explain the Rule of Three in traditional C++ memory management history.
+35. Explain the Rule of Five in modern C++ design principles.
+36. Explain the Rule of Zero and why leveraging standard RAII objects simplifies class configurations.
+37. What is a Conversion Constructor, and how does it facilitate automatic object creation transformations?
+38. Can you invoke a constructor explicitly from another constructor inside the same class (Delegating Constructors)?
+39. Write a code sample demonstrating how one constructor delegates its initialization step to another.
+40. What is an Inheriting Constructor (introduced in C++11), and what syntax brings base constructors to a derived layout?
+41. What is the functional execution state of an object while its constructor body is still actively running?
+42. Can a member function be invoked safely from inside the body of a constructor?
+43. What happens if you call a virtual function inside a constructor body? Which class layout execution path maps to it?
+44. Explain why dynamic dispatch is disabled during object constructor execution steps.
+45. What is an implicitly declared special member function?
+46. How does declaring a custom move constructor affect the auto-generation of the standard copy constructor?
+47. What is a trivial class layout, and what properties define a Plain Old Data (POD) structure?
+48. Explain how dynamic memory allocations ('new') interact with constructor invocations behind the scenes.
+49. What is Placement New, and how does it construct an object instance at a pre-allocated raw memory address?
+50. Write a complete, compilable class containing an integer ID and a string name that tracks construction, copy, and destruction events via print lines.
+
+
+---
+
+## 6. Inheritance & Access Control
+
+1. What is Inheritance in Object-Oriented Programming, and what relationship model does it create?
+2. What is a Base Class (Parent) versus a Derived Class (Child) inside an inheritance blueprint?
+3. Write out the baseline syntax for a class named 'Dog' publicly inheriting from a class named 'Animal'.
+4. Explain the visibility of members under Public Inheritance. How do base public, protected, and private fields map?
+5. Explain the visibility of members under Protected Inheritance. How do base fields alter inside the child class?
+6. Explain the visibility of members party to Private Inheritance. What do public base elements convert into?
+7. What software architecture configuration does private inheritance signify (Is-A versus Has-A/Implemented-In-Terms-Of)?
+8. Can a derived class access private member variables of its base class directly? How can it read them?
+9. What is the functional difference between 'private' visibility and 'protected' visibility inside a base class structure?
+10. How does the compiler resolve symbol lookups when a child class method shares an identical name with a base method (Shadowing/Hiding)?
+11. How do you explicitly invoke a hidden base class method from a derived object instance variable?
+12. What is Multiple Inheritance, and what unique structural capability does it introduce?
+13. Explain the Diamond Inheritance problem using a clear code structure setup.
+14. What structural duplication anomaly happens inside an object memory layout during a diamond inheritance configuration?
+15. How does the 'virtual' keyword fix the diamond inheritance duplication defect when appended to base class inheritances?
+16. Sketch out the physical object memory layout of a derived class utilizing Virtual Base Inheritance.
+17. In a virtual base inheritance setup, which class constructor is uniquely responsible for instantiating the virtual base subobject?
+18. What is the Object Slicing phenomenon, and when does it occur in code assignments?
+19. Write a small function demonstrating how passing a derived object by value to a base parameter triggers object slicing.
+20. Does passing an object by pointer or reference protect against the object slicing bug during polymorphic assignments?
+21. What is a Friend Class, and what access authorization does it hold?
+22. What is a Friend Function, and what syntax defines it inside an enclosed class blueprint?
+23. Is the property of Friendship inherited by subclasses? If Class A is friends with B, is it automatically friends with B’s child?
+24. Is friendship transitive or reciprocal in C++ class structural configurations?
+25. Explain the difference between Composition (Has-A) and Inheritance (Is-A) when building modular frameworks.
+26. What is the Liskov Substitution Principle, and how does improper inheritance violate its conditions?
+27. Can a derived class override a non-virtual function? What happens if you call that function through a base pointer?
+28. What is a Virtual Function, and what runtime capability does it introduce to class methods?
+29. Write down the complete syntax for declaring and overriding a virtual method inside an inheritance tree.
+30. Explain what Runtime Polymorphism means and how base pointers achieve it dynamically.
+31. Why is it absolutely vital to declare a Base class destructor as virtual?
+32. What type of severe memory bug unfolds if a polymorphic derived class object is deleted via a base pointer lacking a virtual destructor?
+33. What is a Pure Virtual Function, and what specific notation ('= 0') defines it?
+34. What is an Abstract Class, and what restriction exists regarding its direct instantiation?
+35. Can an abstract class contain concrete initialized variables and implemented member functions?
+36. What is a Pure Virtual Destructor, and must it be provided with a physical definition body outside the class?
+37. Explain the purpose of the 'override' keyword (introduced in C++11) when appended to member signatures.
+38. How does the 'override' keyword shield developers from subtle signature mismatch bugs during compilation?
+39. Explain the purpose of the 'final' keyword when applied to an entire class definition structure.
+40. How do you apply the 'final' keyword to a single virtual function method inside a mid-level base class?
+41. What are Covariant Return Types, and how do they allow overridden virtual functions to return derived pointer types?
+42. Explain how a member initialization list passes configuration arguments up to parameterized base class constructors.
+43. Can a derived class intercept and block access to inherited public methods using access declarations?
+44. Explain the difference between public inheritance and implementation aggregation models.
+45. Can a virtual function be declared private inside a base class and still be overridden by a public derived method?
+46. What happens if a derived class forgets to implement a pure virtual function inherited from its parent asset?
+47. Explain the runtime lookup performance penalty when traversing deeply nested inheritance tree structures.
+48. Can you create an array of abstract class elements directly (e.g., 'AbstractClass myArr[5];')?
+49. How do you construct a collection of abstract class entries using pointers or smart allocation wrappers?
+50. Write a complete program modeling an abstract base class 'Shape' with a pure virtual 'draw()' method, implemented by 'Circle' and 'Rectangle'.
+
+
+---
+
+## 7. Virtual Functions, vtables & RTTI
+
+1. What is the Virtual Table ('vtable') mechanism, and how does the compiler leverage it for dynamic dispatch?
+2. What specific tracking reference entries are stored inside a class structure’s generated 'vtable'?
+3. At what point during compilation/linking is a class layout’s 'vtable' constructed by the toolchain?
+4. How many 'vtables' exist for a polymorphic class definition? Is it one per class or one per instantiated object?
+5. What is the Virtual Pointer ('vptr'), and what target location address does it hold?
+6. Where is the 'vptr' physically injected inside an instantiated object’s raw memory structure layout?
+7. Does an object containing 10 virtual functions carry 10 individual 'vptrs' inside its instance memory space?
+8. What is the exact physical byte size added to an object instance by the introduction of its first virtual function?
+9. If a class contains zero virtual functions and one 'int' field, what is its explicit 'sizeof' output?
+10. If that same class marks its destructor and two methods as 'virtual', how does its 'sizeof' transform on a 64-bit platform?
+11. Walk through the exact step-by-step lookup sequence that occurs when code invokes a virtual method via a base class pointer.
+12. How does the compiler resolve the index offset for a specific virtual function inside a generated 'vtable'?
+13. Explain why calling a virtual function inside a class constructor body bypasses dynamic dispatch loops.
+14. What occurs if a virtual function is invoked from inside a class destructor body? Which structural path handles it?
+15. What is the performance overhead cost of a virtual function call compared to a standard statically bound function call?
+16. How do modern CPU Branch Predictors respond to indirect calls generated by dynamic 'vtable' lookups?
+17. What is Devirtualization, and how can an optimizing compiler bypass the 'vtable' lookup if the concrete type is known?
+18. Does a non-polymorphic class layout possess a 'vtable' or a 'vptr' resource allocation footprint?
+19. Sketch out a diagram/text layout mapping an object instance, its internal 'vptr', the global class 'vtable', and the target function code blocks.
+20. How does multiple inheritance alter the number of 'vptrs' injected into a single derived class object layout?
+21. Explain how the compiler performs pointer-fixup offsets (Thunks) during dynamic dispatch under multiple inheritance.
+22. What happens to the 'vptr' address during the physical transition steps of an object’s destruction lifecycle?
+23. Can a virtual function be inlined by the compiler? Under what explicit usage scenarios is inlining valid for virtuals?
+24. Explain the memory overhead of large polymorphic systems containing millions of small structural instances.
+25. How does the virtual table mechanism resolve an overridden method that contains default parameter argument values?
+26. Why is it considered dangerous to change default parameter values when overriding a virtual function in a child class?
+27. What does the Run-Time Type Information (RTTI) system store inside or adjacent to a class’s 'vtable' structure?
+28. How does 'dynamic_cast' access the 'vtable' block to validate the authentic runtime type of an object pointer?
+29. Can 'dynamic_cast' be executed on a pointer targeting a non-polymorphic class structure? What compilation error occurs?
+30. What happens to the 'vptr' initialization state if raw memory is cleared via 'memset' inside a constructor body?
+31. Explain why mixing low-level C memory operations with polymorphic C++ class objects triggers crashes.
+32. How does a virtual base table ('vbtable') resolve coordinate locations inside a complex virtual diamond inheritance layout?
+33. Can you access or read the raw address of a class 'vtable' using standard portable C++ source syntax?
+34. How does the compiler handle dynamic dispatch when a class inherits multiple pure virtual interfaces?
+35. Explain the cache performance differences between executing an array of raw objects versus an array of polymorphic pointers.
+36. What is a pure virtual function call error ('pure virtual method called'), and what sequence triggers this runtime crash?
+37. Can a static member function be mapped as an entry inside a class 'vtable' structure?
+38. Explain how overloaded virtual functions interact with lookup indices inside the generated 'vtable'.
+39. How does appending the 'final' keyword to a method block assist the compiler in optimization and devirtualization passes?
+40. What is the physical layout alignment offset of a 'vptr' when a polymorphic class structure is packed via attributes?
+41. Can a constructor access its own 'vptr' resource before its member variables complete initialization?
+42. Explain how linkers consolidate identical 'vtables' generated across separate translation units under the ODR guidelines.
+43. What is the execution cost of a failed 'dynamic_cast' lookup evaluating a pointer downcast path?
+44. What does 'dynamic_cast' output if you pass it a reference to an invalid target instead of a pointer?
+45. Explain how 'typeid' extracts runtime structural identity details using the polymorphic layout engine.
+46. Does checking type information via 'typeid' consume CPU cycles at runtime for polymorphic objects?
+47. Can you override a virtual function to return a completely different type if the types are not covariant pointers?
+48. How do abstract interface classes minimize binary compilation coupling by hiding implementation details from the caller?
+49. Write out a conceptual assembly breakdown of a 'vtable' indirect jump sequence matching a virtual method execution line.
+50. Write a short program that inspects and outputs the 'sizeof' objects before and after adding a single dummy virtual function.
+
+
+---
+
+## 8. STL: Containers, Iterators & Algorithms
+
+1. What are the three primary structural pillars that constitute the Standard Template Library (STL)?
+2. Explain the internal memory allocation mechanics of a standard 'std::vector'.
+3. What is the exact amortized time complexity versus the absolute worst-case time complexity of a 'push_back' operation?
+4. Explain the difference between 'std::vector::resize()' and 'std::vector::reserve()'.
+5. How does 'std::vector::reserve()' shield applications from frequent, expensive heap memory reallocations?
+6. What happens to active iterators, references, and pointers when a vector capacity boundary is breached?
+7. How does a 'std::deque' organize its underlying memory blocks compared to the linear array setup of a 'std::vector'?
+8. What is the internal structural layout profile of a standard doubly linked 'std::list' container?
+9. Compare the random access lookup time complexities for 'std::vector', 'std::deque', and 'std::list'.
+10. When would a developer choose 'std::forward_list' over a standard 'std::list' container wrapper?
+11. What is Iterator Invalidation, and what types of container alterations trigger it across sequential layouts?
+12. What underlying self-balancing tree architecture implements 'std::map' and 'std::set' containers?
+13. What is the guaranteed time complexity for search, insertion, and deletion operations inside a standard 'std::map'?
+14. What core data structure powers 'std::unordered_map' and 'std::unordered_set' hash containers?
+15. What is the average-case versus the absolute worst-case lookup time complexity profile of a 'std::unordered_map'?
+16. What explicit environmental factors cause a hash container lookup to degrade to an O(N) time complexity?
+17. Explain Bucket Collisions in hash maps and what strategies resolve overlapping keys.
+18. Write the complete custom hash function and equality operator structures to utilize a custom 3D 'Point' struct as a key in a 'std::unordered_map'.
+19. How does a 'std::multimap' differ from a standard 'std::map', and can you utilize the bracket operator ('[]') inside it?
+20. How do you isolate and iterate through a range of identical matching keys inside a 'std::multimap' container block?
+21. Explain the performance benefit of using 'emplace_back()' instead of a standard 'push_back()' operation.
+22. Can an 'emplace_back()' call ever trigger an object copy or move constructor? Provide a scenario where this occurs.
+23. What is an STL Container Adapter? Name three distinct adapters provided by the standard template library.
+24. What is the default underlying sequential container wrapper utilized by 'std::stack' and 'std::queue'?
+25. How does a 'std::priority_queue' sort its internal entries, and what specific heap structure conditions does it maintain?
+26. Name the four primary core categories of STL Iterators available.
+27. Differentiate between a Random Access Iterator (e.g., vector) and a Bidirectional Iterator (e.g., map).
+28. How does 'std::advance' optimize its tracking step counts based on the type category of the iterator passed to it?
+29. Explain the utility of the '<type_traits>' header library when implementing advanced template systems.
+30. What does SFINAE mean, and how does it prevent template expansion failures from halting active compilation pipelines?
+31. Why should developers prefer standard STL algorithms (e.g., 'std::sort', 'std::find') over writing manual loops?
+32. What sorting algorithm framework implements 'std::sort' under the hood, and what is its average time complexity?
+33. Write a lambda expression comparator and pass it to 'std::sort' to organize a collection of custom structs in descending order.
+34. Explain the difference between 'std::sort()' and 'std::stable_sort()' regarding identical ranking elements.
+35. How does 'std::binary_search()' differ in return output compared to 'std::lower_bound()' and 'std::upper_bound()'?
+36. What critical ordering precondition must be true for a container before executing 'std::binary_search()' over its ranges?
+37. Explain the function and mapping utility of the 'std::transform()' algorithm.
+38. What does 'std::remove_if()' actually do to elements inside a container, and why must it be paired with an 'erase()' call?
+39. Explain the C++17 parallel execution policies ('std::execution::par') and how they automate algorithm multi-threading.
+40. What is a Custom Allocator, and how does it alter container heap management routines?
+41. What is the purpose of 'std::vector<bool>' specialization, and why is it criticized regarding reference access?
+42. How does 'std::list::splice' optimize transferring nodes between two independent lists without copying data?
+43. Explain how 'std::map::insert_or_assign' (introduced in C++17) improves upon traditional insertion mechanics.
+44. What is the time complexity of clearing a container containing millions of elements?
+45. How do you safely remove elements from a 'std::unordered_map' while actively iterating through its sequence?
+46. What is the difference between an input iterator and an output iterator?
+47. Explain how 'std::back_inserter' works and how it translates algorithm outputs into container growth events.
+48. What are 'std::next' and 'std::prev', and how do they safely calculate iterator offsets?
+49. Can you sort a 'std::list' using 'std::sort(list.begin(), list.end())'? How must a list be sorted?
+50. Write a short program that populates a 'std::vector<int>', removes all even numbers via the Erase-Remove idiom, and displays the final set.
+51. What is 'std::array', and how does it differ from a raw C-style array and from 'std::vector'?
+52. What is Small String Optimization (SSO) inside 'std::string', and how does it let short strings avoid a heap allocation entirely?
+53. What is 'std::string_view' versus 'std::string' when it comes to who owns the underlying character buffer? (cross-reference with Section 10.)
+54. What is 'std::move_iterator', and how does wrapping an iterator with 'std::make_move_iterator' change what 'std::copy' does at the destination?
+55. How does 'std::partition' differ from 'std::sort', and what does 'std::stable_partition' additionally guarantee about relative order?
+
+
+---
+
+## 9. Advanced Memory Management & Performance
+
+1. What is the primary difference between Stack memory management and Heap memory allocation at the OS level?
+2. How do 'new' and 'delete' expressions differ from standard C memory functions 'malloc()' and 'free()'?
+3. What occurs if 'new' fails to secure sufficient heap space? What exception does it throw?
+4. How do you invoke the non-throwing variant of 'new' ('std::nothrow'), and what does it return upon failure?
+5. What is a Memory Leak, and what tool profiling options help automate their detection?
+6. Explain Memory Fragmentation and how alternating between allocating large and small objects induces it.
+7. What is a Custom Memory Pool, and how does it optimize allocation speeds for high-performance loops?
+8. Sketch out the class design architecture for a baseline Fixed-Size Block Memory Allocator.
+9. What are Polymorphic Memory Resources ('std::pmr', introduced in C++17), and how do they modularize allocation strategies?
+10. How does a stack-allocated buffer wrapper ('std::pmr::monotonic_buffer_resource') eliminate heap calls during local execution loops?
+11. Why is allocating millions of small geometric items (like 3D points) via the global 'new' allocator slow?
+12. Explain the concept of Cache Locality and how contiguous array layouts leverage L1/L2 hardware caches.
+13. What is the performance cost of a Cache Miss when software traverses pointer-heavy linked node hierarchies?
+14. Explain Structure Padding rules. How does the compiler pack an object containing mixed boolean, double, and integer fields?
+15. How does structural padding optimize CPU memory controller fetch operations?
+16. What is the 'alignof' operator, and what target constraint does it evaluate?
+17. How do you force a custom class allocation layout to align to a 64-byte hardware cache line limit?
+18. What is the function of the '[[no_unique_address]]' attribute introduced in modern C++20 layouts?
+19. How does '[[no_unique_address]]' optimize the footprint of classes that incorporate empty tracking allocator modules?
+20. Explain the strict aliasing rule and how type-punning via pointers triggers undefined optimization bugs.
+21. What is a Double Free bug, and how do smart pointers or null assignments isolate software from it?
+22. What is an over-aligned type, and how does 'operator new' accommodate alignment requirements since C++17?
+23. Explain the function of the Pimpl Idiom (Pointer to Implementation) in commercial framework architectures.
+24. How does the Pimpl idiom serve as a compilation firewall to reduce header dependency chains and build durations?
+25. What is the Curiously Recurring Template Pattern (CRTP), and how does it achieve static polymorphism?
+26. Write out a clean code structure modeling static polymorphism using the Curiously Recurring Template Pattern.
+27. What is the performance advantage of CRTP static polymorphism over traditional 'vtable' dynamic polymorphism?
+28. Explain the difference between Undefined Behavior (UB), Implementation-Defined Behavior, and Unspecified Behavior.
+29. Give three distinct examples of operations that trigger Undefined Behavior in C++ memory operations.
+30. Why is modifying a variable that was originally declared as a true 'const' via a 'const_cast' downcast undefined behavior?
+31. Explain what memory alignment fault traps are at the processor level.
+32. What is a memory leak tracker profile, and why must it run across multiple platform baselines?
+33. How does 'std::allocator' serve as the baseline memory manager for standard library containers?
+34. Explain the difference between allocating raw uninitialized memory bytes and constructing an object instance over those bytes.
+35. How does 'std::construct_at' (introduced in C++20) safely manage initialization tasks over raw storage blocks?
+36. What does 'std::destroy_at' do when coordinating cleanup over custom raw array structures?
+37. Explain why using macro definitions ('#define') for numerical constants degrades compiler optimization capabilities.
+38. What is a data cache prefetch hint, and how do high-performance graphics engines pull assets into cache blocks early?
+39. Explain how the hardware phenomenon of False Sharing degrades throughput across multi-threaded applications.
+40. How does padding variables using 'std::hardware_destructive_interference_size' shield data from false sharing bottlenecks?
+41. What is the execution cost of utilizing tracking custom allocators inside production loop setups?
+42. How does a garbage collector mechanism differ fundamentally from the RAII memory architecture utilized by C++?
+43. Can you override the global 'operator new' and 'operator delete' functions for an entire application process?
+44. Write out the function signatures required to override global 'operator new' and 'operator delete' trackers.
+45. Why should any custom class that overrides its own class-specific 'operator new' also explicitly override 'operator delete'?
+46. Explain how deep template instantiations impact the final size of compiled binary executable files (Code Bloat).
+47. What is the Rule of Zero and why does leveraging standard RAII objects simplifies class configurations?
+48. Explain how the compiler handles variable capturing in lambdas that contain nested blocks.
+49. Why does an O(N log N) algorithm occasionally perform slower than an O(N^2) algorithm for extremely small dataset array footprints?
+50. Write a functional program displaying the memory address offsets of four distinct sequential fields inside a custom struct layout.
+
+
+---
+
+## 10. Modern C++ (C++11 / 14 / 17 / 20)
+
+1. What core modern features did the C++11 standard introduce to modernize resource management and type deduction?
+2. Explain the functional difference between 'nullptr' and the legacy macro constant 'NULL' or integer 0.
+3. How does 'nullptr' eliminate function overloading ambiguities when mixing integer parameters with pointer references?
+4. What are strongly typed enums ('enum class'), and what structural safety advantages do they hold over unscoped enums?
+5. Explain the 'constexpr' keyword. How does it differ from a standard 'const' variable designation?
+6. What are the strict limitations placed on a 'constexpr' function in C++11 compared to the relaxed rules in C++14/C++17?
+7. Can a 'constexpr' function invoke a dynamic memory allocation ('new') inside a modern C++20 environment?
+8. What is static assertion ('static_assert'), and how does its compile-time validation check aid architectural design?
+9. Explain Rvalue References ('T&&') and how they physically differentiate from standard Lvalue References ('T&').
+10. What does the utility function 'std::move' actually execute at the machine code level?
+11. Write out the move constructor and move assignment operator block signatures for a custom string class layout.
+12. What is a Universal Reference (Forwarding Reference), and under what specific context does a 'T&&' token convert into one?
+13. Explain Perfect Forwarding and why the utility wrapper 'std::forward' is required to preserve reference tracking states.
+14. What is a Lambda Expression, and what is its canonical structural configuration layout?
+15. Differentiate between lambda capture-by-value clauses '[=]' and capture-by-reference clauses '[&]'.
+16. What does appending the 'mutable' keyword to a lambda expression permit it to do to its captured-by-value tracking fields?
+17. What is a Generic Lambda (introduced in C++14), and what type deduction token populates its parameter slot?
+18. How do you move-bind a unique resource (like a 'std::unique_ptr') into a lambda capture clause using C++14 capture initializers?
+19. What are Structured Bindings (introduced in C++17), and how do they simplify unpack transformations over tuples and maps?
+20. Explain the initialized conditional syntax updates allowed inside 'if' and 'switch' statements since C++17.
+21. What is the structural purpose of 'std::optional', and how does it represent optional return sequences without heap pointer tricks?
+22. What is 'std::variant', and how does it operate as a type-safe, polymorphic replacement for traditional C unions?
+23. Explain 'std::any' and describe how it securely packs arbitrary structural types at runtime.
+24. What is 'std::string_view', and how does it eliminate dynamic allocations when parsing sub-string lookups?
+25. Explain compile-time branch evaluation using the modern statement 'if constexpr' inside template pipelines.
+26. What are Fold Expressions (introduced in C++17), and how do they simplify variable loops inside variadic template expansions?
+27. What does the optimization attribute '[[nodiscard]]' instruct the compiler to flag regarding function return processing?
+28. What are C++20 Concepts and Constraints, and how do they replace legacy SFINAE patterns to provide clean errors?
+29. Write a basic C++20 concept named 'Incrementable' that enforces a type must support the pre-increment operator '++'.
+30. What are C++20 Modules, and how do they optimize long compilation build times by bypassing text-include chains?
+31. Explain C++20 Ranges and how view pipelines chain transformation steps without building intermediate collections.
+32. What is a Coroutine in C++20, and what distinct suspension keywords ('co_await', 'co_yield', 'co_return') govern its routines?
+33. How does 'std::span' (introduced in C++20) offer a safe view wrapper over contiguous array data segments?
+34. Explain the spaceship operator ('<=>', three-way comparison) and how it auto-generates all relational operators.
+35. How does 'std::bit_cast' provide a secure alternative for bit-level type conversions compared to 'reinterpret_cast' setups?
+36. What is the purpose of the '[[deprecated]]' attribute, and how does it help deprecate legacy API interfaces?
+37. Explain the function of 'std::source_location' in C++20 and how it provides diagnostic data without using old preprocessor macros.
+38. What are binary literals (e.g., 0b1010) and digit separators (e.g., 1_000_000) introduced to enhance readability?
+39. Explain how variable template instantiations function since their inclusion in the C++14 standard.
+40. What is the structural purpose of the utility function 'std::invoke' introduced to harmonize functional calls?
+41. How does 'std::apply' translate tuple entries into individual arguments for processing by standard functions?
+42. Explain the execution of modern type-safe mathematical comparison utilities like 'std::cmp_equal' or 'std::cmp_less'.
+43. Can a lambda expression be evaluated as a compile-time constant expression inside a 'constexpr' block?
+44. What is a non-type template parameter, and how did C++20 expand its definition capabilities to accept floating point structures?
+45. Explain how user-defined literal modifiers let code initialize custom structural units (e.g., 'auto weight = 5_kg;').
+46. What does 'std::midpoint' calculate, and how does it prevent numeric overflow during average computations?
+47. Explain the inclusion of standard mathematical constants (like pi, e) inside the modern '<numbers>' header library.
+48. What is the structural function of 'std::assume_aligned' when passing data buffers to high-performance loops?
+49. Explain how nested namespace definition tracks are simplified inside modern syntax updates (e.g., 'namespace A::B::C').
+50. Write a modern C++17 script utilizing structured bindings and an initialized 'if' statement to read data out of a 'std::map'.
+
+
+---
+## 11. Pure C Language Specifics
+
+1. Difference between C and C++ — what does C++ add on top of C?
+2. Difference between malloc(), calloc(), and realloc() — what does each guarantee?
+3. What precautions must you take when calling realloc()? (temp pointer, NULL check, pointer may move)
+4. What happens if realloc() fails — what is guaranteed about the original block?
+5. Why must you never write `p = realloc(p, newsize);` directly?
+6. Write C code that dynamically allocates an array of structs and grows it with realloc() once capacity is exceeded.
+7. Struct vs union — how do they differ in memory layout and size?
+8. What are bit-fields in a struct, and why are they used?
+9. What is structure padding, and why does the compiler insert it?
+10. What are the storage classes available in C (auto, register, static, extern)?
+11. What does the volatile keyword do in C, and when is it required?
+12. What is the restrict keyword in C, and what does it promise the compiler?
+13. Function pointer syntax in C — how do you declare and call one?
+14. How do function pointers implement a basic plugin/callback architecture in C?
+15. #define vs const in C — differences in type-safety and scope.
+16. #ifndef header guards vs #pragma once — pros and cons of each.
+17. strtok() vs strtok_r() — why is strtok() not thread-safe/reentrant?
+18. What does errno do, and how should you check it correctly after a failing call?
+19. What is the difference between a declaration and a definition in C?
+20. Explain the four phases of C compilation: preprocessing, compilation, assembly, linking.
+
+
+---
+
+## 12. Bitwise Operators, Endianness & Numeric Representation
+
+1. Difference between arithmetic right shift and logical right shift.
+2. What is the value of ~0 on a 32-bit machine?
+3. How do you quickly multiply or divide an integer by 8 using bitwise shifts?
+4. What is Big Endian vs Little Endian byte order?
+5. How do you convert a 32-bit integer from Big Endian (network order) to Little Endian (x86 host order) using bit manipulation?
+6. What is Two's Complement representation, and why do CPUs use it for signed integers?
+7. How do you safely check for arithmetic overflow before adding two signed integers?
+8. Why is comparing floating-point values directly with == dangerous, and how do you compare them safely with an epsilon?
+
+
+---
+
+## 13. Casting & Type Conversion
+
+1. Difference between static_cast, dynamic_cast, reinterpret_cast, and const_cast — when do you use each?
+2. Why are old C-style casts, e.g. (int)x, discouraged in modern C++?
+3. What is the execution cost of a dynamic_cast lookup, and what does it return on failure for a pointer vs a reference?
+4. Why is modifying a value declared truly const via a const_cast undefined behavior?
+5. What is the risk of pointer type-punning via a bad reinterpret_cast?
+6. What is the Strict Aliasing Rule, and how can violating it break aggressive compiler optimizations?
+
+
+---
+
+## 14. Multithreading & Concurrency
+
+1. Process vs thread — what's shared in memory and what isn't?
+2. What is a race condition? Give a classic example (e.g. counter++ not being atomic).
+3. What is a deadlock? Name the four Coffman conditions required for it to occur.
+4. How do you avoid or prevent deadlocks in practice?
+5. Mutex vs semaphore — key differences and when to use each.
+6. Binary semaphore vs mutex — what's the actual difference given both look like a lock?
+7. What is a spinlock, and when would you prefer it over a mutex?
+8. What is a condition variable, and how does it help coordinate threads beyond a plain mutex?
+9. std::mutex + std::lock_guard vs std::unique_lock — when do you need the extra flexibility of unique_lock?
+10. How do you make a function thread-safe?
+11. What is false sharing, and how do you avoid it in a multithreaded hot path?
+12. What is priority inversion, and how can a low-priority thread block a high-priority one?
+13. What are lock-free data structures, and why use them instead of mutex-protected ones?
+14. What is std::atomic, and when would you use it instead of a mutex?
+15. What is memory ordering (e.g. std::memory_order_acquire/release) in atomic operations?
+16. What is a thread pool, and why use one instead of spawning threads per task?
+17. Why is it dangerous to pass a pointer to a stack-allocated variable into an asynchronously spawned std::thread?
+18. What is a Heisenbug, and why do multithreaded race conditions often vanish the moment you attach a debugger?
+19. Difference between thread starvation and livelock — how does livelock differ from deadlock?
+20. What are memory fences/memory barriers, and why are they needed in custom lock-free code?
+21. What is a lock convoy, and what causes it?
+22. How do reader-writer locks (e.g. std::shared_mutex) behave when readers hold the lock and a writer calls lock() — who gets priority?
+23. What is std::stop_token / std::stop_source (C++20) used for in cooperative thread cancellation?
+24. What happens if an exception escapes a worker thread function unhandled?
+25. What is std::this_thread, and how do you join/detach a std::thread safely?
+
+
+---
+
+## 15. Exception Handling
+
+1. try/catch/throw syntax — how does exception propagation work?
+2. What is exception safety? Explain the three levels: basic, strong, and no-throw guarantee.
+3. Why must move constructors and move-assignment operators be noexcept to be used safely by std::vector?
+4. What is RAII, and why does it matter more in C++ than a try/finally style of cleanup?
+5. std::exception hierarchy — what standard exception types exist and when are they thrown?
+6. Why should exceptions always be caught by reference (const std::exception&) rather than by value?
+7. When should you NOT use exceptions (e.g. hot paths, embedded/real-time constraints)?
+8. Can a destructor throw? What happens to the program if it does during stack unwinding?
+9. What is std::terminate, and what conditions trigger it?
+
+
+---
+
+## 16. Debugging, Profiling & Memory Tools
+
+1. What causes a segmentation fault? List a few real causes (use-after-free, stack overflow, null deref, OOB write).
+2. How do you detect and root-cause a segfault that has no clear repro steps?
+3. How can memory corruption exist even when the program runs fine and shows no visible error?
+4. How do you use GDB day to day (breakpoints, backtrace, examining variables)?
+5. How do you extract a backtrace from a core dump using GDB after a crash?
+6. How does Valgrind (Memcheck) help, and what are its limitations vs. a compiler sanitizer?
+7. What's the advantage of AddressSanitizer (-fsanitize=address) over standalone Valgrind?
+8. What is ThreadSanitizer (-fsanitize=thread), and how does it catch data races without manual logging?
+9. What is a memory leak, and what tools/techniques help you find one?
+10. What's the role of a static analyzer (e.g. Clang-Tidy) in catching bugs before they compile?
+11. What's your general approach to root-causing a production incident/regression?
+
+
+---
+
+## 17. Advanced Data Structures & Systems Design (STL-based)
+
+1. How would you design and implement an LRU cache using std::unordered_map + std::list?
+2. How does a Trie compare to a hash map for prefix-based string lookups?
+3. How does a Bloom filter provide space-efficient membership checks, and what's the false-positive trade-off?
+4. How do you compute the Axis-Aligned Bounding Box (AABB) for a large set of 3D points, and how do you test if two AABBs intersect?
+5. What is spatial indexing (quadtrees/octrees), and how does it reduce collision checks from O(N²) toward O(N log N)?
+6. How do you compare Euclidean distances between many points while avoiding the sqrt() call (squared-distance trick)?
+
+
+---
+
+## 18. Code Output / Predict-the-Output Practice
+
+1. int arr[] = {10,20,30,40}; int *p = arr; printf("%d %d", *p, *(p+2)); — what prints, and why?
+2. int a = 5; printf("%d %d %d", a++, ++a, a); — what prints? (and why is this technically undefined behavior)
+3. struct A { char c; int i; char d; }; — what is sizeof(A), and why (padding/alignment)?
+4. printf("%d", sizeof(int)); — what prints, and what's the actual type of sizeof's result?
+5. int x = 10; int *p = &x; *p = 20; printf("%d", x); — what prints?
+6. What does malloc() return on failure, and how should the return value always be checked?
+7. class Test { private: int x = 10; public: int GetX(){return x;} }; Test t; cout << t.x; — what happens, and why?
+8. Given a class with a raw pointer member and a constructor that calls new, but no destructor and no copy constructor/assignment — what's wrong with it, and how would you fix it (Rule of Three / Five)?
+9. If a class has zero virtual functions and one int field, what is sizeof(that class)? What changes once you mark its destructor virtual?
+
+
+---
+
+## 19. Questions to Ask the Interviewer (Generic — Any Company/Domain)
+
+
+- **Team & Role Fit:** Can you describe the day-to-day responsibilities, and what success looks like in the first 6–12 months for this role?
+
+- **Product & Priorities:** What are the current top priorities or biggest challenges the team is addressing right now?
+
+- **Measurement:** How is performance measured for this role and the team? Which metrics or KPIs matter most?
+
+- **Collaboration:** Which teams will I work most closely with, and what's the preferred mode of collaboration (agile ceremonies, documentation, async)?
+
+- **Growth & Development:** What career progression and learning opportunities do you provide, and how do you support engineers in gaining new skills?
+
+- **Culture & Feedback:** How would you describe the team culture here, and how is feedback given and acted on?

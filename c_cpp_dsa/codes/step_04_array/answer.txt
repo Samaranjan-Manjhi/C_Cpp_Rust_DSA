@@ -1,0 +1,574 @@
+================================================================================
+     ARRAYS — THEORY ANSWERS + TRICKY QUESTIONS + ARRAY/VECTOR OPERATIONS
+================================================================================
+
+================================================================================
+SECTION 1A — CORE ARRAY THEORY (ANSWERS)
+================================================================================
+
+Q1. What is the time complexity of accessing, inserting, and deleting in an
+    array?
+
+    - Access (by index): O(1) — arrays are contiguous memory, so
+      arr[i] is computed directly as base_address + i * element_size.
+    - Insert:
+        - At the end (if capacity available): O(1)
+        - At the end (if resize needed, dynamic array): amortized O(1),
+          worst case O(N) for that one call (copies all elements)
+        - At the beginning or middle: O(N) — every element after the
+          insertion point must shift right by one.
+    - Delete:
+        - From the end: O(1)
+        - From the beginning or middle: O(N) — every element after the
+          deleted index must shift left by one to close the gap.
+    - Search (unsorted): O(N) linear scan. Search (sorted): O(log N) via
+      binary search.
+
+Q2. What is the difference between static and dynamic arrays?
+
+    - Static array: fixed size decided at COMPILE time (e.g. `int arr[10];`),
+      stored on the stack (if local) with size baked into the type; cannot
+      grow or shrink at runtime.
+    - Dynamic array: size decided/changeable at RUNTIME (e.g.
+      `std::vector<int>`, or `new int[n]`), stored on the heap; can grow
+      (usually by reallocating a bigger block and copying elements over)
+      and shrink. std::vector is the standard C++ way to get a dynamic
+      array with automatic memory management.
+
+Q3. How does vector<int> work internally? What happens when it resizes?
+
+    - Internally, std::vector manages a single contiguous heap-allocated
+      buffer, plus three pointers/values conceptually: begin (start of
+      data), end (one past the last constructed element, i.e. size()), and
+      end_of_storage (one past the allocated capacity, i.e. capacity()).
+    - push_back() checks if size() < capacity(); if there's room, it just
+      constructs the new element in place — O(1).
+    - If size() == capacity() (buffer is full), the vector must GROW: it
+      allocates a NEW, larger block (typically ~1.5x-2x the old capacity,
+      implementation-defined — GCC's libstdc++ uses 2x), copies/moves
+      every existing element from the old block to the new block, destroys
+      the old elements, and frees the old block. This single resizing
+      operation is O(N), but because it happens exponentially less often
+      as the vector grows, the AMORTIZED cost per push_back averages out to
+      O(1) over many calls.
+    - Growth invalidates ALL existing iterators, pointers, and references
+      into the vector (since the underlying memory address changed) — a
+      common source of bugs (dangling iterator after a push_back).
+
+Q4. What is cache locality? Why are arrays cache-friendly?
+
+    - Cache locality (specifically spatial locality) refers to CPUs
+      fetching memory in fixed-size chunks called cache lines (commonly 64
+      bytes) — accessing one memory address pulls in nearby addresses too,
+      speculatively, because programs tend to access nearby memory soon
+      after.
+    - Arrays are cache-friendly because their elements are stored
+      CONTIGUOUSLY in memory — iterating an array sequentially means each
+      cache line fetch serves many subsequent accesses "for free" (already
+      in cache), minimizing cache misses. This is why array/vector
+      traversal is dramatically faster in practice than traversing a
+      linked list of the same size, even though both are "O(N)" —
+      linked-list nodes are scattered across the heap, causing a cache
+      miss (and often a full trip to main memory) on nearly every node.
+
+Q5. What is the difference between array and pointer in C++? (Arrays decay
+    to pointers when passed to functions)
+
+    - An array is an object that KNOWS its own size at compile time (for
+      `sizeof(arr)` you get the full array's byte size), and its name
+      refers to the whole contiguous block.
+    - A pointer is just an address — `sizeof(ptr)` gives the pointer's own
+      size (e.g. 8 bytes on 64-bit), not what it points to, and a pointer
+      carries no built-in knowledge of how many elements follow it.
+    - "Array decay": when an array is passed to a function (or otherwise
+      used in most expressions), it automatically converts ("decays") into
+      a pointer to its first element, LOSING its size information — this
+      is why `void f(int arr[])` is functionally identical to
+      `void f(int* arr)`, and why you must pass the array's size as a
+      separate parameter in C-style array functions (unlike std::vector or
+      std::array, which retain size information as a member).
+
+Q6. What is a 2D array? How is it stored in memory (row-major order)?
+
+    - A 2D array (`int arr[R][C];`) is conceptually a grid of R rows and C
+      columns, but physically it's still a single, contiguous 1D block of
+      R*C elements in memory — there's no real "2D" memory, just an
+      indexing convention.
+    - Row-major order (used by C/C++): all elements of row 0 are stored
+      first, then all elements of row 1, and so on. So arr[i][j] maps to
+      the flat memory offset `i * C + j`. This means iterating with the
+      LAST index (column, j) as the inner loop is cache-friendly (moves
+      sequentially through memory), while iterating with the row as the
+      inner loop jumps across memory in strides of C — much worse for
+      cache performance on large matrices.
+
+================================================================================
+SECTION 1B — FRESH ARRAY THEORY (ANSWERS)
+================================================================================
+
+Q1. What is amortized O(1) for vector push_back? Explain the resizing
+    strategy.
+
+    - "Amortized O(1)" means that while any SINGLE push_back call might
+      occasionally cost O(N) (when a resize/reallocation is triggered),
+      the AVERAGE cost per call, taken over a long sequence of N
+      push_backs, is O(1).
+    - Resizing strategy: when the vector is full, it doesn't grow by a
+      fixed amount (like +1) — it grows GEOMETRICALLY, multiplying
+      capacity by a constant factor (commonly 1.5x or 2x, implementation-
+      defined). Because each resize roughly doubles capacity, the total
+      cost of all the resizing copies across N insertions sums to
+      O(1+2+4+...+N) ≈ O(2N) = O(N) overall — spread across N calls, that's
+      O(N)/N = O(1) amortized per call. (If it grew by a fixed +1 each
+      time instead, you'd get O(N) total copies happening O(N) times, for
+      a true O(N^2) worst case — this is exactly why geometric growth
+      matters.)
+
+Q2. Why is cache performance better for arrays than linked lists? Explain
+    spatial locality.
+
+    - Spatial locality: the tendency of programs to access memory
+      locations near ones they've recently accessed. Hardware caches
+      exploit this by fetching whole cache lines (chunks of nearby bytes)
+      on each memory access, not single bytes.
+    - Arrays satisfy spatial locality directly — elements are contiguous,
+      so accessing arr[i] pre-fetches arr[i+1], arr[i+2], etc. into cache
+      "for free."
+    - Linked lists violate spatial locality — each node is a separate heap
+      allocation that can be scattered anywhere in memory, so moving from
+      one node to the next (via its pointer) very often requires a fresh
+      cache-line fetch (or worse, a page fault / trip to main memory),
+      making linked-list traversal far slower in practice than an array of
+      the same logical size, despite identical Big-O complexity.
+
+Q3. What is the difference between row-major and column-major order? Which
+    does C++ use?
+
+    - Row-major: elements of each ROW are stored contiguously (row 0 fully,
+      then row 1 fully, ...). arr[i][j] -> offset i*C + j.
+    - Column-major: elements of each COLUMN are stored contiguously (column
+      0 fully, then column 1 fully, ...). arr[i][j] -> offset j*R + i.
+      Fortran, MATLAB, and Julia use column-major.
+    - C++ (and C) use ROW-MAJOR order. This matters for performance-
+      critical numerical code (e.g. matrix multiplication) — looping with
+      the innermost loop over the LAST index matches the storage order and
+      is cache-friendly; getting this backward (common mistake when porting
+      Fortran-derived numerical algorithms) can slow code down by an order
+      of magnitude due to cache misses.
+
+Q4. What is the complexity of inserting at the beginning of a vector? How
+    would you make this faster?
+
+    - O(N) — inserting at position 0 requires shifting every existing
+      element one slot to the right to make room, then the new size may
+      also trigger a reallocation if capacity is exceeded.
+    - To make front-insertion fast, use a data structure better suited to
+      it:
+        - std::deque<T> — supports O(1) amortized insertion/removal at
+          BOTH the front and back (implemented as a sequence of fixed-size
+          chunks/blocks rather than one contiguous array), at the cost of
+          slightly worse cache locality and O(1) (but not pointer-
+          arithmetic-simple) random access compared to vector.
+        - std::list<T> (doubly linked list) — O(1) insertion anywhere IF
+          you already have an iterator to the position, but O(N) to find
+          that position, and poor cache locality.
+      In short: if you frequently need front-insertion, std::deque is
+      usually the right default replacement for std::vector.
+
+Q5. What is a sparse array and how would you implement one efficiently?
+
+    - A sparse array is a large logical array/index range where the vast
+      majority of positions hold a "default"/zero value, and only a small
+      fraction of indices hold meaningful, non-default data. Storing it as
+      a literal dense array wastes huge amounts of memory.
+    - Efficient implementation: use an associative structure that only
+      stores the non-default entries, mapping index -> value:
+        - std::unordered_map<int, T> — O(1) average lookup/insert by
+          index, memory proportional only to the number of non-default
+          entries (not the full logical range).
+        - std::map<int, T> — O(log N) lookup/insert but keeps entries
+          sorted by index, useful if you need ordered iteration or range
+          queries.
+      Any index not present in the map is treated as the default value.
+      This trades a small per-access overhead (hashing/tree lookup) for
+      potentially massive memory savings when the array is truly sparse.
+
+================================================================================
+SECTION 2 — TRICKY / GOTCHA QUESTIONS
+     (Sound right but aren't, or vice versa — good interview traps for
+      arrays/vectors specifically.)
+================================================================================
+
+1. "sizeof(arr) / sizeof(arr[0]) always correctly gives you the number of
+   elements in an array." TRICKY: TRUE only while `arr` is still a real
+   array in the current scope (e.g., a local `int arr[10];`). The moment
+   the array is passed to a function as a parameter, it DECAYS to a
+   pointer, and `sizeof(arr)` inside that function returns the pointer's
+   size (commonly 8 on 64-bit systems), not the array's — a very common
+   bug where this trick silently gives the wrong (small, constant) answer
+   instead of erroring.
+
+2. "push_back on a vector is always O(1)." TRICKY: FALSE as a blanket
+   statement — it's amortized O(1). Any individual call that triggers a
+   reallocation (capacity exceeded) is O(N) for that call, since every
+   existing element must be copied/moved to the new buffer. Only averaged
+   over a long sequence of calls is the cost O(1) per call.
+
+3. "Once you have an iterator into a vector, it stays valid as long as you
+   don't erase the element it points to." TRICKY: FALSE — a push_back (or
+   insert) that triggers a REALLOCATION invalidates ALL existing
+   iterators, pointers, and references into the vector — even ones
+   pointing at elements you never touched — because the entire buffer may
+   have moved to a new memory address. You can erase nothing and still end
+   up with dangling iterators purely from growth.
+
+4. "Inserting at the end of a vector and inserting at the beginning have
+   the same time complexity, since both are just 'insert.'" TRICKY: FALSE
+   — end-insertion is amortized O(1); beginning-insertion is always O(N),
+   because every existing element must shift right to make room. They
+   look like "the same operation" in code (`push_back` vs `insert(begin(),
+   x)`) but have very different costs.
+
+5. "A 2D array arr[i][j] is stored as a genuinely 2-dimensional block in
+   memory, so arr[i][j] and arr[j][i] involve equivalent memory access
+   costs." TRICKY: FALSE — physically it's a flat 1D block in row-major
+   order. arr[i][j] and arr[j][i] access DIFFERENT memory offsets
+   (i*C+j vs j*C+i), and looping patterns that don't match row-major order
+   (e.g., iterating column-by-column in the outer loop) cause many more
+   cache misses than row-by-row iteration, even though both "look" like
+   simple double-array-indexing in code.
+
+6. "std::vector<bool> behaves just like std::vector<int> or
+   std::vector<char>, just with bool elements." TRICKY: FALSE — this is a
+   famous C++ gotcha: std::vector<bool> is a SPECIAL, bit-packed
+   specialization (each bool takes 1 bit, not 1 byte), which means
+   operator[] does NOT return a real bool&/reference — it returns a proxy
+   object. This breaks things that work fine on every other vector type,
+   e.g. you cannot take a real `bool&` reference to an element, and some
+   generic template code that assumes `T&` breaks specifically for
+   vector<bool>. Many style guides recommend avoiding vector<bool>
+   entirely (use std::deque<bool> or a bitset if you need one).
+
+7. "Array size in C++ (using new[]) can be determined dynamically at
+   runtime, and you can find out how many elements were allocated by
+   asking the pointer later." TRICKY: FALSE — once you have `int* p = new
+   int[n];`, the pointer itself carries NO information about `n`. You must
+   track the size yourself in a separate variable; there's no built-in
+   sizeof or length query on a raw heap-allocated array through its
+   pointer (this is exactly the problem std::vector solves for you by
+   storing size/capacity internally).
+
+8. "Deleting an element from the middle of a vector using erase() is O(1)
+   because vector supports random access." TRICKY: FALSE — random ACCESS
+   is O(1), but erase() from the middle is O(N), because every element
+   after the erased position must be shifted left by one to close the gap
+   (the same cost as middle-insertion, just in reverse).
+
+9. "Since arrays are cache-friendly and O(1) for access, an array is
+   always the best choice over a linked list for any kind of data."
+   TRICKY: FALSE as an absolute — arrays/vectors are usually the right
+   DEFAULT choice due to cache locality, but if your workload does FREQUENT
+   insertions/deletions in the middle/front (not just at the end) and
+   doesn't need random access, a linked list (or a different structure
+   like std::deque) can avoid the O(N) shifting cost that a vector would
+   incur repeatedly — the "right" structure depends on the access pattern,
+   not just Big-O of a single operation type.
+
+10. "Passing an array to a function by value copies the whole array, just
+    like passing a struct or vector by value would." TRICKY: FALSE — a
+    C-style array parameter (`void f(int arr[10])`) does NOT copy the
+    array; due to array decay, it's actually received as `int* arr` — a
+    single pointer to the original array's first element. Modifications
+    inside the function DO affect the caller's original array (unlike
+    true pass-by-value semantics for a struct/vector), which surprises
+    people who assume "no reference/pointer syntax" means a safe copy.
+
+11. "resize() and reserve() on a vector do the same thing." TRICKY: FALSE
+    — reserve(n) only ensures capacity() >= n (pre-allocates memory to
+    avoid future reallocations) WITHOUT changing size() or constructing
+    any new elements. resize(n) actually changes size() to n — if n >
+    current size, it CONSTRUCTS new elements (default- or value-
+    initialized) to fill the gap; if n < current size, it DESTROYS the
+    extra elements. Confusing the two is a common source of "why is my
+    vector full of zeros/garbage" or "why did my loop crash accessing
+    v[i]" bugs.
+
+12. "A vector's capacity() will shrink automatically when you erase
+    elements or call clear(), freeing the unused memory." TRICKY: FALSE —
+    erase() and clear() reduce size() but do NOT reduce capacity() — the
+    already-allocated memory is kept around (in case you push_back again
+    soon, avoiding a fresh reallocation). To actually release the excess
+    memory, you need the "shrink-to-fit" idiom: `vec.shrink_to_fit();`
+    (a non-binding request, similar in spirit to `inline`) or the classic
+    swap-with-temporary trick `std::vector<T>(vec).swap(vec);`.
+
+================================================================================
+SECTION 3 — ARRAY OPERATIONS: TRAVERSAL, INSERTION, DELETION (C-STYLE /
+     RAW ARRAYS) — with complexity and practical notes
+================================================================================
+
+TRAVERSAL
+---------
+  for (int i = 0; i < n; i++) { process(arr[i]); }
+  - Time: O(N) — must visit every element once.
+  - Space: O(1) extra.
+  - Cache-friendly due to contiguous memory (see spatial locality above).
+  - Range-based alternative: `for (int x : arr)` — same complexity, safer
+    syntax (no manual index management, no off-by-one risk), but gives you
+    a COPY of each element unless you use `for (int& x : arr)` to modify
+    in place.
+
+INSERTION (raw/fixed-size array — you must manage size yourself)
+------------------------------------------------------------------
+  Insert at END (if array has spare capacity tracked by you):
+      arr[count] = value; count++;
+      - Time: O(1)
+  Insert at a given INDEX (shift elements right first):
+      for (int i = count; i > index; i--) arr[i] = arr[i-1];
+      arr[index] = value;
+      count++;
+      - Time: O(N) worst case (inserting at index 0 shifts everything)
+  Insert into a FULL fixed-size array:
+      - Not possible without reallocating a bigger array (manual
+        `new`/copy/`delete[]`) — this is exactly the problem std::vector
+        solves automatically.
+
+DELETION (raw/fixed-size array)
+--------------------------------
+  Delete from END:
+      count--;
+      - Time: O(1) — just "forget" the last logical element (no actual
+        erasure of the value needed, just reduce your tracked size).
+  Delete at a given INDEX (shift elements left to close the gap):
+      for (int i = index; i < count - 1; i++) arr[i] = arr[i+1];
+      count--;
+      - Time: O(N) worst case (deleting index 0 shifts everything left).
+
+SEARCHING
+---------
+  Linear search (unsorted array): O(N)
+  Binary search (SORTED array only): O(log N) — must sort first if not
+  already sorted (sorting itself costs O(N log N) for a one-time cost).
+
+================================================================================
+SECTION 4 — std::vector<T> — ALL COMMONLY USED BUILT-IN FUNCTIONS
+     (usage, when to use, and time complexity)
+================================================================================
+
+--- SIZE / CAPACITY ---
+
+  v.size()
+    - Returns current number of elements.
+    - O(1). Use anytime you need the logical length (kept as a stored
+      member, not recomputed).
+
+  v.capacity()
+    - Returns how many elements can be held before the next reallocation.
+    - O(1). Useful for performance tuning/debugging reallocation behavior.
+
+  v.empty()
+    - Returns true if size() == 0.
+    - O(1). Prefer this over `v.size() == 0` — same cost, but clearer
+      intent and works uniformly across all containers.
+
+  v.reserve(n)
+    - Pre-allocates capacity for at least n elements WITHOUT changing
+      size() or constructing elements.
+    - O(N) if it triggers a reallocation (copies existing elements),
+      O(1) if n <= current capacity (no-op).
+    - USE WHEN: you know (or can estimate) the final size in advance
+      (e.g., before a loop of N push_backs) — avoids repeated
+      reallocation/copying, a very common real performance win.
+
+  v.resize(n)
+    - Changes size() to n. If n > current size, default/value-constructs
+      the new elements. If n < current size, destroys the extra elements.
+    - O(N) relative to the difference in size (and may reallocate if
+      growing beyond capacity).
+    - USE WHEN: you need the vector to actually CONTAIN n elements (e.g.
+      to index into v[i] safely afterward), not just have room for them.
+
+  v.shrink_to_fit()
+    - Non-binding request to release unused capacity (reduce capacity()
+      down toward size()).
+    - O(N) if it reallocates (typical), implementation may ignore the
+      request.
+    - USE WHEN: you had a large temporary vector, erased most of it, and
+      want to free the extra memory (e.g. long-lived containers after a
+      big one-time cleanup pass).
+
+--- ACCESS ---
+
+  v[i]
+    - Direct indexed access, no bounds checking.
+    - O(1). Fastest access; use in hot loops where you've already
+      guaranteed i is in range.
+
+  v.at(i)
+    - Indexed access WITH bounds checking — throws std::out_of_range if
+      i >= size().
+    - O(1) (same as [] plus a comparison). USE WHEN: safety matters more
+      than the tiny overhead — e.g. indices coming from user input or
+      untrusted computation, since it fails loudly instead of causing
+      undefined behavior.
+
+  v.front()
+    - Returns reference to first element (equivalent to v[0]).
+    - O(1). UB if vector is empty — always check !v.empty() first.
+
+  v.back()
+    - Returns reference to last element (equivalent to v[size()-1]).
+    - O(1). UB if vector is empty.
+
+  v.data()
+    - Returns a raw pointer to the underlying contiguous array.
+    - O(1). USE WHEN: interfacing with C APIs that expect a raw
+      pointer + length (e.g. memcpy, low-level syscalls, C libraries).
+
+--- MODIFIERS ---
+
+  v.push_back(x)
+    - Appends x to the end.
+    - Amortized O(1), worst case O(N) on the call that triggers a
+      reallocation. The single most common way to build up a vector
+      dynamically.
+
+  v.pop_back()
+    - Removes the last element (destructor runs), reduces size() by 1.
+    - O(1). Does NOT reduce capacity(). UB if vector is empty.
+
+  v.emplace_back(args...)
+    - Constructs a new element IN PLACE at the end, forwarding args...
+      directly to the element type's constructor — avoids an extra
+      temporary object + copy/move that push_back(T(args...)) would incur.
+    - Amortized O(1), same growth behavior as push_back.
+    - USE WHEN: element type is a non-trivial class/struct being
+      constructed from constructor arguments (e.g.
+      `v.emplace_back(1, "abc")` for a struct with a matching
+      constructor) — generally preferred over push_back for such types in
+      modern C++.
+
+  v.insert(pos, x)
+    - Inserts x before the iterator position pos.
+    - O(N) — must shift all elements from pos onward. If pos == end(),
+      behaves like push_back and can be O(1) amortized in that special
+      case, but general insert is O(N).
+    - USE WHEN: you genuinely need to insert in the middle/front — if
+      you're calling this in a loop for many insertions, consider whether
+      a different container (deque, list) or batching the inserts would
+      be better.
+
+  v.erase(pos)
+    - Removes the element at iterator pos, shifting subsequent elements
+      left. Returns iterator to the element that followed the erased one.
+    - O(N) — proportional to number of elements after pos.
+    - erase(first, last) removes a RANGE — also O(N).
+    - GOTCHA: erase() invalidates iterators at and after the erase point
+      — never do `for (it = v.begin(); it != v.end(); ++it) if (cond)
+      v.erase(it);` naively; instead reassign: `it = v.erase(it);` and
+      skip the ++it on that branch.
+
+  v.clear()
+    - Destroys all elements, sets size() to 0. Does NOT change capacity().
+    - O(N) (destructor calls for each element) — O(1) for trivial types
+      in practice.
+
+  v.swap(other)
+    - Swaps the internal buffers/state of two vectors of the same type.
+    - O(1) — just swaps a few internal pointers/sizes, regardless of how
+      many elements either vector holds. USE WHEN: you want to
+      efficiently exchange contents (e.g. the shrink_to_fit-via-swap
+      idiom, or swapping a "scratch" buffer in and out).
+
+  v.assign(n, value) / v.assign(first, last)
+    - Replaces all current contents with n copies of value, or with a
+      copy of a range [first, last).
+    - O(N) relative to new size (destroys old elements, constructs new
+      ones, may reallocate). USE WHEN: you want to "reset and refill" a
+      vector in one call instead of clear() + a loop of push_backs.
+
+--- ITERATORS ---
+
+  v.begin() / v.end()
+    - Return iterators to the first element / one-past-the-last element.
+    - O(1). Foundation for range-based for loops and STL algorithms
+      (std::sort(v.begin(), v.end()), etc.)
+
+  v.rbegin() / v.rend()
+    - Reverse iterators — iterate from last element to first.
+    - O(1). USE WHEN: you want to traverse/process a vector back-to-front
+      without manually computing reverse indices.
+
+--- COMMON STL ALGORITHMS USED WITH VECTORS (not member functions, but
+    used constantly alongside vectors — included since they matter for
+    day-to-day programming) ---
+
+  std::sort(v.begin(), v.end())
+    - O(N log N) average/worst case (introsort: quicksort + heapsort
+      fallback + insertion sort for small ranges).
+    - USE WHEN: you need a sorted order before binary search, or for
+      output requirements — the default general-purpose sort to reach for.
+
+  std::find(v.begin(), v.end(), value)
+    - O(N) linear scan — returns iterator to first match, or end() if not
+      found. USE WHEN: vector is unsorted (or small) and you just need a
+      one-off lookup; for repeated lookups on sorted data, prefer
+      binary_search/lower_bound, or an unordered_set/map for O(1) average
+      lookups if you're checking membership many times.
+
+  std::binary_search(v.begin(), v.end(), value)
+    - O(log N), REQUIRES the range to already be sorted. Returns bool only
+      (existence), not position — use std::lower_bound if you need the
+      iterator/position.
+
+  std::lower_bound(v.begin(), v.end(), value) /
+  std::upper_bound(v.begin(), v.end(), value)
+    - O(log N) on a sorted range. lower_bound returns iterator to the
+      first element NOT LESS than value; upper_bound returns iterator to
+      the first element GREATER than value. Together they give you the
+      exact range of elements equal to value — commonly used for counting
+      duplicates or finding insertion points in sorted data.
+
+  std::reverse(v.begin(), v.end())
+    - O(N) — reverses elements in place.
+
+  std::unique(v.begin(), v.end())
+    - O(N), REQUIRES sorted input to remove ALL duplicates — removes only
+      CONSECUTIVE duplicates, returns a new logical end iterator; you
+      typically follow it with v.erase(new_end, v.end()) to actually
+      shrink the vector (the classic "sort + unique + erase" idiom for
+      deduplication).
+
+  std::accumulate(v.begin(), v.end(), 0)  (from <numeric>)
+    - O(N) — sums all elements (or applies a custom binary operation).
+      USE WHEN: computing sum/product/custom-fold over a vector without
+      writing a manual loop.
+
+  std::count(v.begin(), v.end(), value)
+    - O(N) — counts occurrences of value.
+
+  std::max_element(v.begin(), v.end()) /
+  std::min_element(v.begin(), v.end())
+    - O(N) — returns iterator to the max/min element (dereference it to
+      get the value).
+
+--- QUICK DECISION GUIDE ---
+
+  Need...                                  | Use
+  ------------------------------------------|----------------------------
+  Append at end, don't know final size      | push_back / emplace_back
+  Know final size ahead of time             | reserve(n) then push_back
+  Need exact size with real elements now    | resize(n)
+  Fast membership test, no order needed     | unordered_set (not vector)
+  Frequent front AND back insertion         | std::deque instead of vector
+  Frequent middle insertion/deletion        | std::list, or reconsider
+                                            | whether vector is the right
+                                            | structure at all
+  Safe indexing (may be out of range)       | .at(i) instead of [i]
+  Raw pointer for a C API                   | .data()
+  Remove duplicates                         | sort() + unique() + erase()
+  Find position in already-sorted data      | lower_bound / upper_bound
+
+================================================================================
+END OF FILE
+================================================================================

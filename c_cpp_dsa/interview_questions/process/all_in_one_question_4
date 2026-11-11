@@ -1,0 +1,2216 @@
+================================================================================
+   C++ + DSA — FRESH INTERVIEW QUESTIONS (PART 4)
+   All questions are NEW — no repeats from previous files (Part 1, 2, 3).
+   Topics follow the same roadmap order.
+   Real questions from: Google, Amazon, Microsoft, Adobe, Flipkart,
+   Paytm, Swiggy, Zomato, PhonePe, CRED, Meesho, Dunzo, Zepto,
+   Groww, Razorpay, Slice, upGrad, Juspay, BrowserStack, HashedIn,
+   Dolat Capital, Edelweiss, Tower Research, Optiver (campus/off-campus)
+================================================================================
+
+FORMAT:
+  [ ] = not attempted   [~] = need revision   [x] = done
+  (E) Easy   (M) Medium   (H) Hard
+  [T] = Theory/Verbal    [C] = Coding
+
+================================================================================
+SECTION 1 — C++ BASICS: VARIABLES, TYPES, OPERATORS
+(Fresh theory + fresh coding — different from Parts 1, 2, 3)
+================================================================================
+
+THEORY (asked verbally — one-liner answers expected)
+-----------------------------------------------------
+  [T][ ] What is the difference between signed and unsigned right shift?
+          (C++ >> on signed int is implementation-defined; on unsigned it is logical)
+          Asked at: Samsung, Dolat Capital, Sasken
+
+  [T][ ] What is type promotion in C++? What happens when you add char + int?
+          Asked at: TCS, L&T Infotech, Wipro
+
+  [T][ ] Why is float comparison with == dangerous? How do you fix it?
+          (floating-point representation error — use epsilon comparison)
+          Asked at: Dolat Capital, Zoho, Amazon
+
+  [T][ ] What is the difference between NaN and Infinity in floating point?
+          How do you check for them in C++?
+          Asked at: Dolat Capital, HFT firms
+
+  [T][ ] What does the comma operator do in C++? Give a tricky example.
+          Asked at: Google, Zoho
+
+  [T][ ] What is integral promotion? What is the "usual arithmetic conversion"?
+          Asked at: Sasken, Samsung
+
+  [T][ ] What is the difference between char, signed char, and unsigned char?
+          Are they all distinct types?
+          Asked at: Samsung, Sasken, embedded roles
+
+  [T][ ] Can you have a reference to a reference in C++? What about pointer to reference?
+          Asked at: Advanced C++ roles, Google
+
+  [T][ ] What is std::numeric_limits<int>::max() and when would you use it?
+          Asked at: Amazon, Microsoft, competitive programming roles
+
+  [T][ ] What is the difference between {}-initialization and ()-initialization?
+          What is narrowing conversion?
+          Asked at: Google, Atlassian, modern C++ roles
+
+CODING — EASY
+--------------
+  [C][ ] (E) Without any if/else/ternary, print 1 if a > b, -1 if a < b, 0 if equal.
+             Hint: (a > b) - (a < b)
+             Asked at: Samsung, Dolat Capital
+
+  [C][ ] (E) Check if two floats are equal up to 6 decimal places.
+             Use: fabs(a - b) < 1e-6
+             Asked at: Zoho, Dolat Capital
+
+  [C][ ] (E) Without any loop, find the absolute value of an integer without abs().
+             Use: (x < 0) ? -x : x  OR  (x ^ (x >> 31)) - (x >> 31)
+             Asked at: Samsung, Sasken
+
+  [C][ ] (E) Read two integers a and b. Print their average WITHOUT overflow.
+             Hint: a/2 + b/2 + (a%2 + b%2)/2
+             Asked at: Amazon, Google
+
+  [C][ ] (E) Given 3 bits x, y, z, compute the majority bit (1 if at least 2 are 1).
+             Hint: (x & y) | (y & z) | (x & z)
+             Asked at: Dolat Capital, competitive programming
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Print the binary representation of a float using union hack.
+             (Use union { float f; unsigned int i; } — observe bits)
+             Asked at: Sasken, Samsung, HFT firms
+
+  [C][ ] (M) Without using division or modulo, check if N is divisible by 8.
+             Hint: (n & 7) == 0
+             Asked at: Dolat Capital, Samsung
+
+  [C][ ] (M) Compute x * 9 using only shift and addition.
+             Hint: (x << 3) + x
+             Asked at: Dolat Capital, Samsung, Sasken
+
+  [C][ ] (M) Given an integer n, flip all bits below and including the highest set bit.
+             Asked at: Competitive programming, Samsung
+
+  [C][ ] (M) Implement a function that returns the sign of (a - b) without subtraction.
+             Asked at: Dolat Capital, HFT firms
+
+================================================================================
+SECTION 2 — LOOPS, PATTERNS & MATHEMATICAL SERIES
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Print the following pattern for N=5 (right-aligned triangle):
+                 *
+                **
+               ***
+              ****
+             *****
+             Asked at: Wipro, TCS, Capgemini
+
+  [C][ ] (E) Print a hollow diamond pattern for N=4.
+             Asked at: TCS, Infosys, Capgemini
+
+  [C][ ] (E) Print Pascal's Triangle for N rows.
+             Asked at: Amazon, Microsoft, TCS
+
+  [C][ ] (E) Find sum of all numbers from 1 to N divisible by 3 OR 5.
+             (Classic FizzBuzz sum variant)
+             Asked at: Google, Amazon campus
+
+  [C][ ] (E) Print the number spiral matrix for N=4 clockwise starting from 1.
+             Asked at: Amazon, Zoho
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Print all numbers from 1 to N that are perfect squares.
+             Without using sqrt() — use only loops.
+             Asked at: TCS, Wipro, Capgemini
+
+  [C][ ] (M) Find the Nth term in series: 1, 3, 6, 10, 15, 21 (triangular numbers).
+             In O(1). Hint: N*(N+1)/2
+             Asked at: Capgemini, Wipro
+
+  [C][ ] (M) FizzBuzz with a twist: print "Jazz" for multiples of 7 too.
+             Asked at: many product companies (Amazon, Flipkart) as warm-up
+
+  [C][ ] (M) Print all lucky numbers up to N.
+             (Start with natural numbers; repeatedly delete every kth number
+             where k is the value at the kth position — a sieve-like process)
+             Asked at: Competitive programming, Samsung
+
+  [C][ ] (M) Without math.h, compute floor(log2(N)) for a positive integer N.
+             Hint: count how many times you can right-shift before reaching 0.
+             Asked at: Dolat Capital, Samsung
+
+================================================================================
+SECTION 3 — FUNCTIONS & RECURSION (FRESH PROBLEMS)
+================================================================================
+
+THEORY
+-------
+  [T][ ] Can you call a virtual function from a constructor? What happens?
+          (It calls the base class version — vtable not yet pointing to derived)
+          Asked at: Amazon, Microsoft, Adobe
+
+  [T][ ] What is the difference between deep recursion and tail recursion?
+          Does GCC/Clang optimize tail calls in C++?
+          Asked at: Zoho, Persistent, Google
+
+  [T][ ] What is memoization vs tabulation? When do you prefer each?
+          Asked at: Amazon, Flipkart, Swiggy
+
+  [T][ ] What is a pure function? What is a side effect? Why does this matter?
+          Asked at: Google, Atlassian, functional-style interview rounds
+
+  [T][ ] Explain the difference between call stack and call heap.
+          Asked at: L&T Infotech, TCS, Persistent
+
+CODING — EASY
+--------------
+  [C][ ] (E) Recursive function to print digits of a number from left to right.
+             (without reversing — use recursion order cleverly)
+             Asked at: Wipro, Cognizant
+
+  [C][ ] (E) Recursive: check if N is prime.
+             Asked at: Wipro, TCS
+
+  [C][ ] (E) Recursive: find the minimum element of an array.
+             Asked at: Infosys, Capgemini
+
+  [C][ ] (E) Recursive: count number of zeros in an integer.
+             e.g. 1001020 -> 3 zeros
+             Asked at: Wipro, Cognizant
+
+  [C][ ] (E) Recursive multiplication without * operator:
+             multiply(a, b) = a + multiply(a, b-1)
+             Asked at: TCS, Wipro
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Print all binary strings of length N that have no consecutive 1s.
+             Use recursion. Count them too (answer is Fibonacci!).
+             Asked at: Amazon, Microsoft, Google
+
+  [C][ ] (M) Given N, find all ways to express N as ordered sum of 1s and 2s.
+             (Stair climbing counting variant — print actual paths)
+             Asked at: Amazon, Flipkart, Zoho
+
+  [C][ ] (M) Recursive function to sort an array using insertion sort style.
+             (sort first N-1 elements, then insert Nth)
+             Asked at: Amazon campus
+
+  [C][ ] (M) Recursive: given a string, print all unique permutations
+             (handle duplicate characters)
+             Asked at: Amazon, Microsoft, Google
+
+  [C][ ] (M) Recursive: find the kth symbol in the grammar.
+             Row 1: "0"   Row 2: "01"   Row 3: "0110"   Row 4: "01101001"
+             Rule: 0 -> 01, 1 -> 10
+             (LeetCode 779 — asked at Google campus)
+             Asked at: Google, Atlassian
+
+CODING — HARD
+--------------
+  [C][ ] (H) Flood fill on a grid using recursion (DFS without explicit stack).
+             Input: matrix, source (r,c), old color, new color.
+             Asked at: Amazon, Microsoft, Adobe
+
+  [C][ ] (H) Expression evaluation using recursion:
+             Parse a string like "2*(3+4)-1" and evaluate it.
+             (Implement recursive descent parser)
+             Asked at: Google, Atlassian, Adobe
+
+  [C][ ] (H) Recursive: given N, find all combinations that sum to N
+             using integers 1 to 9 each at most once.
+             Asked at: Amazon, Google
+
+  [C][ ] (H) Count the number of structurally unique BSTs with N nodes.
+             (Catalan number — implement both recursive and DP solutions)
+             Asked at: Microsoft, Amazon
+
+  [C][ ] (H) Solve the cryptarithmetic puzzle SEND + MORE = MONEY using backtracking.
+             Asked at: Google, Atlassian (as a design/algorithm question)
+
+================================================================================
+SECTION 4 — ARRAYS (FRESH PROBLEMS — MOST IMPORTANT TOPIC)
+================================================================================
+
+THEORY
+-------
+  [T][ ] What is amortized O(1) for vector push_back? Explain the resizing strategy.
+          Asked at: Amazon, Microsoft, Flipkart, Swiggy
+
+  [T][ ] Why is cache performance better for arrays than linked lists?
+          Explain spatial locality.
+          Asked at: Dolat Capital, HFT firms, Samsung
+
+  [T][ ] What is the difference between row-major and column-major order?
+          Which does C++ use?
+          Asked at: Samsung, Sasken, numerical computing roles
+
+  [T][ ] What is the complexity of inserting at the beginning of a vector?
+          How would you make this faster?
+          Asked at: Amazon, Flipkart
+
+  [T][ ] What is a sparse array and how would you implement one efficiently?
+          Asked at: Google, Atlassian, Adobe
+
+CODING — EASY
+--------------
+  [C][ ] (E) Given array of size N containing elements 1 to N+1 with one missing,
+             find the missing number using XOR only (no arithmetic sum).
+             Asked at: Amazon, Microsoft, TCS
+
+  [C][ ] (E) Find the element that appears more than N/2 times (majority element).
+             Use Boyer-Moore Voting Algorithm — O(N) time O(1) space.
+             Asked at: Amazon, Adobe, Flipkart
+
+  [C][ ] (E) Rotate array right by K positions in O(N) time O(1) space.
+             Hint: reverse entire, reverse first K, reverse last N-K.
+             Asked at: Amazon, Microsoft, Adobe
+
+  [C][ ] (E) Given array, check if it is a permutation of 1 to N.
+             (all elements unique and in range [1, N])
+             Asked at: TCS, Wipro, Zoho
+
+  [C][ ] (E) Find the product of all elements except itself without division.
+             Input:  [1, 2, 3, 4]
+             Output: [24, 12, 8, 6]
+             Asked at: Amazon, Microsoft, Google, Flipkart
+
+  [C][ ] (E) Segregate even and odd numbers — evens first, odds second.
+             Maintain relative order. O(N) time O(1) space.
+             Asked at: Amazon, Zoho, TCS
+
+  [C][ ] (E) Given sorted array, remove duplicates in-place and return new length.
+             Do NOT use extra space.
+             Asked at: Amazon, TCS, Wipro, Adobe
+
+  [C][ ] (E) Find the only element that appears once when every other appears thrice.
+             Hint: count bits at each position mod 3.
+             Asked at: Amazon, Adobe, Samsung
+
+  [C][ ] (E) Given array of n-1 integers in range 1 to n, find the missing number
+             using only XOR (not sum formula).
+             Asked at: Amazon, Microsoft, TCS
+
+  [C][ ] (E) Given two sorted arrays, merge them in-place (no extra space).
+             First array has extra space for second array's elements.
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (E) Count elements smaller than current in array for each position.
+             Input:  [8, 5, 2, 6]
+             Output: [3, 1, 0, 2]   (brute force first, then optimize)
+             Asked at: Amazon, Flipkart
+
+  [C][ ] (E) Find the equilibrium index: index where sum of left = sum of right.
+             Asked at: Amazon, Adobe, Zoho
+
+  [C][ ] (E) Find the minimum number of jumps to reach end of array.
+             Each element = max steps you can jump from that position.
+             (Greedy approach — not DP)
+             Asked at: Amazon, Google, Flipkart
+
+  [C][ ] (E) Given array of intervals sorted by start time, merge overlapping ones.
+             Input:  [[1,3],[2,6],[8,10],[15,18]]
+             Output: [[1,6],[8,10],[15,18]]
+             Asked at: Amazon, Google, Microsoft
+
+  [C][ ] (E) Rearrange array such that arr[i] = i if possible; else arr[i] = -1.
+             (Rearrange by sign/value problem variant)
+             Asked at: Zoho, Paytm
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Find the longest subarray with equal number of 0s and 1s.
+             Hint: replace 0s with -1, then find longest subarray with sum 0.
+             Use prefix sum + hashmap.
+             Asked at: Amazon, Microsoft, Flipkart, Paytm
+
+  [C][ ] (M) Given array, find minimum number of swaps to sort it.
+             (Count cycles in permutation graph)
+             Asked at: Amazon, Goldman Sachs, Edelweiss
+
+  [C][ ] (M) Find count of inversions in array.
+             (pair (i,j) where i < j but arr[i] > arr[j])
+             Use modified merge sort. O(N log N).
+             Asked at: Amazon, Microsoft, Goldman Sachs, JP Morgan
+
+  [C][ ] (M) Rearrange array into alternating high-low (wave form):
+             arr[0] >= arr[1] <= arr[2] >= arr[3] ...
+             O(N) one-pass solution exists.
+             Asked at: Amazon, Flipkart, Paytm
+
+  [C][ ] (M) Given array of positive and negative numbers, rearrange so they
+             alternate in sign. Maintain relative order within each sign group.
+             Asked at: Amazon, Adobe, Zoho
+
+  [C][ ] (M) Find all triplets in array that form an arithmetic progression.
+             a[j] - a[i] == a[k] - a[j] where i < j < k
+             Asked at: Samsung, competitive programming
+
+  [C][ ] (M) Given an array of meeting times [start, end], find the minimum
+             number of conference rooms required.
+             (Use sorting + min heap of end times)
+             Asked at: Amazon, Google, Microsoft
+
+  [C][ ] (M) Find the kth largest element in an unsorted array in O(N) average.
+             Use QuickSelect algorithm (partition without fully sorting).
+             Asked at: Amazon, Microsoft, Facebook/Meta
+
+  [C][ ] (M) Given array, find minimum length subarray whose sum >= S.
+             (Sliding window — O(N))
+             Asked at: Amazon, Microsoft, Adobe
+
+  [C][ ] (M) Maximum product of any subarray.
+             Keep track of current max AND current min (because negative * negative = positive).
+             Asked at: Amazon, Microsoft, Flipkart, Google
+
+  [C][ ] (M) Given array of n integers where each element appears twice except two,
+             find both non-repeating elements.
+             Hint: XOR all -> XOR of two results. Use rightmost set bit to partition.
+             Asked at: Amazon, Adobe, Samsung
+
+  [C][ ] (M) Given sorted matrix (each row and column sorted), find kth smallest.
+             Use min heap of size K or binary search on value range.
+             Asked at: Amazon, Google, Microsoft
+
+  [C][ ] (M) Count all subarrays with product less than K.
+             Sliding window: O(N).
+             Asked at: Amazon, Flipkart
+
+  [C][ ] (M) Given array of length 2N where first N elements form a sequence and
+             next N are their pairing, interleave them: p1, q1, p2, q2, ...
+             in O(1) extra space.
+             Asked at: Google, Adobe
+
+  [C][ ] (M) Trapping rain water between bars of given heights.
+             (Solve with two pointers O(N) O(1) — not prefix array approach)
+             Asked at: Amazon, Google, Microsoft, Flipkart (very common!)
+
+CODING — HARD
+--------------
+  [C][ ] (H) Find the longest consecutive sequence in unsorted array in O(N).
+             Use unordered_set. Only start counting from sequence beginnings.
+             Asked at: Amazon, Google, Facebook/Meta
+
+  [C][ ] (H) Given array of N integers, find the maximum sum rectangle in a 2D matrix.
+             (Extend Kadane's to 2D — O(N^2 * M))
+             Asked at: Amazon, Microsoft, Google
+
+  [C][ ] (H) Minimum number of platforms required at a railway station.
+             Given arrival[] and departure[] arrays.
+             Sort both, use two pointers to simulate.
+             Asked at: Amazon, Microsoft, Flipkart, Paytm
+
+  [C][ ] (H) Given array, find max sum of non-adjacent elements.
+             Then solve the circular version (first and last are also adjacent).
+             Asked at: Amazon, Microsoft, Adobe, Flipkart
+
+  [C][ ] (H) Given array where each element is distance you can jump backwards or
+             forwards, find minimum jumps to reach position with value 0.
+             BFS approach. O(N^2).
+             Asked at: Google, Microsoft
+
+  [C][ ] (H) Median of two sorted arrays of sizes m and n in O(log(min(m,n))).
+             Binary search on smaller array.
+             Asked at: Google, Amazon, Microsoft, Facebook/Meta (very hard classic)
+
+  [C][ ] (H) Given N jobs each with start[i], end[i], profit[i], find max profit
+             subset of non-overlapping jobs.
+             (Weighted job scheduling — DP + binary search)
+             Asked at: Amazon, Goldman Sachs, Flipkart
+
+  [C][ ] (H) Largest rectangle in a histogram.
+             Use monotonic stack. O(N).
+             Asked at: Amazon, Google, Microsoft (very common hard question!)
+
+  [C][ ] (H) Find maximum sum of K non-overlapping subarrays each of length L.
+             (Sliding window with DP)
+             Asked at: Amazon, Google
+
+  [C][ ] (H) Given array of positive integers, find minimum number of elements
+             to remove so that no element is exactly double of another.
+             (Greedy with frequency counting)
+             Asked at: Amazon, Razorpay
+
+================================================================================
+SECTION 5 — STRINGS (FRESH PROBLEMS)
+================================================================================
+
+THEORY
+-------
+  [T][ ] What is the time complexity of string concatenation using += in a loop?
+          Why is stringstream or reserve() better?
+          Asked at: Amazon, Microsoft, Adobe
+
+  [T][ ] What is the difference between s.find() returning string::npos vs -1?
+          Why might comparing with -1 be a bug?
+          Asked at: Google, Amazon (common C++ trap question)
+
+  [T][ ] What is a suffix array? How does it differ from a suffix tree?
+          Asked at: Google, competitive programming roles
+
+  [T][ ] What is Z-function? When would you use it over KMP?
+          Asked at: Competitive programming companies, Google
+
+  [T][ ] What is lexicographically smallest rotation of a string?
+          Name the O(N) algorithm.
+          (Booth's algorithm or using suffix array)
+          Asked at: Google, competitive programming
+
+CODING — EASY
+--------------
+  [C][ ] (E) Given a string, print all its distinct substrings.
+             (Use set to deduplicate)
+             Asked at: Amazon, Zoho
+
+  [C][ ] (E) Check if a string has all unique characters without using any extra structure.
+             O(N^2) brute force, then O(N) with bitmask (only lowercase letters).
+             Asked at: Amazon, Microsoft, Adobe
+
+  [C][ ] (E) Given a sentence, reverse only the words, not the characters.
+             "hello world" -> "world hello"
+             Asked at: Amazon, Microsoft, TCS, Zoho
+
+  [C][ ] (E) Find the longest common prefix among an array of strings.
+             Vertical scanning approach.
+             Asked at: Amazon, Flipkart
+
+  [C][ ] (E) Given string of only '(' and ')', find minimum insertions to make it valid.
+             (Count unmatched brackets using a counter, not a stack)
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (E) Count occurrences of a word in a sentence (case-insensitive).
+             Asked at: TCS, Wipro, Zoho
+
+  [C][ ] (E) Given string, remove all consecutive duplicate characters.
+             "aabbccdde" -> "abcde"
+             Asked at: Zoho, Paytm, Swiggy
+
+  [C][ ] (E) Check if string B is a scrambled version of string A.
+             (Shift all characters by the same amount modulo 26)
+             Asked at: TCS, Capgemini
+
+  [C][ ] (E) Given two strings, find the number of positions where
+             they have the same character.
+             Asked at: TCS, Wipro
+
+  [C][ ] (E) Find all starting indices of anagrams of pattern P in string S.
+             Use sliding window + frequency array.
+             Asked at: Amazon, Microsoft, Flipkart
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Longest palindromic substring.
+             Expand around center approach O(N^2). Then Manacher's O(N).
+             Asked at: Amazon, Microsoft, Google, Flipkart (very common!)
+
+  [C][ ] (M) Given a string, find the minimum window substring containing
+             all characters of a pattern.
+             (Sliding window with frequency map)
+             Asked at: Amazon, Google, Microsoft, Adobe
+
+  [C][ ] (M) String compression: "aaabbbcccc" -> "a3b3c4"
+             Run-length encoding. Handle case where compressed is longer.
+             Asked at: Amazon, Microsoft, Adobe, Zoho
+
+  [C][ ] (M) Given string, find the longest substring with at most K distinct characters.
+             Sliding window.
+             Asked at: Amazon, Flipkart, Paytm
+
+  [C][ ] (M) Given string of balanced parentheses, find the score.
+             "()" = 1, "AB" = A + B, "(A)" = 2*A
+             Use stack — pop when you see ')'.
+             Asked at: Amazon, Google
+
+  [C][ ] (M) Check if string S2 can be formed by interleaving S1 and S3.
+             (2D DP — isInterleave problem)
+             Asked at: Amazon, Google, Adobe
+
+  [C][ ] (M) Find the number of distinct palindromic substrings in a string.
+             (Use Manacher's or expand-around-center with a set)
+             Asked at: Amazon, Flipkart, Google
+
+  [C][ ] (M) Given a string, find the longest substring where each character
+             appears an even number of times.
+             (Bitmask DP — XOR of character frequencies as state)
+             Asked at: Google, Facebook/Meta
+
+  [C][ ] (M) Pattern matching: implement wildcard matching where '?' matches
+             any single character and '*' matches any sequence.
+             (DP solution)
+             Asked at: Amazon, Google, Microsoft
+
+  [C][ ] (M) Count the number of ways to decode a digit string to letters.
+             '1'->A ... '26'->Z.  "226" -> 3 ways.
+             (1D DP)
+             Asked at: Amazon, Microsoft, Facebook/Meta, Flipkart
+
+CODING — HARD
+--------------
+  [C][ ] (H) Word Break II: given string and dictionary, return all sentences
+             that can be formed by adding spaces.
+             (Backtracking + memoization)
+             Asked at: Amazon, Google, Facebook/Meta
+
+  [C][ ] (H) Given N strings, group them by anagram.
+             Optimal: sort each string as key for hashmap. O(N * L log L).
+             Asked at: Amazon, Microsoft, Google, Flipkart
+
+  [C][ ] (H) Find the shortest palindrome you can make by adding characters
+             to the FRONT of a string.
+             (KMP failure function on s + '#' + reverse(s))
+             Asked at: Amazon, Google
+
+  [C][ ] (H) Count palindromic subsequences (not substrings) of length 3.
+             For each character, count (same chars before) * (same chars after).
+             Asked at: Competitive programming, Amazon
+
+  [C][ ] (H) Serialize and deserialize a list of strings with special characters.
+             Design the format so you can reconstruct perfectly.
+             Asked at: Amazon, Facebook/Meta, Google (system design + coding)
+
+  [C][ ] (H) Find the lexicographically smallest string that can be produced by
+             removing K characters from S.
+             (Monotonic stack — greedy)
+             Asked at: Amazon, Google, Facebook/Meta
+
+  [C][ ] (H) Given string with lowercase letters and '?', replace '?' such that
+             no two adjacent characters are same and result is lexicographically smallest.
+             Asked at: Competitive programming, Amazon, Google
+
+  [C][ ] (H) Implement regex matching with '.' and '*'.
+             (DP — similar to wildcard but '*' means zero or more of preceding)
+             Asked at: Google, Facebook/Meta, Amazon
+
+================================================================================
+SECTION 6 — POINTERS & MEMORY (FRESH — DIFFERENT FROM PARTS 1, 2)
+================================================================================
+
+THEORY
+-------
+  [T][ ] What is the difference between delete and delete[]?
+          What happens if you use delete on an array?
+          Asked at: L&T Infotech, Persistent, Wipro, C++ developer roles
+
+  [T][ ] What is a memory leak? How do you detect and fix it?
+          What tools exist for Linux?
+          Asked at: Most C++ developer roles
+
+  [T][ ] Explain RAII (Resource Acquisition Is Initialization) with an example.
+          Asked at: Persistent, L&T Infotech, Nagarro, Google
+
+  [T][ ] What is the Rule of Three? Rule of Five in C++11?
+          (destructor, copy constructor, copy assignment — plus move versions)
+          Asked at: Google, Atlassian, advanced C++ roles
+
+  [T][ ] What happens if you throw an exception inside a destructor?
+          Asked at: Google, Atlassian, advanced C++ roles
+
+  [T][ ] What is copy elision and RVO (Return Value Optimization)?
+          Asked at: Google, advanced C++ roles, Dolat Capital
+
+  [T][ ] What is the difference between std::move and std::forward?
+          Asked at: Google, advanced C++ roles
+
+  [T][ ] What is a smart pointer? When would you use unique_ptr vs shared_ptr?
+          Asked at: Amazon, Microsoft, Google, Adobe
+
+  [T][ ] What is a dangling reference? How is it different from a dangling pointer?
+          Asked at: L&T Infotech, Persistent
+
+  [T][ ] What is the lifetime of a temporary object in C++?
+          Can a const reference extend it?
+          Asked at: Google, advanced C++ roles
+
+CODING — EASY
+--------------
+  [C][ ] (E) Implement a function that deep-copies a 2D array dynamically allocated.
+             (int** src, int rows, int cols -> returns int**)
+             Asked at: L&T Infotech, Persistent
+
+  [C][ ] (E) Write a class with explicit copy constructor that does deep copy.
+             (String class example with char* data member)
+             Asked at: Zoho, Persistent, Adobe
+
+  [C][ ] (E) Implement a generic swap using templates without using std::swap.
+             Asked at: Amazon, Zoho
+
+  [C][ ] (E) Demonstrate move semantics: write a class that moves resources
+             instead of copying them. Show it with a timing test.
+             Asked at: Persistent, Nagarro, Google
+
+  [C][ ] (E) Write a function that returns a local array. Why is this dangerous?
+             Then fix it properly (use vector or unique_ptr).
+             Asked at: TCS, Wipro, L&T Infotech
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Implement a smart pointer (like unique_ptr) from scratch.
+             operator*, operator->, destructor, no copy, move-only.
+             Asked at: Google, Atlassian, advanced C++ roles
+
+  [C][ ] (M) Write a reference-counted smart pointer (like shared_ptr).
+             Include copy constructor, assignment, destructor.
+             Asked at: Advanced C++ roles, Google
+
+  [C][ ] (M) Implement a custom allocator that pre-allocates a pool and
+             hands out memory from it. (Memory pool pattern)
+             Asked at: Dolat Capital, HFT firms, game dev roles
+
+  [C][ ] (M) Find and fix all the bugs in this code (interviewer gives code with
+             multiple pointer/memory errors): double-free, null deref, use-after-free.
+             Asked at: Samsung, Persistent, L&T Infotech
+
+================================================================================
+SECTION 7 — OOP (FRESH PROBLEMS)
+================================================================================
+
+THEORY
+-------
+  [T][ ] What is the difference between overloading, overriding, and hiding?
+          Give an example of function hiding.
+          Asked at: TCS, Zoho, Persistent, L&T Infotech
+
+  [T][ ] What is a pure virtual function? Can it have a body?
+          (Yes, pure virtual CAN have a body — it just forces override in derived)
+          Asked at: Amazon, Microsoft, Persistent
+
+  [T][ ] What is object slicing? When does it happen? How to prevent it?
+          Asked at: Amazon, Microsoft, Zoho, Persistent
+
+  [T][ ] What is the diamond problem? How does virtual inheritance solve it?
+          Asked at: TCS, Wipro, L&T Infotech, Persistent
+
+  [T][ ] Explain the vtable and vptr mechanism in detail.
+          Asked at: Amazon, Samsung, Sasken, embedded C++ roles
+
+  [T][ ] What is a covariant return type? Give an example.
+          Asked at: Advanced C++ roles, Google
+
+  [T][ ] Can you call a non-virtual function polymorphically? Explain.
+          Asked at: Zoho, Persistent
+
+  [T][ ] What is the difference between aggregation, composition, and association?
+          Asked at: TCS, Infosys, L&T Infotech
+
+  [T][ ] What is an interface in C++? How do you implement it?
+          (Abstract class with all pure virtual functions)
+          Asked at: Amazon, Microsoft, TCS
+
+  [T][ ] What is the difference between struct and class in C++?
+          (Default access specifier only — struct: public, class: private)
+          Asked at: TCS, Wipro, Infosys (very common basic question)
+
+CODING — EASY
+--------------
+  [C][ ] (E) Design a class Matrix with operator+, operator* (matrix multiply),
+             and operator<< for printing.
+             Asked at: Zoho, Persistent, Adobe
+
+  [C][ ] (E) Design a Fraction class with +, -, *, / operators that auto-simplifies.
+             (Use GCD to reduce after each operation)
+             Asked at: Zoho, Amazon campus, Adobe
+
+  [C][ ] (E) Design a complex number class with operator+, -, *, /, ==, and <<.
+             Asked at: Zoho, Samsung, L&T Infotech
+
+  [C][ ] (E) Implement the Singleton pattern and make it thread-safe using
+             std::call_once or a local static (Meyers Singleton).
+             Asked at: Amazon, Microsoft, Flipkart
+
+  [C][ ] (E) Design a class hierarchy: Vehicle -> ElectricVehicle -> Tesla.
+             Show constructor/destructor call order with virtual destructors.
+             Asked at: TCS, Wipro, L&T Infotech
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Design an event system using the Observer pattern.
+             EventSource, IListener interface, multiple concrete listeners.
+             Asked at: Amazon, Adobe, Atlassian
+
+  [C][ ] (M) Design a plugin system using the Factory pattern.
+             ShapeFactory creates Circle, Square, Triangle based on string input.
+             Asked at: Amazon, Flipkart, Adobe
+
+  [C][ ] (M) Implement a thread-safe LRU Cache class.
+             Doubly linked list + unordered_map. O(1) get and put.
+             With mutex for thread safety.
+             Asked at: Amazon, Google, Microsoft, Flipkart (VERY common!)
+
+  [C][ ] (M) Design a generic Stack class using templates with:
+             - push, pop, top, isEmpty, size
+             - Exception on pop/top when empty
+             - Copy constructor and assignment operator
+             Asked at: Zoho, Amazon, Adobe
+
+  [C][ ] (M) Design and implement a simple expression parser using OOP:
+             Expression base class, BinaryExpression, Literal, Variable derived.
+             Visitor pattern for evaluation.
+             Asked at: Atlassian, Adobe, Google
+
+================================================================================
+SECTION 8 — LINKED LISTS (FRESH PROBLEMS)
+================================================================================
+
+THEORY
+-------
+  [T][ ] When would you prefer linked list over array? When array over linked list?
+          (Insert/delete at O(1) vs cache locality and random access)
+          Asked at: Amazon, Microsoft, Flipkart, Zoho
+
+  [T][ ] What is XOR linked list? What problem does it solve?
+          (Store prev XOR next to halve pointer storage)
+          Asked at: Advanced C++, Samsung, competitive programming
+
+  [T][ ] What is an unrolled linked list? What are its advantages?
+          Asked at: Google, Dolat Capital, cache-optimized systems
+
+  [T][ ] How does std::list differ from std::forward_list?
+          (doubly vs singly linked)
+          Asked at: Amazon, Microsoft, C++ developer roles
+
+CODING — EASY
+--------------
+  [C][ ] (E) Given a linked list, swap nodes pairwise without swapping data.
+             1->2->3->4->5  =>  2->1->4->3->5
+             Asked at: Amazon, Microsoft, Adobe
+
+  [C][ ] (E) Delete all occurrences of a given value from a linked list.
+             (Handle head, middle, and consecutive duplicates)
+             Asked at: Amazon, Zoho, TCS
+
+  [C][ ] (E) Given head pointer, delete a node given only that node's pointer.
+             (Classic trick: copy next node's data, delete next)
+             Asked at: Amazon, Microsoft, Google
+
+  [C][ ] (E) Flatten a linked list that has a 'down' pointer in addition to 'next'.
+             Each node can have a vertical list hanging from it.
+             Merge all into one sorted list.
+             Asked at: Amazon, Flipkart, Paytm
+
+  [C][ ] (E) Remove Nth node from end of list in single pass.
+             (Two pointers N apart)
+             Asked at: Amazon, Microsoft, Adobe, Zoho
+
+  [C][ ] (E) Segregate even and odd positioned nodes.
+             1->2->3->4->5  =>  1->3->5->2->4
+             Asked at: Amazon, Flipkart
+
+  [C][ ] (E) Given sorted linked list, remove all duplicates so each element appears once.
+             Asked at: TCS, Wipro, Amazon
+
+  [C][ ] (E) Check if two linked lists are equal (same data and length).
+             Asked at: TCS, Wipro, Cognizant
+
+  [C][ ] (E) Given linked list, return it as a vector and vice versa.
+             Asked at: TCS, Wipro (warm-up question)
+
+  [C][ ] (E) Reverse a linked list in groups of K.
+             1->2->3->4->5, K=2  =>  2->1->4->3->5
+             Asked at: Amazon, Microsoft, Flipkart, Zoho
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Clone a linked list with both 'next' and 'random' pointers.
+             Random pointer can point to any node or null.
+             O(N) time O(1) space solution using interleaving trick.
+             Asked at: Amazon, Microsoft, Google, Facebook/Meta
+
+  [C][ ] (M) Sort a linked list in O(N log N) time O(1) space.
+             (Merge sort on linked list — no extra array)
+             Asked at: Amazon, Microsoft, Adobe, Flipkart
+
+  [C][ ] (M) Given linked list with values in range [1, N], sort it in O(N).
+             (Counting sort on linked list, then re-link)
+             Asked at: Competitive programming, Samsung
+
+  [C][ ] (M) Design a Least Recently Used (LRU) cache using linked list.
+             get(key) O(1), put(key, value) O(1).
+             Asked at: Amazon, Google, Microsoft, Flipkart (VERY common!)
+
+  [C][ ] (M) Add two numbers represented as linked lists where digits are in
+             FORWARD order (not reversed). No extra space for reversal.
+             (Use recursion to add from end)
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (M) Rotate linked list to the right by K places.
+             1->2->3->4->5, K=2  =>  4->5->1->2->3
+             Asked at: Amazon, Microsoft, Adobe
+
+  [C][ ] (M) Find if linked list has a palindrome using O(1) extra space.
+             (Reverse second half, compare, then restore)
+             Asked at: Amazon, Microsoft, Adobe, Flipkart
+
+  [C][ ] (M) Implement skip list (conceptual + code skeleton).
+             Layered linked list for O(log N) search on average.
+             Asked at: Google, Atlassian, database companies
+
+CODING — HARD
+--------------
+  [C][ ] (H) Merge K sorted linked lists efficiently.
+             Use min heap (priority queue) of size K. O(N log K).
+             Asked at: Amazon, Google, Microsoft, Flipkart
+
+  [C][ ] (H) Reverse linked list from position M to N in single pass.
+             (Iterative — count and rewire pointers carefully)
+             Asked at: Amazon, Microsoft
+
+================================================================================
+SECTION 9 — STACKS (FRESH PROBLEMS)
+================================================================================
+
+THEORY
+-------
+  [T][ ] How does a function call stack work? Explain with a recursive call.
+          (Stack frame: return address, local vars, params)
+          Asked at: Amazon, TCS, Wipro, L&T Infotech
+
+  [T][ ] What is monotonic stack? What problems does it solve?
+          Asked at: Amazon, Google, Flipkart, competitive programming
+
+  [T][ ] What is the difference between stack (data structure) and call stack?
+          Asked at: TCS, L&T Infotech
+
+  [T][ ] When would you use a stack over recursion?
+          (When recursion depth is very large — avoid stack overflow)
+          Asked at: Amazon, Microsoft
+
+CODING — EASY
+--------------
+  [C][ ] (E) Evaluate a postfix expression: "2 3 1 * + 9 -"  =>  -4
+             (Use stack; push numbers, pop two on operator)
+             Asked at: Amazon, Zoho, TCS, Wipro
+
+  [C][ ] (E) Convert infix expression to postfix using stack.
+             Handle operator precedence and parentheses.
+             Asked at: TCS, Wipro, Zoho, Amazon
+
+  [C][ ] (E) Design a stack that returns minimum in O(1) without extra space.
+             (Store (element, current_min) pairs OR use lazy difference trick)
+             Asked at: Amazon, Microsoft, Adobe, Flipkart
+
+  [C][ ] (E) Find the celebrity in a party of N people.
+             Celebrity: everyone knows them, they know no one.
+             Stack-based elimination: O(N) time O(1) space.
+             Asked at: Amazon, Microsoft, Adobe, Zoho
+
+  [C][ ] (E) Given a string with nested parentheses, find the depth of nesting.
+             Asked at: TCS, Wipro, Zoho
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Largest rectangle in histogram using monotonic stack.
+             Classic O(N) solution with left/right boundary arrays.
+             Asked at: Amazon, Google, Microsoft (very common!)
+
+  [C][ ] (M) Decode string: "3[a2[bc]]" -> "abcbcabcbcabcbc"
+             Use two stacks (one for counts, one for strings).
+             Asked at: Amazon, Google, Flipkart
+
+  [C][ ] (M) Remove k digits from number string to get smallest possible number.
+             Monotonic stack: pop larger digit when next is smaller.
+             Asked at: Amazon, Google, Flipkart
+
+  [C][ ] (M) Implement a browser back-forward navigation system using two stacks.
+             Full implementation with visit(), back(), forward().
+             Asked at: Amazon, Flipkart, Zoho, Adobe
+
+  [C][ ] (M) Sum of subarray minimums.
+             Find sum of min(subarray) for all possible subarrays.
+             Use monotonic stack to find next smaller and previous smaller.
+             Asked at: Amazon, Google, Facebook/Meta
+
+CODING — HARD
+--------------
+  [C][ ] (H) Maximum area of rectangle in binary matrix.
+             Reduce to histogram per row, apply largest rectangle in histogram.
+             Asked at: Amazon, Google, Microsoft (hard classic)
+
+  [C][ ] (H) Implement a stack with O(1) push, pop, top, getMin, getMax.
+             (Use two auxiliary stacks for min and max tracking)
+             Asked at: Amazon, Microsoft, Adobe
+
+  [C][ ] (H) Given expression with +, -, *, /, (, ) and variables,
+             evaluate it with variable map lookup.
+             Implement full expression evaluator using two stacks.
+             Asked at: Google, Atlassian, Adobe
+
+================================================================================
+SECTION 10 — QUEUES (FRESH PROBLEMS)
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Implement queue using a single stack (amortized O(1)).
+             Push: always push to stack. Pop: if helper stack empty, transfer all.
+             Asked at: Amazon, Microsoft, Adobe
+
+  [C][ ] (E) Reverse a queue without extra data structure.
+             (Use recursion — queue is naturally FIFO, recursion reverses it)
+             Asked at: Amazon, TCS, Zoho
+
+  [C][ ] (E) Circular tour problem: find the starting gas station from which
+             a truck can complete a circular route without running empty.
+             Greedy + queue simulation. O(N).
+             Asked at: Amazon, Flipkart
+
+  [C][ ] (E) Print all binary numbers up to N using queue.
+             (Enqueue "1"; dequeue front, print it, enqueue front+"0" and front+"1")
+             Asked at: Amazon, TCS, Zoho
+
+  [C][ ] (E) Interleave first and second halves of a queue.
+             Input: 1 2 3 4 5 6 -> Output: 1 4 2 5 3 6
+             Use stack for second half.
+             Asked at: Amazon, Zoho
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Sliding window maximum using deque.
+             O(N) — maintain deque of indices in decreasing order of values.
+             Asked at: Amazon, Google, Microsoft, Flipkart
+
+  [C][ ] (M) Rotten oranges: grid problem, multi-source BFS.
+             Find minimum minutes to rot all oranges. -1 if impossible.
+             Asked at: Amazon, Microsoft, Flipkart, Swiggy
+
+  [C][ ] (M) Jump Game with minimum jumps (BFS on implicit graph).
+             Each position i can reach [i+1, i+nums[i]].
+             BFS level = number of jumps.
+             Asked at: Amazon, Google, Microsoft
+
+  [C][ ] (M) First non-repeating character in a stream of characters.
+             Use queue to maintain order of candidates.
+             Asked at: Amazon, Flipkart, Paytm, Swiggy
+
+CODING — HARD
+--------------
+  [C][ ] (H) Shortest path in binary matrix (0 = passable, 1 = blocked).
+             8-directional BFS.
+             Asked at: Amazon, Google, Microsoft
+
+  [C][ ] (H) Design a moving average calculator for a data stream with window size K.
+             O(1) per update.
+             Asked at: Amazon, Facebook/Meta
+
+================================================================================
+SECTION 11 — HASHING (FRESH PROBLEMS)
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Given array, print all elements that appear more than once.
+             Use unordered_map for frequency count.
+             Asked at: TCS, Wipro, Amazon
+
+  [C][ ] (E) Check if two strings are isomorphic.
+             'egg' and 'add' are (e->a, g->d). 'foo' and 'bar' are not.
+             Use two hashmaps for bidirectional mapping.
+             Asked at: Amazon, Microsoft, Zoho
+
+  [C][ ] (E) Find all pairs in array with given difference K.
+             Use set: for each element x, check if (x+K) or (x-K) in set.
+             Asked at: Amazon, Zoho, TCS
+
+  [C][ ] (E) Given array of integers, find if there are two elements with sum = 0.
+             Use unordered_set.
+             Asked at: TCS, Wipro, Zoho
+
+  [C][ ] (E) Word frequency counter: given paragraph, count word frequencies,
+             return K most frequent words.
+             Asked at: Amazon, Microsoft, Flipkart
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Longest consecutive sequence in array. O(N).
+             Use unordered_set; for each n, start counting only if n-1 not in set.
+             Asked at: Amazon, Google, Facebook/Meta
+
+  [C][ ] (M) 4-Sum: find all unique quadruplets that sum to target.
+             Sort + two pointer inside nested loop. O(N^3).
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (M) Given array, find the subarray (contiguous) with sum divisible by K.
+             Use prefix sum mod K + hashmap. O(N).
+             Asked at: Amazon, Flipkart, Paytm
+
+  [C][ ] (M) Count pairs in array with XOR equal to K.
+             Use hashmap: for each element x, check if (x XOR K) in map.
+             Asked at: Amazon, Samsung, competitive programming
+
+  [C][ ] (M) Minimum window substring containing all characters of pattern.
+             Sliding window + frequency hashmap.
+             Asked at: Amazon, Google, Microsoft, Adobe (very common!)
+
+  [C][ ] (M) Given array and K, find length of longest subarray with sum = K.
+             Prefix sum + hashmap. O(N).
+             Asked at: Amazon, Flipkart, Paytm
+
+  [C][ ] (M) Count number of subarrays with XOR equal to K.
+             Use prefix XOR + hashmap (same idea as prefix sum for sum=K).
+             Asked at: Flipkart, Swiggy, competitive programming
+
+  [C][ ] (M) Find all duplicates in array where elements are in range [1, N].
+             Use negative marking trick: O(N) time O(1) space.
+             Asked at: Amazon, Adobe, Flipkart
+
+================================================================================
+SECTION 12 — BINARY SEARCH (FRESH PROBLEMS)
+================================================================================
+
+THEORY
+-------
+  [T][ ] When should you use lower_bound vs upper_bound?
+          What do they return on absent elements?
+          Asked at: Amazon, Competitive programming
+
+  [T][ ] Explain "binary search on the answer" technique.
+          When is it applicable?
+          Asked at: Amazon, Flipkart, Google
+
+  [T][ ] What is exponential search? When is it useful over binary search?
+          (When array is infinite or unbounded)
+          Asked at: Competitive programming, Google
+
+CODING — EASY
+--------------
+  [C][ ] (E) Find floor and ceiling of a number in sorted array.
+             (floor = largest <= x, ceiling = smallest >= x)
+             Asked at: Amazon, Adobe, Zoho
+
+  [C][ ] (E) Given mountain array (increases then decreases), find the peak element.
+             Binary search: O(log N).
+             Asked at: Amazon, Microsoft, Google
+
+  [C][ ] (E) Find first occurrence of 1 in a binary array (0s then 1s).
+             Binary search variant.
+             Asked at: TCS, Wipro, Amazon
+
+  [C][ ] (E) Given sorted array rotated at unknown pivot, find if element exists.
+             (Modified binary search — determine which half is sorted)
+             Asked at: Amazon, Microsoft, Google, Adobe
+
+  [C][ ] (E) Find the element that occurs exactly once in array where every other
+             element occurs twice. Array is sorted.
+             (XOR-free solution using binary search on even/odd index property)
+             Asked at: Amazon, Adobe, Samsung
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Given K sorted arrays each of size N, find median.
+             Use binary search on answer range.
+             Asked at: Amazon, Microsoft, competitive programming
+
+  [C][ ] (M) Minimum time to finish all jobs given M workers.
+             Binary search on time; check feasibility with greedy.
+             Asked at: Amazon, Google, Flipkart
+
+  [C][ ] (M) Koko eating bananas: minimum eating speed to finish in H hours.
+             Binary search on speed. O(N log(max)).
+             Asked at: Amazon, Google, Facebook/Meta
+
+  [C][ ] (M) Capacity to ship packages within D days (minimize max weight).
+             Binary search on capacity.
+             Asked at: Amazon, Google, LeetCode classics
+
+  [C][ ] (M) Find the row with maximum number of 1s in binary matrix
+             (rows sorted). O(M + N) approach without binary search; then
+             binary search each row for O(M log N).
+             Asked at: Amazon, Flipkart
+
+  [C][ ] (M) Split array largest sum: split array into K parts to minimize
+             the maximum subarray sum.
+             Binary search on the answer.
+             Asked at: Amazon, Google, Facebook/Meta
+
+  [C][ ] (M) Find median in a stream of integers efficiently.
+             (Two heaps: max-heap for lower half, min-heap for upper half)
+             Asked at: Amazon, Google, Microsoft, Flipkart
+
+================================================================================
+SECTION 13 — SORTING (FRESH PROBLEMS)
+================================================================================
+
+THEORY
+-------
+  [T][ ] When would you choose merge sort over quick sort? And vice versa?
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [T][ ] What is introsort? Which standard library sort() implementations use it?
+          (Hybrid: quicksort, heapsort, insertion sort based on depth)
+          Asked at: Competitive programming, Google
+
+  [T][ ] What is external sorting? When do you need it?
+          (When data doesn't fit in RAM — merge sort with file chunks)
+          Asked at: Google, Microsoft, database companies
+
+  [T][ ] What is counting sort? What are its limitations?
+          Asked at: Amazon, TCS, Wipro
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Sort array using 3-way quicksort (Dutch National Flag).
+             Handles equal elements efficiently. O(N log N) average.
+             Asked at: Competitive programming, Amazon, Google
+
+  [C][ ] (M) Given array, sort it by frequency of elements.
+             Same frequency: sort by value.
+             Asked at: Amazon, Flipkart, Paytm, Swiggy
+
+  [C][ ] (M) Given two arrays A and B, sort A such that relative order matches B.
+             Elements not in B go to end in sorted order.
+             Asked at: Amazon, Flipkart, Adobe
+
+  [C][ ] (M) Merge K sorted arrays into one sorted array.
+             Use min heap. O(N log K) where N = total elements.
+             Asked at: Amazon, Google, Microsoft (very common!)
+
+  [C][ ] (M) Pancake sorting: sort using only prefix reversal operations.
+             Asked at: Google, competitive programming
+
+CODING — HARD
+--------------
+  [C][ ] (H) Count inversions using BIT (Binary Indexed Tree).
+             More efficient than merge sort for some competitive problems.
+             Asked at: Competitive programming, Dolat Capital
+
+  [C][ ] (H) Sort a nearly sorted array where every element is at most K positions
+             away from its sorted position.
+             Use min heap of size K+1. O(N log K).
+             Asked at: Amazon, Google, Microsoft
+
+================================================================================
+SECTION 14 — TWO POINTER & SLIDING WINDOW (FRESH)
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Check if string is a palindrome ignoring non-alphanumeric characters.
+             "A man, a plan, a canal: Panama" -> true
+             Two pointers from both ends.
+             Asked at: Amazon, Microsoft, Google
+
+  [C][ ] (E) Squares of sorted array in sorted order.
+             Input: [-4,-1,0,3,10] -> [0,1,9,16,100]
+             Two pointers from both ends. O(N).
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (E) Move all negative numbers to beginning, positives to end.
+             Two pointers (partition).
+             Asked at: TCS, Wipro, Zoho
+
+  [C][ ] (E) Find if there's a pair in sorted array with given sum using two pointers.
+             O(N) time O(1) space.
+             Asked at: Amazon, TCS, Wipro, Zoho
+
+  [C][ ] (E) Remove all instances of value from array in-place; return new length.
+             Two pointers: slow for write position, fast for reading.
+             Asked at: Amazon, TCS, Microsoft
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) 3Sum Closest: find triplet with sum closest to target.
+             Sort + two pointers. O(N^2).
+             Asked at: Amazon, Microsoft, Google
+
+  [C][ ] (M) Longest subarray with at most K zeros.
+             Sliding window: expand right, shrink left when zeros > K.
+             Asked at: Amazon, Flipkart, Paytm
+
+  [C][ ] (M) Maximum sum of K consecutive elements (sliding window).
+             Then: minimize the maximum sum after partitioning into K groups.
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (M) Boats to save people: each boat holds at most 2 people and
+             weight limit W. Find minimum number of boats.
+             Sort + greedy two pointers.
+             Asked at: Amazon, LeetCode
+
+  [C][ ] (M) Subarray product less than K: count number of such subarrays.
+             Sliding window. O(N).
+             Asked at: Amazon, Flipkart
+
+  [C][ ] (M) Minimum size subarray sum >= S.
+             Sliding window. O(N).
+             Then: minimum sum subarray (negative values) — different approach.
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (M) Longest substring with exactly K distinct characters.
+             Sliding window with a frequency map.
+             Asked at: Amazon, Google, Flipkart
+
+  [C][ ] (M) Count number of substrings with exactly K distinct characters.
+             (Hint: atMostK(K) - atMostK(K-1))
+             Asked at: Google, Flipkart, competitive programming
+
+================================================================================
+SECTION 15 — TREES: BINARY TREE (FRESH PROBLEMS)
+================================================================================
+
+THEORY
+-------
+  [T][ ] What is the difference between BFS and DFS on a tree?
+          When would you prefer one over the other?
+          Asked at: Amazon, Microsoft, Flipkart, Zoho
+
+  [T][ ] What is Euler tour of a tree? What problems does it solve?
+          Asked at: Competitive programming, Google
+
+  [T][ ] What is a segment tree on arrays? How does it differ from Fenwick tree?
+          Asked at: Competitive programming, Dolat Capital
+
+  [T][ ] What is Morris traversal? What is its advantage?
+          (O(1) space tree traversal using threading)
+          Asked at: Google, advanced algorithm roles
+
+  [T][ ] What is the time complexity of building a binary tree from
+          inorder + preorder traversal arrays?
+          Asked at: Amazon, Microsoft
+
+CODING — EASY
+--------------
+  [C][ ] (E) Given preorder and inorder traversals, reconstruct the binary tree.
+             (Recursive — root is preorder[0], split inorder by root)
+             Asked at: Amazon, Microsoft, Google, Flipkart
+
+  [C][ ] (E) Given postorder and inorder traversals, reconstruct the binary tree.
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (E) Count number of nodes at depth D in a binary tree.
+             (Level order BFS — count at Dth level)
+             Asked at: Amazon, TCS, Zoho
+
+  [C][ ] (E) Find all leaf nodes of binary tree and print them.
+             Asked at: TCS, Wipro, Zoho
+
+  [C][ ] (E) Check if a binary tree is a complete binary tree.
+             (Level order: once null seen, no more non-null should appear)
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (E) Find the boundary traversal of a binary tree
+             (left boundary, leaves, right boundary in order).
+             Asked at: Amazon, Flipkart, Paytm
+
+  [C][ ] (E) Find distance between two nodes in a binary tree.
+             (distance = depth(u) + depth(v) - 2 * depth(LCA))
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (E) Print nodes at distance K from a given node.
+             (Mark parent pointers, then BFS from target node)
+             Asked at: Amazon, Microsoft, Flipkart
+
+  [C][ ] (E) Given binary tree, convert to its mirror image (in-place).
+             Asked at: Amazon, TCS, Wipro, Zoho
+
+  [C][ ] (E) Find the maximum width of a binary tree (max nodes at any level).
+             (Level order BFS)
+             Asked at: Amazon, Flipkart, TCS
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Serialize and deserialize a binary tree.
+             (Level order BFS serialization with null markers)
+             Asked at: Amazon, Google, Microsoft, Facebook/Meta
+
+  [C][ ] (M) Binary tree cameras: minimum number of cameras to monitor all nodes.
+             (Greedy + DFS — each node in one of: uncovered, covered, has camera)
+             Asked at: Amazon, Google
+
+  [C][ ] (M) Find the maximum sum path in binary tree.
+             Path can start and end at any node.
+             (At each node: max gain = max(left, right, 0) + node.val)
+             Asked at: Amazon, Google, Microsoft, Facebook/Meta
+
+  [C][ ] (M) Count number of paths in binary tree that sum to K.
+             Path goes downward only.
+             Use prefix sum hashmap + DFS.
+             Asked at: Amazon, Flipkart, LeetCode
+
+  [C][ ] (M) Find the smallest value in each row of a binary tree.
+             Level order BFS, track min per level.
+             Asked at: Amazon, Flipkart
+
+  [C][ ] (M) Flatten binary tree to linked list in-place (preorder order).
+             (Threaded tree trick or recursive)
+             Asked at: Amazon, Microsoft, Google
+
+  [C][ ] (M) Find all nodes at vertical order and print column by column.
+             (BFS + map<int, vector> by horizontal distance)
+             Asked at: Amazon, Flipkart, Paytm
+
+  [C][ ] (M) Check if binary tree is height-balanced.
+             Return height from bottom; if any subtree has |left-right|>1 return -1.
+             O(N) single pass.
+             Asked at: Amazon, Google, Microsoft, Flipkart
+
+  [C][ ] (M) Connect all nodes at the same level (next right pointers).
+             BFS or level-order.
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (M) Print all root-to-leaf paths where path sum equals target.
+             DFS + path tracking.
+             Asked at: Amazon, Microsoft, Adobe, TCS
+
+================================================================================
+SECTION 16 — BST (FRESH PROBLEMS)
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Given a BST and two nodes, find their Lowest Common Ancestor.
+             (If both smaller than root -> go left; both larger -> go right; else root)
+             O(H) time.
+             Asked at: Amazon, Microsoft, Google, Flipkart
+
+  [C][ ] (E) Convert a sorted linked list to a height-balanced BST.
+             (Find middle, make root, recurse)
+             Asked at: Amazon, Microsoft, Adobe
+
+  [C][ ] (E) Check if a binary tree can be a BST.
+             (Pass min and max bounds down recursively)
+             Asked at: Amazon, Microsoft, Zoho, TCS
+
+  [C][ ] (E) Print all elements of BST in range [L, R].
+             Inorder traversal with pruning.
+             Asked at: Amazon, Adobe, Zoho
+
+  [C][ ] (E) Find the difference between the sum of nodes at odd level
+             vs even level in a BST.
+             Level order BFS with level counter.
+             Asked at: TCS, Wipro
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Given BST, find two nodes whose values are swapped by mistake.
+             (Inorder should be sorted — find two violations)
+             Asked at: Amazon, Microsoft, Google
+
+  [C][ ] (M) Construct BST from preorder traversal.
+             (Use upper bound trick: O(N) using index and range)
+             Asked at: Amazon, Flipkart
+
+  [C][ ] (M) Count pairs from two BSTs whose sum equals K.
+             (Inorder of BST1 + reverse inorder of BST2, then two pointer)
+             Asked at: Amazon, Adobe, Flipkart
+
+  [C][ ] (M) Given BST, trim it to only include values in range [low, high].
+             (Recursive — prune left/right subtrees as needed)
+             Asked at: Amazon, LeetCode
+
+  [C][ ] (M) Median of BST.
+             (Count nodes, find median by doing inorder traversal)
+             Asked at: Amazon, Adobe, Flipkart
+
+================================================================================
+SECTION 17 — HEAPS (FRESH PROBLEMS)
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Implement heapify-up and heapify-down from scratch.
+             Then implement extract-min.
+             Asked at: Amazon, Google, competitive programming
+
+  [C][ ] (E) Given N ropes, connect them with minimum cost.
+             Always connect two shortest ropes.
+             Min heap. O(N log N).
+             Asked at: Amazon, Flipkart, Paytm
+
+  [C][ ] (E) Sort nearly sorted array (each element at most K away).
+             Min heap of size K+1. O(N log K).
+             Asked at: Amazon, Microsoft
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Find Kth largest element in a stream.
+             Maintain min heap of size K. New element replaces smallest if larger.
+             Asked at: Amazon, Microsoft, Flipkart, Paytm
+
+  [C][ ] (M) Frequency sort using max heap.
+             Count frequencies, use max heap keyed by frequency.
+             Asked at: Amazon, Flipkart, Swiggy
+
+  [C][ ] (M) Reorganize string: rearrange so no two adjacent characters same.
+             Use max heap. Greedily pick most frequent char available.
+             Asked at: Amazon, Google, Microsoft
+
+  [C][ ] (M) Sliding window median: find median of every window of size K.
+             Two heaps (max and min) with lazy deletion.
+             Asked at: Amazon, Google, competitive programming
+
+  [C][ ] (M) Minimum cost to hire K workers.
+             (Hard optimization — sort by ratio, use max heap)
+             Asked at: Google, Facebook/Meta
+
+CODING — HARD
+--------------
+  [C][ ] (H) Merge K sorted linked lists using min heap.
+             O(N log K).
+             Asked at: Amazon, Google, Microsoft, Facebook/Meta (very common!)
+
+  [C][ ] (H) IPO Problem: maximize capital by completing at most K projects.
+             Sort by capital requirement; use max heap for profit.
+             Asked at: Amazon, LeetCode
+
+================================================================================
+SECTION 18 — GRAPHS (FRESH PROBLEMS)
+================================================================================
+
+THEORY
+-------
+  [T][ ] What is the difference between BFS and Dijkstra's?
+          When does BFS give shortest path?
+          Asked at: Amazon, Microsoft, Flipkart, Google
+
+  [T][ ] What is a topological sort? Can it exist for undirected graphs?
+          Asked at: Amazon, Flipkart, Microsoft
+
+  [T][ ] What is the difference between Prim's and Kruskal's for MST?
+          When would you prefer one over the other?
+          Asked at: Amazon, Microsoft, competitive programming
+
+  [T][ ] What is a bipartite graph? How do you check if a graph is bipartite?
+          Asked at: Amazon, Flipkart, Google
+
+  [T][ ] What is 0-1 BFS? When do you use it?
+          (BFS with deque when edge weights are 0 or 1)
+          Asked at: Competitive programming, Google, Dolat Capital
+
+CODING — EASY
+--------------
+  [C][ ] (E) Find number of connected components in undirected graph.
+             BFS/DFS with visited array.
+             Asked at: Amazon, Microsoft, TCS
+
+  [C][ ] (E) Check if undirected graph is bipartite (2-colorable).
+             BFS with 2-coloring.
+             Asked at: Amazon, Microsoft, Flipkart
+
+  [C][ ] (E) Find the shortest path in unweighted graph (BFS).
+             Asked at: Amazon, TCS, Wipro, Zoho
+
+  [C][ ] (E) Print all paths from source to destination in directed graph.
+             DFS + path tracking.
+             Asked at: Amazon, Flipkart, Zoho
+
+  [C][ ] (E) Check if directed graph has a cycle.
+             DFS with visited (white/gray/black coloring).
+             Asked at: Amazon, Microsoft, Flipkart
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Course Schedule II: topological sort gives valid order or detect cycle.
+             (Kahn's algorithm — BFS with in-degrees)
+             Asked at: Amazon, Microsoft, Google, Facebook/Meta
+
+  [C][ ] (M) Number of islands: count connected components in grid.
+             DFS/BFS on 2D grid. Mark visited in-place.
+             Asked at: Amazon, Google, Microsoft, Flipkart (VERY common!)
+
+  [C][ ] (M) Word Ladder: find shortest transformation sequence.
+             BFS with string mutations as edges.
+             Asked at: Amazon, Google, Microsoft, Flipkart
+
+  [C][ ] (M) Surrounded regions: flip 'O's not connected to border.
+             DFS/BFS from border 'O's; everything else gets flipped.
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (M) Clone directed graph (deep copy with shared pointers for same nodes).
+             BFS + hashmap.
+             Asked at: Amazon, Microsoft, Facebook/Meta
+
+  [C][ ] (M) Find all bridges in an undirected graph.
+             Tarjan's algorithm — DFS with discovery/low arrays.
+             Asked at: Competitive programming, Google, Dolat Capital
+
+  [C][ ] (M) Find all strongly connected components.
+             Kosaraju's algorithm: 2 DFS passes.
+             Asked at: Google, competitive programming
+
+  [C][ ] (M) Find if path exists from source to destination (directed graph).
+             BFS/DFS.
+             Asked at: Amazon, TCS, Flipkart
+
+  [C][ ] (M) Minimum spanning tree using Prim's algorithm.
+             Min heap based. O((V+E) log V).
+             Asked at: Amazon, Microsoft, competitive programming
+
+  [C][ ] (M) Minimum spanning tree using Kruskal's + Union-Find.
+             O(E log E).
+             Asked at: Amazon, Microsoft, competitive programming
+
+CODING — HARD
+--------------
+  [C][ ] (H) Cheapest flights within K stops.
+             Modified Bellman-Ford (run K+1 times) or priority queue BFS.
+             Asked at: Amazon, Google, Flipkart
+
+  [C][ ] (H) Critical connections in a network.
+             Find all bridges. Tarjan's algorithm.
+             Asked at: Amazon, Facebook/Meta, LeetCode
+
+  [C][ ] (H) Alien dictionary: given sorted list of alien words, find character order.
+             Build DAG from adjacent word comparisons, topological sort.
+             Asked at: Amazon, Google, Microsoft, Facebook/Meta
+
+  [C][ ] (H) Swim in rising water: minimum time to travel from top-left to bottom-right
+             in grid where grid[i][j] = time water rises to that cell.
+             Dijkstra on grid. O(N^2 log N).
+             Asked at: Google, LeetCode
+
+  [C][ ] (H) Network delay time: weighted directed graph, find time for all nodes
+             to receive signal from source.
+             Dijkstra's. Max of all distances.
+             Asked at: Amazon, Google, LeetCode
+
+================================================================================
+SECTION 19 — DYNAMIC PROGRAMMING (FRESH PROBLEMS)
+================================================================================
+
+THEORY
+-------
+  [T][ ] What is the difference between overlapping subproblems and optimal substructure?
+          Give an example of a problem that has one but not the other.
+          Asked at: Amazon, Google, Microsoft
+
+  [T][ ] What is the space optimization trick in 1D DP (rolling array)?
+          When can you reduce O(N) space to O(1)?
+          Asked at: Amazon, Microsoft, competitive programming
+
+  [T][ ] What is DP on broken profiles (plugin DP)?
+          Asked at: Competitive programming, advanced algorithm rounds
+
+  [T][ ] Explain the difference between DP and greedy.
+          When does greedy fail where DP succeeds?
+          (Coin change with arbitrary denominations)
+          Asked at: Amazon, Google, Microsoft, Flipkart
+
+CODING — EASY (1D DP)
+-----------------------
+  [C][ ] (E) Minimum cost to reach last step (can jump 1 or 2 steps).
+             dp[i] = min(dp[i-1], dp[i-2]) + cost[i]
+             Asked at: Amazon, Microsoft, LeetCode
+
+  [C][ ] (E) Count ways to tile a 2xN board using 1x2 tiles.
+             dp[n] = dp[n-1] + dp[n-2]
+             Asked at: Amazon, TCS, competitive programming
+
+  [C][ ] (E) Paint fence: N posts, K colors — no 3 consecutive same color.
+             dp[i][same] = (k-1) * dp[i-1][diff] + dp[i-1][same]
+             Asked at: Google, Facebook/Meta
+
+  [C][ ] (E) Maximum sum of non-adjacent elements.
+             dp[i] = max(dp[i-1], dp[i-2] + arr[i])
+             Asked at: Amazon, Microsoft, Flipkart
+
+  [C][ ] (E) Count derangements of N elements.
+             (Permutations where no element appears in original position)
+             D(n) = (n-1) * (D(n-1) + D(n-2))
+             Asked at: Competitive programming, Google
+
+CODING — MEDIUM (2D DP)
+------------------------
+  [C][ ] (M) Longest increasing subsequence (LIS) in O(N log N).
+             Use patience sorting (binary search on tail array).
+             Asked at: Amazon, Google, Microsoft, Flipkart (very common!)
+
+  [C][ ] (M) Minimum insertions to make string palindrome.
+             dp[i][j] = min insertions for substring [i..j].
+             Related to LCS of string and its reverse.
+             Asked at: Amazon, Google, Microsoft
+
+  [C][ ] (M) Count palindromic subsequences (distinct) in a string.
+             dp[i][j] = count from i to j.
+             Asked at: Amazon, Google, competitive programming
+
+  [C][ ] (M) Minimum cost to cut a stick into segments.
+             (Interval DP — similar to matrix chain multiplication)
+             Asked at: Amazon, Google, LeetCode
+
+  [C][ ] (M) Largest divisible subset.
+             Sort array; dp[i] = length of longest chain ending at i.
+             LIS variant.
+             Asked at: Amazon, Google, LeetCode
+
+  [C][ ] (M) Dungeon game: minimum initial health to reach princess in grid.
+             Work backwards: dp[i][j] = min health needed from cell (i,j) to end.
+             Asked at: Amazon, Google
+
+  [C][ ] (M) Word break: check if string can be segmented using words from dictionary.
+             dp[i] = true if s[0..i-1] can be segmented.
+             Asked at: Amazon, Google, Microsoft, Facebook/Meta
+
+  [C][ ] (M) Count unique BSTs with N nodes (Catalan number).
+             dp[n] = sum(dp[i-1] * dp[n-i]) for i=1 to n
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (M) Partition array into K subsets with equal sum.
+             Backtracking + bitmask DP.
+             Asked at: Amazon, Google, LeetCode
+
+  [C][ ] (M) Palindrome partitioning: minimum cuts to split string into palindromes.
+             O(N^2) DP.
+             Asked at: Amazon, Google, Microsoft
+
+CODING — HARD
+--------------
+  [C][ ] (H) Burst balloons: pop balloons to maximize coins.
+             dp[i][j] = max coins from bursting all balloons between i and j.
+             Interval DP. O(N^3).
+             Asked at: Amazon, Google, Facebook/Meta
+
+  [C][ ] (H) Strange printer: minimum turns to print a string.
+             dp[i][j] = min turns for substring [i..j].
+             Interval DP.
+             Asked at: Google, LeetCode hard
+
+  [C][ ] (H) DP with bitmask: assign N tasks to M workers, minimize total cost.
+             dp[mask] = min cost to complete tasks in 'mask'.
+             O(2^N * N).
+             Asked at: Google, competitive programming, Dolat Capital
+
+  [C][ ] (H) Number of ways to reach exactly score N in a game where
+             you can score 3, 5, or 10 points per move.
+             (Unbounded knapsack counting variant)
+             Asked at: Amazon, competitive programming
+
+================================================================================
+SECTION 20 — BACKTRACKING (FRESH PROBLEMS)
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Generate all combinations of N numbers chosen K at a time.
+             Classic nCk generation.
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (E) Print all binary strings of length N.
+             (Backtracking with 0/1 choice at each step)
+             Asked at: TCS, Wipro, Zoho
+
+  [C][ ] (E) Find all paths from top-left to bottom-right in a grid
+             (can only move right or down).
+             Backtracking / DP.
+             Asked at: Amazon, TCS
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Generate all valid IP addresses from a string of digits.
+             (4 parts, each 0-255, no leading zeros)
+             Asked at: Amazon, Microsoft, Flipkart
+
+  [C][ ] (M) Cryptarithmetic solver: assign digits to letters to make equation true.
+             Backtracking + pruning.
+             Asked at: Google, Atlassian
+
+  [C][ ] (M) Knight's tour on NxN board.
+             Backtracking + Warnsdorff's heuristic for optimization.
+             Asked at: Competitive programming, Samsung
+
+  [C][ ] (M) Solve Kakuro puzzle (like Sudoku with sums).
+             Asked at: Competitive programming, Atlassian
+
+  [C][ ] (M) Partition into two subsets with minimum absolute difference.
+             Backtracking first, then optimize with DP.
+             Asked at: Amazon, Flipkart, Paytm
+
+CODING — HARD
+--------------
+  [C][ ] (H) Solving a crossword puzzle using backtracking.
+             Place words horizontally and vertically into grid.
+             Asked at: Competitive programming, Google
+
+  [C][ ] (H) Beautiful arrangement: 1..N arranged such that each prefix
+             is divisible by its position or vice versa.
+             Backtracking with bitmask for visited.
+             Asked at: LeetCode, Google
+
+================================================================================
+SECTION 21 — GREEDY (FRESH PROBLEMS)
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Assign cookies to children to maximize satisfied children.
+             Sort both, greedy two-pointer.
+             Asked at: Amazon, LeetCode
+
+  [C][ ] (E) Maximize profit from stock (buy once, sell once).
+             Track min price seen so far. O(N) O(1).
+             Asked at: Amazon, Microsoft, Flipkart (very common!)
+
+  [C][ ] (E) Maximize profit from stock (can buy/sell multiple times).
+             Sum all positive differences between consecutive days.
+             Asked at: Amazon, Microsoft
+
+  [C][ ] (E) Minimum number of arrows to burst all balloons.
+             Sort by end; one arrow covers all overlapping balloons.
+             Asked at: Amazon, LeetCode
+
+  [C][ ] (E) Lemonade change: determine if you can give exact change to all customers.
+             Greedy: track count of $5 and $10 bills.
+             Asked at: Amazon, LeetCode
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Task scheduler: minimum time to finish all tasks with cooldown N.
+             Count frequencies; most frequent task determines idle time.
+             Asked at: Amazon, Google, Facebook/Meta
+
+  [C][ ] (M) Minimum number of intervals to remove to make others non-overlapping.
+             Sort by end time, greedily keep non-overlapping intervals.
+             Asked at: Amazon, Google, LeetCode
+
+  [C][ ] (M) Minimum platforms at railway station.
+             Sort arrivals and departures separately; simulate with two pointers.
+             Asked at: Amazon, Microsoft, Flipkart, Paytm
+
+  [C][ ] (M) Partition labels: partition string so each character appears in one part only.
+             Last occurrence of each char determines partition boundaries.
+             Asked at: Amazon, Google, LeetCode
+
+  [C][ ] (M) Candy distribution: N children in a row, each has a rating.
+             Give minimum candies such that higher rated neighbors get more.
+             Two pass greedy: left-to-right, then right-to-left.
+             Asked at: Amazon, Google, LeetCode
+
+CODING — HARD
+--------------
+  [C][ ] (H) IPO: maximize capital with limited initial capital.
+             Two heaps: available projects (by capital), profit heap.
+             Asked at: Amazon, LeetCode hard
+
+  [C][ ] (H) Minimum number of taps to water a garden.
+             Transform to interval covering; sort by start position.
+             Greedy jump game variant.
+             Asked at: Amazon, Google, LeetCode
+
+================================================================================
+SECTION 22 — BIT MANIPULATION (FRESH PROBLEMS)
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Find XOR of all elements in array from index L to R.
+             Use prefix XOR array. O(1) per query.
+             Asked at: Competitive programming, Amazon
+
+  [C][ ] (E) Find the single missing number in 1 to N using XOR.
+             XOR all with 1..N and all elements.
+             Asked at: Amazon, TCS, Samsung
+
+  [C][ ] (E) Add two numbers using only bitwise operators.
+             (XOR for sum without carry, AND+shift for carry; iterate)
+             Asked at: Samsung, Dolat Capital
+
+  [C][ ] (E) Swap nibbles of a byte. (nibble = 4 bits)
+             (x & 0x0F) << 4 | (x & 0xF0) >> 4
+             Asked at: Samsung, embedded roles
+
+  [C][ ] (E) Find position of rightmost set bit.
+             log2(n & -n) or using loop.
+             Asked at: Samsung, Sasken
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Total Hamming distance between all pairs in array.
+             For each bit position: count ones (k) and zeros (n-k); add k*(n-k).
+             O(32 * N) = O(N).
+             Asked at: Amazon, LeetCode
+
+  [C][ ] (M) Find two elements appearing odd number of times in array.
+             XOR all -> XOR of two odd-elements. Use rightmost set bit to split.
+             Asked at: Amazon, Adobe, Samsung
+
+  [C][ ] (M) Count total set bits from 1 to N.
+             Use pattern: count contribution of each bit position.
+             O(log N).
+             Asked at: Amazon, Samsung, competitive programming
+
+  [C][ ] (M) Subsets with XOR value K.
+             Count number of subsets whose XOR equals K.
+             (DP with XOR state)
+             Asked at: Competitive programming, Samsung
+
+CODING — HARD
+--------------
+  [C][ ] (H) Maximum XOR of two numbers in array.
+             Build trie of all numbers in binary; for each number find complement greedily.
+             O(N * 32).
+             Asked at: Amazon, Google, competitive programming
+
+  [C][ ] (H) Minimum XOR value pair: find pair with minimum XOR.
+             Sort array; minimum XOR is always between adjacent elements.
+             O(N log N).
+             Asked at: Competitive programming, Dolat Capital
+
+================================================================================
+SECTION 23 — NUMBER THEORY & MATH (FRESH PROBLEMS)
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Fast modular exponentiation: compute (base^exp) % mod.
+             Binary exponentiation. O(log exp).
+             Asked at: Amazon, competitive programming, Dolat Capital
+
+  [C][ ] (E) Sieve of Eratosthenes: find all primes up to N.
+             O(N log log N).
+             Asked at: Amazon, TCS, competitive programming
+
+  [C][ ] (E) Count prime factors of N (with repetition).
+             Trial division up to sqrt(N). O(sqrt(N)).
+             Asked at: Amazon, competitive programming
+
+  [C][ ] (E) Find all divisors of N in sorted order. O(sqrt(N)).
+             Asked at: TCS, Wipro, Zoho
+
+  [C][ ] (E) Check if N is a perfect number (sum of proper divisors = N).
+             e.g. 6 = 1+2+3
+             Asked at: TCS, Wipro, Capgemini
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Modular inverse using Fermat's little theorem.
+             inv(a) = a^(MOD-2) % MOD (when MOD is prime).
+             Asked at: Competitive programming, Dolat Capital
+
+  [C][ ] (M) Count number of integers in [1, N] divisible by at least one of a, b, c.
+             Inclusion-exclusion principle.
+             Asked at: Amazon, competitive programming
+
+  [C][ ] (M) N-th permutation of digits 1 to K (lexicographic order).
+             Factorial number system.
+             Asked at: Amazon, Google, LeetCode
+
+  [C][ ] (M) Josephus problem: N people in circle, every Kth is eliminated.
+             Find position of last survivor.
+             dp[n][k] = (dp[n-1][k] + k) % n   with dp[1][k] = 0
+             Asked at: Amazon, Samsung, competitive programming
+
+  [C][ ] (M) Extended Euclidean algorithm: find x, y such that ax + by = gcd(a, b).
+             Asked at: Competitive programming, Dolat Capital, cryptography roles
+
+CODING — HARD
+--------------
+  [C][ ] (H) Count numbers from 1 to N with digit sum equal to S.
+             Digit DP.
+             Asked at: Competitive programming, Google
+
+  [C][ ] (H) Matrix exponentiation: compute Fibonacci(N) in O(log N).
+             Multiply [[1,1],[1,0]] matrix to the power N.
+             Asked at: Competitive programming, Dolat Capital, HFT firms
+
+================================================================================
+SECTION 24 — SYSTEM DESIGN FOR DEVELOPERS (often asked in interviews)
+================================================================================
+
+THEORY — SYSTEM & OOP DESIGN
+------------------------------
+  [T][ ] Design an in-memory cache with TTL (time-to-live) expiry.
+          What data structures would you use?
+          Asked at: Amazon, Flipkart, Swiggy, Zomato
+
+  [T][ ] Design a rate limiter. What are the common algorithms?
+          (Token bucket, Leaky bucket, Fixed window, Sliding window log)
+          Asked at: Amazon, Google, Swiggy, Razorpay
+
+  [T][ ] Design a file system (directory + file hierarchy) using OOP.
+          What pattern applies? (Composite pattern)
+          Asked at: Amazon, Microsoft, Adobe
+
+  [T][ ] How would you design a task queue with priority?
+          What data structure? How do you handle retries?
+          Asked at: Amazon, Flipkart, Swiggy
+
+  [T][ ] Design an undo-redo system for a text editor.
+          What data structure? (Two stacks)
+          Asked at: Amazon, Adobe, Microsoft
+
+  [T][ ] Design a parking lot system. Classes, relationships, edge cases.
+          Asked at: Amazon, Microsoft, Adobe, Flipkart (very common LLD!)
+
+  [T][ ] Design a URL shortener (bit.ly). Data structures needed.
+          Hash function for URL to short code.
+          Asked at: Amazon, Google, Microsoft, Flipkart
+
+  [T][ ] Design a cricket scoreboard. Classes and relationships.
+          Asked at: Swiggy, Flipkart, Paytm, Indian product companies
+
+  [T][ ] Design a library management system. OOP + data structures.
+          Asked at: TCS, Infosys, Wipro (campus + off-campus)
+
+  [T][ ] Design a food delivery system (Swiggy/Zomato model).
+          Focus on matching algorithm (restaurant, delivery agent, customer).
+          Asked at: Swiggy, Zomato, Dunzo, Zepto
+
+================================================================================
+SECTION 25 — TRIE & ADVANCED STRING STRUCTURES
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Insert and search words in a trie.
+             Standard trie with 26-child nodes and isEnd flag.
+             Asked at: Amazon, Google, Microsoft
+
+  [C][ ] (E) Count total words stored in a trie.
+             (Count nodes where isEnd = true)
+             Asked at: Amazon, Zoho
+
+  [C][ ] (E) Delete a word from trie (handle shared prefixes carefully).
+             Asked at: Amazon, Zoho, competitive programming
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Implement autocomplete system using trie.
+             Retrieve all words with given prefix.
+             Asked at: Amazon, Google, Microsoft, Flipkart
+
+  [C][ ] (M) Find the word with longest prefix match in trie.
+             Asked at: Amazon, Flipkart, Paytm, Razorpay (DNS routing!)
+
+  [C][ ] (M) Design a spell checker using trie + edit distance.
+             Asked at: Google, Microsoft, Adobe
+
+  [C][ ] (M) Implement a dictionary with wildcard search ('.' matches any char).
+             (Backtracking DFS on trie)
+             Asked at: Amazon, LeetCode (WordDictionary problem)
+
+CODING — HARD
+--------------
+  [C][ ] (H) Maximum XOR of two numbers using binary trie.
+             For each number, greedily pick the complement bit from trie.
+             O(N * 32).
+             Asked at: Amazon, Google, competitive programming
+
+  [C][ ] (H) Palindrome pairs: given list of words, find all pairs
+             (i,j) where words[i]+words[j] is a palindrome.
+             Trie of reversed words.
+             O(N * L^2).
+             Asked at: Google, Facebook/Meta, LeetCode hard
+
+================================================================================
+SECTION 26 — SEGMENT TREE & FENWICK TREE
+================================================================================
+
+CODING — EASY
+--------------
+  [C][ ] (E) Implement segment tree for range sum queries and point updates.
+             Build: O(N). Query: O(log N). Update: O(log N).
+             Asked at: Competitive programming, Dolat Capital
+
+  [C][ ] (E) Implement Fenwick tree (BIT) for prefix sum queries and updates.
+             Simpler than segment tree for this specific task.
+             Asked at: Competitive programming, Dolat Capital
+
+  [C][ ] (E) Count inversions using Fenwick tree.
+             Process elements right to left; query how many already inserted are smaller.
+             O(N log N).
+             Asked at: Amazon, competitive programming, Dolat Capital
+
+CODING — MEDIUM
+----------------
+  [C][ ] (M) Segment tree with lazy propagation for range updates.
+             Range add + range sum query.
+             Asked at: Competitive programming, Dolat Capital, Google
+
+  [C][ ] (M) Count of range sum: count subarrays with sum in [lower, upper].
+             Merge sort or BIT based. O(N log N).
+             Asked at: Google, LeetCode hard, competitive programming
+
+================================================================================
+SECTION 27 — MULTITHREADING & CONCURRENCY (C++) — FRESH QUESTIONS
+================================================================================
+
+THEORY
+-------
+  [T][ ] What is the difference between thread::join() and thread::detach()?
+          What happens if main() exits before a detached thread finishes?
+          Asked at: Persistent, Nagarro, L&T Infotech
+
+  [T][ ] What is a deadlock? Give a classic example with two threads and two mutexes.
+          How do you prevent it?
+          Asked at: Amazon, Microsoft, L&T Infotech, Persistent
+
+  [T][ ] What is a livelock? How is it different from deadlock?
+          Asked at: Advanced concurrency roles, Google
+
+  [T][ ] What is the difference between mutex and semaphore?
+          Asked at: L&T Infotech, Persistent, Nagarro
+
+  [T][ ] What is memory ordering in C++11 (relaxed, acquire, release, seq_cst)?
+          Asked at: Dolat Capital, HFT firms, advanced C++ roles
+
+  [T][ ] What is the double-checked locking pattern? What is wrong with it
+          without atomic/memory fences?
+          Asked at: Advanced C++ roles, Dolat Capital
+
+  [T][ ] What is thread pool? Why is creating a thread for every task bad?
+          Asked at: Amazon, Flipkart, L&T Infotech
+
+  [T][ ] What is false sharing in CPU caches? How do you avoid it?
+          (Two threads modifying data in same cache line causes cache invalidation)
+          Asked at: Dolat Capital, HFT firms, Samsung
+
+CODING
+-------
+  [C][ ] (M) Implement producer-consumer with bounded buffer using mutex + condition_variable.
+             Producers wait when buffer full; consumers wait when buffer empty.
+             Asked at: Amazon, Microsoft, Persistent, L&T Infotech
+
+  [C][ ] (M) Implement a thread-safe singleton using C++11 local static.
+             (The "Meyers Singleton" — thread-safe by standard guarantee)
+             Asked at: Amazon, Flipkart, Persistent
+
+  [C][ ] (M) Implement a reader-writer lock (multiple readers, exclusive writer).
+             Using shared_mutex or condition_variable.
+             Asked at: Amazon, Microsoft, Persistent
+
+  [C][ ] (H) Implement a thread pool with a task queue.
+             N worker threads, unlimited tasks, graceful shutdown.
+             Asked at: Amazon, Dolat Capital, HFT firms, Adobe
+
+================================================================================
+SECTION 28 — ADVANCED C++: TEMPLATES & MODERN C++
+================================================================================
+
+THEORY
+-------
+  [T][ ] What is SFINAE (Substitution Failure Is Not An Error)?
+          What is std::enable_if?
+          Asked at: Google, advanced C++ roles, Atlassian
+
+  [T][ ] What is template specialization vs template instantiation?
+          Asked at: Persistent, Nagarro, Google
+
+  [T][ ] What is a variadic template? Give a simple example.
+          Asked at: Google, advanced C++ roles
+
+  [T][ ] What is std::decltype? When would you use it over auto?
+          Asked at: Google, advanced C++ roles
+
+  [T][ ] What is perfect forwarding? What problem does it solve?
+          (Forwarding references + std::forward)
+          Asked at: Google, Atlassian, advanced C++ roles
+
+  [T][ ] What is a fold expression (C++17)?
+          Asked at: Advanced C++ roles
+
+  [T][ ] What is structured binding (C++17)? Give 3 use cases.
+          Asked at: Google, Atlassian, modern C++ roles
+
+  [T][ ] What is std::optional? When would you use it over a pointer?
+          Asked at: Google, advanced C++ roles
+
+  [T][ ] What is std::variant? How is it different from union?
+          Asked at: Google, advanced C++ roles
+
+  [T][ ] What is constexpr if (C++17)?
+          Asked at: Google, advanced C++ roles
+
+CODING
+-------
+  [C][ ] (M) Implement a type-safe printf using variadic templates.
+             Called: myprintf("%d %s", 42, "hello");
+             Asked at: Google, advanced C++ roles
+
+  [C][ ] (M) Implement compile-time fibonacci using constexpr or template metaprogramming.
+             Asked at: Google, Atlassian, Samsung
+
+  [C][ ] (M) Implement a generic tuple using variadic templates.
+             get<0>(t), get<1>(t) access.
+             Asked at: Advanced C++ roles
+
+  [C][ ] (H) Implement a type-erased function wrapper (like std::function<>) from scratch.
+             Template + virtual dispatch inside.
+             Asked at: Google, advanced C++ roles
+
+================================================================================
+BONUS: 30 QUICK THEORY QUESTIONS (ask verbally — 1 answer each)
+(Fresh — not in Parts 1, 2, 3)
+================================================================================
+
+  [T][ ] What is ABI (Application Binary Interface)? Why does it matter for C++ libraries?
+  [T][ ] What is the Curiously Recurring Template Pattern (CRTP)?
+  [T][ ] What is undefined behavior sanitizer (UBSan)?
+  [T][ ] What is thread sanitizer (TSan)?
+  [T][ ] What is copy-on-write (COW) optimization for std::string?
+  [T][ ] What is small string optimization (SSO)?
+  [T][ ] What is the difference between std::array and C-style array?
+  [T][ ] What is std::span (C++20)?
+  [T][ ] What is a coroutine in C++20?
+  [T][ ] What is std::jthread (C++20)?
+  [T][ ] What is the difference between std::mutex and std::recursive_mutex?
+  [T][ ] What is memory_order_relaxed? When is it safe to use?
+  [T][ ] What is RVO vs NRVO?
+  [T][ ] What is aggregate initialization in C++?
+  [T][ ] What is designated initializers (C++20)?
+  [T][ ] What is std::string_view? Advantages over const std::string&?
+  [T][ ] What is transparent comparator (std::less<void>)?
+  [T][ ] What is deduction guides (C++17)?
+  [T][ ] What is Argument Dependent Lookup (ADL/Koenig lookup)?
+  [T][ ] What is the most vexing parse in C++? Give an example.
+  [T][ ] What is std::launder? When do you need it?
+  [T][ ] What is bit_cast (C++20)?
+  [T][ ] What is three-way comparison operator <=> (spaceship, C++20)?
+  [T][ ] What is [[nodiscard]] attribute? When should you use it?
+  [T][ ] What is [[likely]] and [[unlikely]] (C++20)?
+  [T][ ] What is if consteval (C++23)?
+  [T][ ] What is the difference between reinterpret_cast and bit_cast?
+  [T][ ] What is std::expected (C++23)? How does it differ from exceptions?
+  [T][ ] What is ranges library (C++20)? Give one example.
+  [T][ ] What is std::format (C++20)? How does it compare to printf?
+
+================================================================================
+SCORE TRACKING
+================================================================================
+
+  Topic                          | Easy | Med | Hard | Done | Total
+  -------------------------------|------|-----|------|------|------
+  Variables & Operators          |   8  |  5  |   0  |      |  13
+  Loops & Patterns               |   5  |  5  |   0  |      |  10
+  Functions & Recursion          |   5  | 10  |   5  |      |  20
+  Arrays                         |  15  | 15  |  10  |      |  40
+  Strings                        |  10  | 10  |   8  |      |  28
+  Pointers & Memory              |   5  |  4  |   0  |      |   9
+  OOP                            |   5  |  5  |   0  |      |  10
+  Linked Lists                   |  10  |  8  |   2  |      |  20
+  Stacks                         |   5  |  5  |   3  |      |  13
+  Queues                         |   5  |  4  |   2  |      |  11
+  Hashing                        |   5  |  8  |   0  |      |  13
+  Binary Search                  |   5  |  7  |   0  |      |  12
+  Sorting                        |   0  |  5  |   2  |      |   7
+  Two Pointer / Sliding Window   |   8  |  8  |   0  |      |  16
+  Binary Tree                    |  10  | 10  |   0  |      |  20
+  BST                            |   5  |  5  |   0  |      |  10
+  Heaps                          |   3  |  5  |   2  |      |  10
+  Graphs                         |   5  | 10  |   5  |      |  20
+  Dynamic Programming            |   5  | 10  |   4  |      |  19
+  Backtracking                   |   3  |  5  |   2  |      |  10
+  Greedy                         |   5  |  5  |   2  |      |  12
+  Bit Manipulation               |   5  |  4  |   2  |      |  11
+  Number Theory / Math           |   5  |  5  |   2  |      |  12
+  System Design (Theory)         |  10T |  0  |   0  |      |  10
+  Trie                           |   3  |  4  |   2  |      |   9
+  Segment Tree / BIT             |   3  |  2  |   0  |      |   5
+  Multithreading                 |   8T |  3  |   1  |      |  12
+  Modern C++ / Templates         |  10T |  4  |   1  |      |  15
+  Quick Theory (Bonus)           |  30T |  0  |   0  |      |  30
+  -------------------------------|------|-----|------|------|------
+  TOTAL                          | 160+ |160+ |  55+ |      | 407+
+
+================================================================================
+END OF PART 4
+================================================================================
+
+"Binary search your weaknesses — once found, divide and conquer them."
+"Every hard problem is just a medium problem you haven't seen enough times yet."
+"Code it, break it, fix it, optimize it. Repeat."
+
+================================================================================

@@ -1,0 +1,1193 @@
+================================================================================
+     POINTERS & REFERENCES — THEORY ANSWERS + TRICKY QUESTIONS
+================================================================================
+
+================================================================================
+SECTION 1A — POINTERS: CORE CONCEPTS (ANSWERS)
+================================================================================
+
+Q1. What is a pointer? What is a reference? What is the difference?
+
+    - A pointer is a variable that stores a MEMORY ADDRESS of another
+      variable. It can be reassigned to point elsewhere, can be null, and
+      requires explicit dereferencing (*p) to access the value it points
+      to.
+    - A reference is an ALIAS for an existing variable — another name for
+      the same memory location. It must be bound at declaration, can never
+      be null, can never be "reseated" to refer to a different variable
+      afterward, and is used without any special dereference syntax (it
+      looks exactly like using the original variable).
+    - Key differences: pointers support arithmetic and reassignment and can
+      be null; references are simpler/safer but less flexible — used
+      mainly for function parameters/return values where you want
+      alias-like access without pointer syntax risks.
+
+Q2. What is a null pointer? What is a dangling pointer?
+
+    - Null pointer: a pointer explicitly set to point to "nothing" —
+      `nullptr` in modern C++ (or `NULL`/0 in older code). Dereferencing a
+      null pointer is undefined behavior (typically crashes with a
+      segmentation fault), but a null pointer itself is a safe,
+      well-defined, checkable state (`if (p == nullptr)`).
+    - Dangling pointer: a pointer that still holds the address of memory
+      that has ALREADY BEEN FREED/gone out of scope (e.g., after `delete p;`
+      without setting p to nullptr, or a pointer to a local variable after
+      the function returns). The memory it points to may now be reused by
+      something else entirely — dereferencing it is undefined behavior,
+      but unlike a null pointer, there's no easy way to detect it's
+      "dangling" just by looking at its value.
+
+Q3. What is a wild pointer? How is it different from a dangling pointer?
+
+    - A wild pointer is a pointer that was NEVER initialized at all —
+      it contains whatever garbage bit pattern happened to be in that
+      memory location, pointing to a completely random/unknown address.
+    - A dangling pointer, by contrast, WAS validly initialized/assigned at
+      some point but became invalid later because the memory it pointed to
+      was freed or went out of scope. The distinction: wild = never valid
+      in the first place; dangling = was valid, became invalid.
+
+Q4. What is a memory leak? How do you detect and prevent it? What tools
+    exist for Linux? (valgrind, ASan)
+
+    - A memory leak is heap memory that was allocated (new/malloc) but
+      never freed (delete/free), and for which no reachable pointer to it
+      remains in the program — so it can never be freed, permanently
+      wasting that memory until the process exits.
+    - Prevention: prefer RAII and smart pointers (unique_ptr/shared_ptr)
+      over raw new/delete so memory is automatically released when the
+      owning object goes out of scope, even on early returns/exceptions;
+      always pair every new with exactly one delete (and every new[] with
+      delete[]).
+    - Detection tools on Linux: Valgrind (specifically its "memcheck"
+      tool) runs your program in a sandbox and reports leaked/unfreed
+      allocations, invalid memory accesses, and use of uninitialized
+      memory, at the cost of significant runtime slowdown. AddressSanitizer
+      (ASan) is a compiler-instrumented alternative (`-fsanitize=address`)
+      that's much faster than Valgrind and also catches leaks, use-after-
+      free, and out-of-bounds access, making it well suited to being run
+      routinely in CI/test pipelines.
+
+Q5. What is the difference between stack memory and heap memory?
+
+    - Stack: used for function call frames — local variables, parameters,
+      return addresses. Automatically managed (grows on function call,
+      shrinks on return); fixed/limited total size (can overflow with deep
+      recursion or huge local arrays); very fast allocation (just a
+      pointer bump).
+    - Heap: used for dynamically allocated memory (new/malloc), NOT tied
+      to any function's lifetime — persists until explicitly freed
+      (delete/free) or managed via a smart pointer's destructor. Much
+      larger capacity than the stack, but slower to allocate/deallocate
+      (goes through an allocator with bookkeeping), and manual mismanagement
+      causes leaks or dangling pointers.
+
+Q6. What does new and delete do? What happens if you forget to delete?
+
+    - `new T` allocates enough raw memory to hold a T on the heap, then
+      calls T's CONSTRUCTOR on that memory, and returns a typed pointer
+      (T*) to it. `delete p` calls p's DESTRUCTOR first, then deallocates
+      the underlying memory back to the heap.
+    - If you forget to `delete` memory obtained with `new`, that memory is
+      never released for the lifetime of the program (a memory leak) — the
+      destructor never runs either, so any cleanup logic it contains (e.g.
+      closing a file handle) also never happens. In a long-running process,
+      repeated leaks can eventually exhaust available memory.
+
+Q7. What is the difference between delete and delete[]? What happens if
+    you use delete on a heap-allocated array?
+
+    - `delete p` is for a SINGLE object allocated with `new T` — it calls
+      exactly one destructor.
+    - `delete[] p` is for an ARRAY allocated with `new T[n]` — it calls the
+      destructor for EACH of the n elements, then frees the whole block.
+      The compiler needs to know n to do this, which it stores internally
+      alongside the array allocation (implementation detail, not visible to
+      you).
+    - Using plain `delete` on an array allocated with `new[]` is undefined
+      behavior: at best it calls the destructor for only the FIRST element
+      and leaves the rest un-destructed (leaking any resources those
+      elements own); at worst, since the two allocation paths may track
+      size differently, it can corrupt the heap's bookkeeping entirely.
+
+Q8. What is a void pointer? What are its limitations?
+
+    - A void pointer (`void*`) is a generic pointer that can hold the
+      address of ANY type, but carries no type information itself.
+    - Limitations: you CANNOT dereference a void* directly (the compiler
+      doesn't know the size/layout of what it points to) — you must first
+      cast it to a concrete type (e.g. `static_cast<int*>(vp)`); pointer
+      arithmetic on void* is not standard C++ (some compilers allow it as
+      an extension treating it like char*, but it's not portable); commonly
+      used for generic APIs (like the classic C `qsort`/`memcpy`
+      signatures) before templates existed as a more type-safe alternative.
+
+Q9. What is a double pointer (pointer to pointer)?
+
+    - A double pointer (`int** pp`) stores the address of ANOTHER pointer,
+      rather than the address of a plain value directly. Dereferencing once
+      (`*pp`) gives you the inner pointer; dereferencing twice (`**pp`)
+      gives you the actual value.
+    - Common uses: modifying a pointer itself inside a function (a plain
+      `int* p` parameter lets you modify what p points to, but not
+      reassign p itself in the caller — for that you need `int**` or
+      `int*&`); representing dynamic 2D arrays (an array of pointers,
+      each pointing to a row); implementing linked structures like a
+      pointer to the head-pointer of a linked list, allowing a helper
+      function to modify the caller's head pointer.
+
+Q10. What is the difference between array name and pointer?
+
+    - An array name, in most expressions, DECAYS into a pointer to its
+      first element — but the array itself is a distinct object type that
+      knows its own full size at compile time (`sizeof(arr)` gives the
+      whole array's byte size).
+    - A pointer variable is just an address with no built-in size/length
+      information (`sizeof(ptr)` gives only the pointer's own size, e.g. 8
+      bytes on 64-bit). Also, an array name cannot be reassigned (you can't
+      do `arr = somethingElse;`), whereas a pointer variable can be
+      reassigned freely to point elsewhere.
+
+Q11. What is pointer arithmetic? Is it safe to go out of bounds?
+
+    - Pointer arithmetic lets you add/subtract integers to/from a pointer
+      to move it by whole ELEMENTS (not raw bytes) — `p + 1` moves the
+      pointer forward by `sizeof(*p)` bytes, landing on the "next" element
+      of whatever array it points into. Pointer subtraction (`p2 - p1`)
+      gives the number of elements between two pointers into the same
+      array.
+    - It is NOT safe to go out of bounds — dereferencing (or even in some
+      strict interpretations, merely FORMING) a pointer that goes past
+      one-past-the-end of a valid array is undefined behavior. In practice
+      this can silently read/write unrelated memory, or crash, depending
+      on what memory happens to be there — a very common source of subtle
+      bugs, especially in systems/kernel code, since there's no automatic
+      bounds checking at all.
+
+Q12. Can you have a pointer to a function in C++? Show the syntax.
+
+    - Yes: `int (*fp)(int, int);` declares fp as a pointer to a function
+      taking two ints and returning int. Assigned via `fp = someFunc;`
+      (function-to-pointer decay makes the `&` optional) and called via
+      `fp(a, b);` or `(*fp)(a, b);`. Useful for callbacks, dispatch tables,
+      and plugging in different behavior at runtime without virtual
+      dispatch overhead.
+
+Q13. What is a fat pointer?
+
+    - A "fat pointer" is a pointer representation that carries EXTRA
+      metadata alongside the raw address — instead of being just one
+      machine word (the address), it's effectively two or more words: e.g.,
+      address + length, or address + a vtable/type-info pointer.
+    - In C++, `std::string_view` and a `T[]`-style span (`std::span<T>`)
+      are conceptually fat pointers (address + size); a pointer to a
+      polymorphic base combined with RTTI, or Rust's `&dyn Trait` /
+      `&[T]` types, are classic fat-pointer examples in other languages.
+      They trade a slightly larger pointer size for safety/convenience
+      (bounds/length known without a separate parameter).
+
+Q14. Can you have a reference to a reference in C++? What about pointer to
+     reference?
+
+    - No — C++ does not allow you to directly declare a "reference to a
+      reference" (e.g. `int& & r = x;` is a compile error) or a "pointer to
+      a reference" (`int&* p;` is also illegal) — references are not
+      objects with their own address that you can point to; they're purely
+      an aliasing mechanism at the language level.
+    - HOWEVER, "reference collapsing" happens implicitly in template code
+      (e.g. with universal/forwarding references `T&&` combined with
+      `int&`), where the compiler collapses combinations like `& &` and
+      `& &&` down to a single `&` — this is a compile-time rule for
+      template deduction, not something you write directly yourself.
+
+================================================================================
+SECTION 1B — REFERENCES (ANSWERS)
+================================================================================
+
+Q1. What is a reference in C++? How is it different from a pointer?
+
+    (Key differences, as also outlined in your question bank:)
+    - A reference CANNOT be null — it must always refer to a valid object.
+    - A reference CANNOT be reassigned/reseated to refer to a different
+      variable after initialization — `int& r = a; r = b;` assigns b's
+      VALUE into a (through r), it does NOT make r refer to b instead.
+    - No dereference operator is needed to use a reference — it reads
+      exactly like using the original variable.
+    - A reference MUST be initialized at the point of declaration (you
+      cannot declare an "empty" reference and bind it later, unlike a
+      pointer which can be declared and assigned separately).
+
+Q2. What is a const reference? When should you prefer it for function
+    parameters?
+
+    - A const reference (`const T&`) is a reference through which the
+      referred-to object CANNOT be modified — read-only access, but with
+      no copy made (unlike passing by value).
+    - Prefer it for function parameters when passing objects that are
+      "large" (expensive to copy — strings, vectors, custom classes) AND
+      the function doesn't need to modify the caller's copy — e.g.
+      `void print(const std::string& s)`. It gives you the performance of
+      pass-by-reference (no copy) with the safety of pass-by-value (caller's
+      data can't be changed). Also uniquely useful because a const
+      reference CAN bind to a temporary (rvalue), extending its lifetime —
+      a plain non-const reference cannot bind to a temporary at all.
+
+Q3. What is a dangling reference? How is it different from a dangling
+    pointer?
+
+    - A dangling reference refers to memory that has already been
+      destroyed/gone out of scope — most commonly from returning a
+      reference to a LOCAL variable from a function (the local is
+      destroyed when the function returns, but the reference still
+      "points" at that now-invalid stack location).
+    - It behaves the same as a dangling pointer conceptually (using it is
+      undefined behavior), but is arguably MORE dangerous in practice: a
+      dangling pointer can at least be checked against nullptr (though a
+      dangling pointer usually isn't null, just invalid) and you're
+      constantly reminded you're "dealing with a pointer, be careful" —
+      whereas a dangling reference looks and behaves EXACTLY like a normal
+      variable at the use site, with no syntactic hint that anything could
+      be wrong, making the bug easier to miss during a code review.
+
+Q4. What is the lifetime of a temporary object in C++? Can a const
+    reference extend it?
+
+    - Normally, a temporary object (e.g. the result of an expression like
+      `std::string("abc") + "def"`, or a temporary returned by value) is
+      destroyed at the end of the FULL EXPRESSION it appears in — very
+      short-lived.
+    - Special rule: if you bind a temporary directly to a `const T&`
+      (or, in modern C++, an rvalue reference `T&&`), its lifetime is
+      EXTENDED to match the lifetime of that reference — e.g.
+      `const std::string& s = std::string("hello");` keeps the temporary
+      alive as long as `s` is in scope, instead of destroying it
+      immediately. This extension does NOT propagate through further
+      indirection though — e.g. if the temporary is a member accessed
+      through a function returning a reference, or the reference is
+      stored inside another object, the extension rule doesn't reach that
+      far, a common subtle trap.
+
+Q5. What is pass by value vs pass by reference? When should you use each?
+
+    - Pass by value: function gets a COPY; changes don't affect caller;
+      appropriate for small/cheap-to-copy types (int, double, small
+      structs, or types you WANT to modify locally without touching the
+      original).
+    - Pass by reference: function gets an alias to the caller's original
+      object; changes DO affect the caller (for non-const T&), or gives
+      read-only access with no copy (for const T&); appropriate for large
+      objects (avoid the copy cost) or when the function genuinely needs
+      to modify the caller's variable (an "out parameter").
+
+Q6. Can a function return a reference? When is it safe / unsafe?
+
+    - Yes, syntactically. It is SAFE when the reference refers to
+      something that will outlive the function call — e.g. a reference to
+      a MEMBER of an object passed in by reference/pointer, a reference to
+      a STATIC or GLOBAL variable, or (for member functions) a reference to
+      one of the calling object's own members (e.g. an overloaded
+      `operator[]` returning `T&` into internal storage).
+    - It is UNSAFE (undefined behavior) when the reference refers to a
+      LOCAL variable of the function itself — that local is destroyed the
+      moment the function returns, so the caller ends up with a dangling
+      reference even though the code compiles without error (this is one
+      of the most common C++ interview "gotcha" questions).
+
+================================================================================
+SECTION 1C — SMART POINTERS & MODERN C++ (ANSWERS)
+================================================================================
+
+Q1. What is a smart pointer? What types exist in C++?
+
+    - A smart pointer is a class that WRAPS a raw pointer and manages its
+      lifetime automatically via RAII — the underlying resource is
+      released (destructor called, memory freed) automatically when the
+      smart pointer itself goes out of scope, eliminating most manual
+      new/delete bugs (leaks, double-frees, dangling pointers) in ordinary
+      use.
+    - Three standard types (since C++11, in <memory>):
+        - std::unique_ptr<T> — sole, exclusive ownership; cannot be
+          copied, only moved.
+        - std::shared_ptr<T> — shared ownership via reference counting;
+          the object is destroyed when the last shared_ptr owning it is
+          destroyed/reset.
+        - std::weak_ptr<T> — a non-owning "observer" reference to an
+          object managed by a shared_ptr, used to break reference cycles.
+
+Q2. What is the difference between unique_ptr, shared_ptr, and weak_ptr?
+
+    - unique_ptr: exactly ONE owner at a time; lightweight (typically no
+      extra overhead vs a raw pointer for the default deleter); ownership
+      can be transferred (moved) but never shared/copied.
+    - shared_ptr: MULTIPLE owners can share the same object; keeps an
+      internal reference count (usually in a separately-allocated "control
+      block"); the object is destroyed only when the count hits zero.
+      Slightly heavier than unique_ptr (control block allocation, atomic
+      increments/decrements for thread-safety of the count).
+    - weak_ptr: does NOT contribute to the reference count and does NOT
+      keep the object alive by itself; used to observe an object owned by
+      shared_ptr(s) without creating a cycle; must call `.lock()` to
+      attempt to get a temporary shared_ptr (which returns null/empty if
+      the object has already been destroyed) before actually using it.
+
+Q3. What is a reference count? How does shared_ptr use it?
+
+    - A reference count is a running tally of how many owners currently
+      hold a reference to a shared resource. shared_ptr keeps this count
+      in a control block (allocated alongside/near the managed object).
+      Every time a shared_ptr is copied, the count increments; every time
+      one is destroyed or reset, the count decrements; when the count
+      reaches zero, the managed object's destructor runs and its memory is
+      freed. This lets multiple parts of a program share ownership safely
+      without any one part needing to know when it's "safe" to delete —
+      the count answers that automatically.
+
+Q4. What is a circular reference? How does weak_ptr solve it?
+
+    - A circular (cyclic) reference happens when two (or more) objects
+      hold shared_ptrs to EACH OTHER (A holds a shared_ptr to B, B holds a
+      shared_ptr back to A). Neither object's reference count ever reaches
+      zero — even if nothing else in the program references A or B, they
+      keep each other alive forever, causing a memory leak that
+      shared_ptr's automatic cleanup can never resolve on its own.
+    - weak_ptr solves this by having ONE side of the relationship (commonly
+      the "back-pointer," e.g. a child's pointer back to its parent) use a
+      weak_ptr instead of a shared_ptr. A weak_ptr doesn't increment the
+      reference count, so it doesn't keep the pointed-to object alive —
+      once all the "real" (shared_ptr) owners are gone, the object is
+      destroyed normally, breaking the cycle.
+
+Q5. What is RAII (Resource Acquisition Is Initialization)? Give an
+    example. Why is it important?
+
+    - RAII is the idiom of tying a resource's LIFETIME to an object's
+      lifetime: acquire the resource in the object's CONSTRUCTOR, release
+      it in the DESTRUCTOR. Since C++ guarantees destructors run when an
+      object goes out of scope — including during stack unwinding from an
+      exception — the resource is released reliably no matter how control
+      leaves the scope (normal return, early return, or exception).
+    - Example: std::unique_ptr manages heap memory this way;
+      std::lock_guard acquires a mutex lock in its constructor and releases
+      it in its destructor, so you never forget to unlock even if an
+      exception is thrown between lock and unlock; std::ifstream opens a
+      file in its constructor and closes it in its destructor.
+    - Importance: it makes resource management EXCEPTION-SAFE and
+      eliminates entire classes of bugs (forgetting to free/unlock/close)
+      that plague manual acquire/release code, without needing
+      finally-style blocks.
+
+Q6. What does valgrind do? What does AddressSanitizer (ASan) do?
+
+    - Valgrind (memcheck tool): runs your compiled program inside a
+      software CPU emulator, instrumenting every memory access to detect
+      memory leaks, use of uninitialized memory, invalid reads/writes
+      (buffer overruns), and use-after-free — very thorough but SLOW
+      (programs typically run 10-50x slower under it) since everything is
+      emulated in software.
+    - AddressSanitizer (ASan): a compiler-based instrumentation
+      (`-fsanitize=address`) that inserts checks directly into the
+      compiled machine code (via "redzones" around allocations and shadow
+      memory tracking) — catches similar classes of bugs (heap/stack
+      buffer overflows, use-after-free, use-after-scope, memory leaks) but
+      typically only 2x slower than uninstrumented code, making it
+      practical to run routinely in CI/automated testing, unlike Valgrind
+      which is more often used for occasional deep debugging.
+
+Q7. What is a segmentation fault? What causes it?
+
+    - A segmentation fault (segfault) is a hardware/OS-level error raised
+      when a program tries to access memory it isn't allowed to access —
+      the memory management unit (MMU) detects the access falls outside
+      the process's valid mapped address space (or violates page
+      permissions, e.g. writing to read-only code memory) and the OS
+      terminates the process (SIGSEGV on Linux).
+    - Common causes: dereferencing a null or wild/dangling pointer,
+      writing past the end of an array/buffer (buffer overflow), stack
+      overflow from excessive recursion, using a pointer after `delete`
+      (use-after-free), or dereferencing an uninitialized pointer.
+
+Q8. What is move semantics? What is an rvalue reference?
+
+    - Move semantics let a program TRANSFER ownership of a resource (heap
+      buffer, file handle, etc.) from one object to another WITHOUT
+      copying the underlying data — instead of duplicating a large buffer,
+      you just steal its pointer and null out the source's pointer, making
+      the transfer O(1)/cheap regardless of the resource's size.
+    - An rvalue reference (`T&&`) is a reference type that can bind to
+      TEMPORARY objects (rvalues) — things that are about to be destroyed
+      anyway, like the return value of a function or the result of
+      std::move — signaling "this object is disposable, it's safe to steal
+      its internals rather than copy them." This is the mechanism move
+      constructors and move assignment operators are overloaded on.
+
+Q9. What is std::move? Does it actually move anything?
+
+    - std::move does NOT move anything by itself — it is purely a CAST:
+      it converts its argument into an rvalue reference (an "I'm disposable"
+      signal), nothing more. The ACTUAL move (stealing internal
+      pointers/resources) only happens if that rvalue-cast object is then
+      used to construct/assign into something that has a MOVE CONSTRUCTOR
+      or MOVE ASSIGNMENT OPERATOR defined — std::move just makes that
+      overload eligible to be selected by overload resolution.
+    - If the target type has no move constructor, `std::move`-ing into it
+      just falls back to a regular COPY — perfectly legal but doesn't save
+      anything, which surprises people who think std::move guarantees
+      cheap transfers.
+
+Q10. What is a move constructor? When is it called automatically?
+
+    - A move constructor (`T(T&& other)`) constructs a new object by
+      "stealing" the internal resources (pointers, buffers, handles) of
+      `other`, typically leaving `other` in a valid-but-empty/moved-from
+      state (e.g. nulling out its internal pointer so its destructor is a
+      safe no-op), instead of duplicating the data.
+    - It is called automatically whenever the compiler determines the
+      source object is an RVALUE — e.g. returning a local object by value
+      from a function (often further optimized away entirely by RVO, see
+      below), passing the result of std::move(x) to a constructor, or
+      constructing from a temporary directly (`T obj = makeTemporary();`).
+
+Q11. What is the Rule of Three? The Rule of Five in C++11?
+
+    - Rule of Three: if a class needs to define ANY ONE of the following,
+      it likely needs to define ALL THREE, because they all relate to how
+      the class manages a resource it owns: the destructor, the copy
+      constructor, and the copy assignment operator. (If the
+      compiler-generated defaults for these would be wrong for one, they're
+      almost certainly wrong for the others too — e.g. a class holding a
+      raw pointer needs a real destructor to free it, which implies it
+      also needs real copy operations to avoid double-free from a shallow
+      copy.)
+    - Rule of Five (C++11+): extends this to FIVE special member
+      functions, adding the move constructor and move assignment operator
+      — since move operations can now also be user-defined/deleted, and
+      defining any of the "big three" suppresses the compiler's
+      auto-generation of the move operations, so you typically want to
+      define (or explicitly default/delete) all five together for a
+      resource-owning class.
+
+Q12. What is the Rule of Zero?
+
+    - The Rule of Zero says: if your class does NOT directly manage a raw
+      resource (no raw new/delete, no raw file handles, etc.) — because it
+      instead relies entirely on members that already manage themselves
+      (std::string, std::vector, std::unique_ptr, std::shared_ptr, etc.) —
+      then you should write NONE of the five special member functions at
+      all. Let the compiler generate all of them; they'll correctly call
+      each member's own copy/move/destructor logic automatically. This is
+      the modern, preferred style — reserve the Rule of Three/Five for the
+      rare, low-level classes that actually own a raw resource directly
+      (the resource-managing wrapper classes themselves, like a custom
+      smart pointer).
+
+Q13. What is copy elision and RVO (Return Value Optimization)?
+
+    - Copy elision is a compiler optimization (in some cases MANDATED by
+      the standard since C++17, in other cases just permitted) that skips
+      creating a temporary object and its subsequent copy/move entirely —
+      constructing the object DIRECTLY in its final destination memory
+      location instead.
+    - RVO (Return Value Optimization) is the specific, common case of copy
+      elision applied to returning a local object by value from a
+      function: instead of constructing a local, then copying/moving it
+      into the caller's storage, the compiler constructs the object
+      DIRECTLY in the caller's storage in the first place — no copy or
+      move constructor call happens at all, even if one is defined
+      (as of C++17, this specific form — returning a prvalue directly —
+      is guaranteed by the standard, not just an optional optimization).
+
+Q14. What happens if you throw an exception inside a destructor?
+
+    - This is dangerous and generally forbidden by convention: if a
+      destructor throws WHILE another exception is already propagating
+      (i.e., the destructor itself is running as part of stack unwinding
+      from a different exception), the C++ runtime has no sensible way to
+      handle two simultaneous exceptions, and `std::terminate()` is called
+      immediately, aborting the entire program.
+    - Because of this, destructors in C++ are implicitly `noexcept` by
+      default (since C++11) — if a destructor DOES throw and that
+      exception tries to escape, `std::terminate()` is called even in the
+      simpler case (no other exception in flight), unless you explicitly
+      mark the destructor `noexcept(false)`. Best practice: destructors
+      should never throw; if cleanup can fail, log the error or handle it
+      internally, but don't let an exception escape a destructor.
+
+Q15. What is the difference between shallow copy and deep copy?
+     Specifically in context of copy constructor.
+
+    - Shallow copy: the copy constructor copies member values AS-IS,
+      including raw pointers — so the copy's pointer members end up
+      pointing to the SAME underlying memory as the original. If both
+      objects' destructors independently try to free that same memory,
+      you get a double-free (undefined behavior); modifying data through
+      one object's pointer also silently affects the other. This is
+      exactly what the COMPILER-GENERATED default copy constructor does
+      for any class containing raw pointers.
+    - Deep copy: the copy constructor explicitly allocates NEW, independent
+      memory and copies the actual pointed-to data into it, so the
+      original and the copy are fully independent afterward — each can be
+      modified or destroyed safely without affecting the other. Any class
+      that owns a raw resource directly needs a user-defined (deep) copy
+      constructor and copy assignment operator — or, better in modern C++,
+      should just use RAII member types (std::vector, std::string,
+      std::unique_ptr) that already implement correct deep-copy or
+      move-only semantics for you (Rule of Zero).
+
+================================================================================
+SECTION 1D — MEMORY MODEL & DYNAMIC ALLOCATION (ANSWERS)
+================================================================================
+
+Q1. What are the different memory segments in a C++ program? (Text/Code,
+    Data, BSS, Heap, Stack)
+
+    - Text/Code segment: holds the compiled machine instructions of the
+      program. Typically read-only (and shared between multiple running
+      instances of the same program) to prevent accidental/malicious
+      self-modification.
+    - Data segment: holds INITIALIZED global and static variables (their
+      initial values are stored directly in the executable file).
+    - BSS segment: holds UNINITIALIZED (or zero-initialized) global and
+      static variables — doesn't need to store actual initial values in
+      the executable (they're all zero), saving disk space; the OS
+      zero-fills this region at load time.
+    - Heap: dynamically allocated memory (new/malloc), grows upward
+      (conventionally) as more is requested, managed manually or via smart
+      pointers/RAII.
+    - Stack: function call frames (locals, parameters, return addresses),
+      grows downward (conventionally), automatically managed, limited size.
+
+Q2. What is stored in the stack vs heap?
+
+    - Stack: local (automatic) variables, function parameters, return
+      addresses, saved registers — anything whose lifetime is naturally
+      tied to the function call that created it.
+    - Heap: anything explicitly allocated with new/malloc (or via a
+      container like std::vector/std::string that allocates internally),
+      whose lifetime is intentionally decoupled from any particular
+      function call — it persists until explicitly freed.
+
+Q3. What is the BSS segment? What variables go there?
+
+    - BSS ("Block Started by Symbol") is the memory segment reserved for
+      global and static variables that are either explicitly initialized
+      to zero or have no explicit initializer at all (C++ zero-initializes
+      such variables by default) — e.g. `static int counter;` or
+      `int globalArr[1000];` with no initializer. Since their initial value
+      is always all-zero-bytes, the executable file doesn't need to store
+      actual data for them (just their size) — the OS/loader simply
+      zero-fills this region in memory when the program starts, saving disk
+      space compared to storing a giant block of zeros explicitly.
+
+Q4. What is the difference between malloc/free and new/delete?
+
+    - malloc/free are C library functions: malloc allocates raw,
+      UNINITIALIZED bytes and returns `void*` (needs an explicit cast in
+      C++); free deallocates raw bytes. NEITHER calls
+      constructors/destructors — they know nothing about C++ object
+      semantics at all.
+    - new/delete are C++ OPERATORS (and can be overloaded): `new T`
+      allocates memory AND calls T's constructor, returning a typed T*;
+      `delete p` calls the destructor first, then deallocates.
+    - Consequence: mixing them (e.g. `malloc`-ing a C++ object then
+      `delete`-ing it, or `new`-ing an object then `free`-ing it) is
+      undefined behavior — constructors/destructors won't run correctly,
+      and the two allocators' internal bookkeeping may be incompatible.
+
+Q5. What does malloc return if allocation fails? What does new do?
+    (malloc returns NULL; new throws std::bad_alloc)
+
+    - malloc returns `NULL` (a null pointer) on failure to allocate — you
+      must explicitly check the return value before using it, since
+      nothing stops you from accidentally dereferencing a null pointer if
+      you forget the check.
+    - `new` instead throws a `std::bad_alloc` EXCEPTION on failure — if
+      uncaught, this terminates the program (via std::terminate), which is
+      arguably safer as a default since a forgotten check silently crashes
+      later with a segfault (malloc) rather than immediately and loudly
+      (new). If you want malloc-like null-return behavior with `new`, C++
+      provides `new(std::nothrow) T`, which returns nullptr instead of
+      throwing.
+
+Q6. What is placement new? When would you use it?
+
+    - Placement new (`new (ptr) T(args...)`) constructs an object of type
+      T at an ALREADY-ALLOCATED memory address (`ptr`) instead of
+      allocating new memory itself — it only runs the CONSTRUCTOR, it does
+      not call the allocator at all.
+    - Used when you need precise control over where an object is
+      constructed, separate from allocation — e.g. implementing a custom
+      memory pool/object pool (allocate a big raw buffer once, then
+      placement-new individual objects into slots of it as needed, without
+      each construction triggering a separate heap allocation); implementing
+      containers like std::vector internally (which allocates raw storage
+      via an allocator, then placement-news elements into it one at a
+      time); or reusing a fixed buffer for repeated construct/destruct
+      cycles in performance-critical code (common in HFT/embedded systems).
+      Objects constructed with placement new must be manually destructed
+      by explicitly calling the destructor (`ptr->~T();`) rather than
+      `delete`, since `delete` would also try to deallocate memory that
+      wasn't allocated by `new` in the first place.
+
+Q7. What is a memory pool? Why is it used in trading/finance systems?
+
+    - A memory pool is a pre-allocated, fixed-size (or size-class-based)
+      block of memory from which objects are carved out ("acquired") and
+      returned ("released") WITHOUT going through the general-purpose
+      heap allocator on every request — typically implemented with
+      placement new for construction and manual destructor calls for
+      release, reusing the same underlying memory repeatedly.
+    - Used in trading/finance (HFT) systems because: (1) general-purpose
+      allocators (malloc/new) have unpredictable, sometimes relatively
+      high and VARIABLE latency (due to locking, fragmentation handling,
+      searching free lists) — unacceptable in latency-sensitive code where
+      microseconds matter and consistency (low jitter) matters as much as
+      raw speed; (2) a memory pool gives O(1), highly predictable
+      allocation/deallocation (often just popping/pushing a free-list
+      pointer) with minimal jitter; (3) it avoids heap fragmentation from
+      many small, short-lived allocations of the same object type (e.g.
+      order objects, market data ticks) that get created and destroyed at
+      extremely high frequency.
+
+Q8. What is the difference between stack overflow and heap overflow?
+
+    - Stack overflow: the CALL STACK (used for function frames/local
+      variables) exceeds its fixed size limit — typically from excessive
+      recursion depth or an unusually large local array/variable — causing
+      a crash (often detected quickly via a guard page, giving a clean
+      segfault).
+    - Heap overflow (buffer overflow on the heap): writing PAST THE END of
+      a heap-allocated buffer, overwriting adjacent heap memory (which
+      might belong to a completely different object, or to the allocator's
+      own bookkeeping metadata) — this does NOT necessarily crash
+      immediately; it can silently corrupt data or the heap's internal
+      structures, causing a crash or wrong behavior much later and far away
+      from the actual bug, making it much harder to debug than a stack
+      overflow. (Note: "heap overflow" is also sometimes used to mean the
+      allocator failing because the heap itself is exhausted — but in a
+      security/bug context it almost always means a buffer overrun.)
+
+Q9. What is a core dump? How do you analyze it?
+
+    - A core dump is a file the OS produces when a program crashes
+      (typically from a signal like SIGSEGV) that captures the ENTIRE
+      memory image of the process at the moment of the crash — stack,
+      heap, register values, and more — so you can inspect exactly what
+      state the program was in.
+    - Analyzed using a debugger like GDB: `gdb ./my_program core` (or
+      `gdb ./my_program core.<pid>`) loads both the executable and the
+      dump, and commands like `bt` (backtrace) show the call stack at the
+      moment of the crash, `print <variable>` inspects variable values,
+      and `frame <n>` navigates between stack frames — extremely useful
+      for post-mortem debugging of crashes that happened in production
+      and can't easily be reproduced live.
+
+Q10. What is the difference between calloc and malloc? (calloc
+     zero-initializes, malloc does not)
+
+    - malloc(size) allocates a block of `size` bytes with UNINITIALIZED
+      (garbage) contents — whatever bytes happened to already be in that
+      memory.
+    - calloc(count, size) allocates space for `count` elements of `size`
+      bytes each (count * size total) AND zero-initializes the entire
+      block before returning it. It's not just "malloc + memset" as a
+      convenience wrapper either — some implementations can satisfy calloc
+      more efficiently (e.g. from freshly-mapped, already-zeroed OS pages)
+      than an explicit malloc+memset would be.
+
+Q11. What is realloc? What happens if the new block cannot be grown in
+     place?
+
+    - realloc(ptr, new_size) resizes a previously malloc/calloc/realloc'd
+      block to `new_size` bytes, preserving as much of the original
+      content as fits in the new size.
+    - If the allocator CAN grow the existing block in place (there's free
+      space immediately adjacent), it does so and returns the SAME pointer.
+      If it CANNOT grow in place (no adjacent free space), realloc instead
+      allocates an entirely NEW block elsewhere, copies the old data over,
+      frees the OLD block, and returns the NEW pointer — meaning the
+      returned pointer may differ from the one you passed in, and you must
+      always use the RETURN VALUE going forward, never assume the original
+      pointer is still valid. (Also: if realloc fails entirely, it returns
+      NULL and the ORIGINAL block is left untouched/still valid — a classic
+      gotcha is writing `ptr = realloc(ptr, newSize);`, which leaks the
+      original block if realloc fails, since you've overwritten your only
+      reference to it with NULL.)
+
+Q12. What is memory alignment? Why does the CPU care about it?
+
+    - Memory alignment means a data value is stored at a memory address
+      that is a multiple of its size (or some required alignment
+      boundary) — e.g. a 4-byte int aligned to a 4-byte boundary, an
+      8-byte double aligned to an 8-byte boundary.
+    - CPUs care because memory is physically fetched by the hardware in
+      fixed-size chunks (aligned to cache-line/word boundaries). A
+      properly aligned value can be read/written in a SINGLE memory
+      access. A MISALIGNED value (straddling two chunks) may require the
+      CPU to perform TWO separate memory accesses and combine the results
+      — slower — and on some architectures (historically ARM, still
+      relevant in some embedded/strict contexts), misaligned access isn't
+      just slow, it's an outright hardware fault/crash. This is why the
+      compiler automatically inserts padding in structs (see below) to
+      keep each member properly aligned.
+
+Q13. What is struct padding? Why does it happen? How to minimize it?
+     Example: struct { char a; int b; char c; } — what is sizeof?
+
+    - Struct padding is extra, unused bytes the compiler inserts BETWEEN
+      (or after) struct members so that each member ends up at a
+      properly ALIGNED address (see above), and so the struct's total
+      size is a multiple of its own required alignment (needed so arrays
+      of the struct keep every element correctly aligned too).
+    - Example: `struct { char a; int b; char c; };` on a typical 64-bit
+      system with 4-byte int alignment: `a` takes 1 byte, then 3 PADDING
+      bytes are inserted so `b` starts at a 4-byte-aligned offset; `b`
+      takes 4 bytes; `c` takes 1 byte, then 3 MORE padding bytes are added
+      at the end so the struct's total size (12 bytes) is itself a
+      multiple of 4 (the largest member's alignment requirement) — this
+      trailing padding matters for arrays of this struct. Total: sizeof
+      typically = 12, even though the "useful" data is only 1+4+1 = 6
+      bytes.
+    - Minimizing padding: reorder members from LARGEST alignment
+      requirement to SMALLEST (e.g. put the `int` first, then group the
+      `char`s together at the end) — `struct { int b; char a; char c; };`
+      typically packs down to 8 bytes instead of 12, since the two chars
+      can sit adjacent to each other in the leftover space rather than
+      each needing their own padded slot. This matters a lot for
+      large arrays of structs (cache/memory footprint) in
+      performance-sensitive or embedded code.
+
+Q14. What is the difference between delete and delete[] (deeper)? (delete[]
+     calls destructor for each element; delete only calls once)
+
+    - (Expanding on 1A Q7): `delete p` calls the destructor exactly ONCE,
+      assuming p points to a single object. `delete[] p` calls the
+      destructor once for EVERY element in the array (n times, for an
+      array of n elements) before freeing the whole block — the runtime
+      needs to know n to do this correctly, which is why compilers
+      typically store the array length in a small header just before the
+      returned pointer when you use `new T[n]` (an implementation detail,
+      not something the standard mandates the exact layout of, but a
+      common approach). Using the wrong one of the pair (delete on a
+      new[]'d array, or delete[] on a single new'd object) is undefined
+      behavior — for a class with a non-trivial destructor holding its own
+      resources, using plain `delete` on an array will destruct only the
+      FIRST element, silently leaking whatever resources the REMAINING
+      elements owned.
+
+================================================================================
+SECTION 1E — ADDITIONAL POINTER THEORY (ANSWERS)
+================================================================================
+
+Q1. What is the difference between const int* p, int* const p, and
+    const int* const p?
+
+    - `const int* p;` (equivalently `int const* p;`) — a POINTER TO CONST
+      int: p itself CAN be reassigned to point elsewhere, but you CANNOT
+      modify the int through p (`*p = 5;` is a compile error).
+    - `int* const p;` — a CONST POINTER (to non-const int): p itself
+      CANNOT be reassigned once initialized, but you CAN modify the int
+      through it (`*p = 5;` is fine).
+    - `const int* const p;` — BOTH: p cannot be reassigned, AND the int
+      cannot be modified through p. Fully read-only, fully fixed.
+    - Memory trick: read the declaration right-to-left from the variable
+      name — the `const` applies to whatever is IMMEDIATELY to its left
+      (or, if nothing is to its left, to the type immediately to its
+      right).
+
+Q2. What is an opaque pointer (PIMPL idiom)? Why is it used? What are its
+    advantages?
+
+    - An opaque pointer is a pointer to a type whose full definition is
+      deliberately HIDDEN from the header file — the header only forward-
+      declares the type (e.g. `class Impl;`) and stores a pointer to it
+      (`Impl* pImpl;` or `std::unique_ptr<Impl> pImpl;`) as a class member,
+      while the type's actual full definition (and the class's real
+      implementation details/private members) live only in the .cpp file.
+    - This is the PIMPL ("Pointer to IMPLementation") idiom. Advantages:
+      (1) Faster COMPILE TIMES — changing private implementation details
+      doesn't require recompiling every file that includes the header,
+      since the header's content (and thus its dependencies) doesn't
+      change; (2) BINARY COMPATIBILITY — the public class's size/layout as
+      seen by client code stays stable even if the private implementation
+      changes, useful for shared libraries (ABI stability); (3) hides
+      implementation details more thoroughly than plain `private:` members
+      (which still expose their types/headers to anyone including the
+      header).
+
+Q3. What is a function pointer? What is a callback function? Give a
+    real-world example. (Repeated from 1A/Functions topic — see also Q12
+    in Section 1A above.)
+
+    - Function pointer: a variable holding the address of a function,
+      callable indirectly through it, reassignable to point at a different
+      function of the same signature.
+    - Callback: a function passed (often via a function pointer,
+      std::function, or lambda) to another function, to be invoked by
+      that function later at an appropriate point, inverting control.
+    - Real-world example: `qsort()`'s comparator argument; an event handler
+      registered with a GUI framework and invoked on a button click; in
+      systems/kernel-adjacent work, an event handler registered with a
+      filesystem monitoring API (like fanotify) invoked when a matching
+      event fires.
+
+Q4. What is std::function? How is it different from a function pointer?
+
+    - std::function<Signature> is a general-purpose, type-erased callable
+      wrapper that can hold a plain function, a function pointer, a lambda
+      (WITH captures), a functor, or a std::bind result — anything
+      callable with a matching signature.
+    - A raw function pointer can ONLY point to a plain function (or a
+      captureless lambda, which decays to one) — it cannot hold a lambda
+      with captures or a functor with member state, since those carry
+      extra data beyond a bare code address. std::function pays a small
+      runtime cost (possible heap allocation for large captures, plus
+      indirection through type erasure) for this added flexibility.
+
+Q5. What is a functor (function object)? Why use it over a function
+    pointer?
+
+    - A functor is an object of a class overloading `operator()`, callable
+      like a function (`obj(args)`), able to carry internal STATE (member
+      variables set via its constructor) between calls.
+    - Preferred over a raw function pointer in TEMPLATE/generic code
+      (e.g. `std::sort` with a custom comparator) because a functor is a
+      distinct, concrete TYPE the compiler can see through fully at
+      compile time and INLINE `operator()` directly at each call site —
+      whereas a function pointer is a runtime value the compiler typically
+      cannot inline through (it's an indirect call), so functor-based
+      generic code is often measurably faster in practice.
+
+Q6. What is a lambda? How is it related to pointers and functors? Explain
+    [=], [&], [x], [&x], [this] in the capture clause.
+
+    - A lambda (`[capture](params){ body }`) is an anonymous inline
+      function object — the compiler generates a hidden class with an
+      overloaded `operator()` for it, meaning a lambda IS, structurally, a
+      functor (created for you by the compiler instead of hand-written).
+      A CAPTURELESS lambda can implicitly convert/decay to a plain function
+      pointer (since it needs no extra state); a lambda WITH captures
+      cannot, because it needs to carry that captured state along with it.
+    - Capture clause meanings:
+        [=]    capture all used outer variables BY VALUE (copies).
+        [&]    capture all used outer variables BY REFERENCE.
+        [x]    capture only x, by value.
+        [&x]   capture only x, by reference.
+        [this] capture the enclosing object's `this` pointer (by value),
+               giving access to its members inside the lambda body.
+
+Q7. What is the overhead of a pointer dereference vs a direct access?
+
+    - Direct access to a local/stack variable is typically just a register
+      or a single, statically-known-offset stack access — very cheap and
+      highly predictable for the compiler/CPU to optimize and keep in
+      registers.
+    - A pointer dereference requires first reading the POINTER's value
+      (to get an address), THEN doing a separate memory access at that
+      address — an extra level of INDIRECTION. If the pointed-to data
+      isn't already in cache, this can cost a cache miss (potentially
+      100+ cycles for a trip to main memory) that a direct/local access
+      wouldn't incur. Additionally, pointers hinder certain compiler
+      optimizations because of ALIASING concerns (see next question) — the
+      compiler often can't assume a pointer doesn't alias other data,
+      forcing it to re-read memory more conservatively than it would for
+      plain local variables.
+
+Q8. What is aliasing? What is the strict aliasing rule in C++?
+
+    - Aliasing is when two different pointers/references (of possibly
+      different or same types) refer to the SAME underlying memory
+      location. If the compiler can't be sure whether writing through one
+      pointer might affect the value read through another, it must be
+      conservative about optimizations (like reordering or caching values
+      in registers), since it can't prove they're independent.
+    - The strict aliasing rule says: the compiler is allowed to ASSUME that
+      pointers of DIFFERENT, unrelated types never point to the same
+      memory (with a few standard exceptions, like `char*`, which is
+      always allowed to alias anything). This lets the compiler optimize
+      more aggressively (e.g. keep a value in a register across a write
+      through a different-typed pointer, instead of re-reading from
+      memory defensively). VIOLATING this rule (e.g. reinterpreting a
+      `float*` as an `int*` and accessing through both) is undefined
+      behavior — it can produce surprising, seemingly "wrong" optimized
+      results, especially at higher optimization levels, because the
+      compiler assumed something the code actually violated. `memcpy` or
+      `std::bit_cast` (C++20) are the correct, well-defined ways to
+      reinterpret bytes between unrelated types.
+
+Q9. What is an iterator? Is an iterator a generalization of a pointer?
+
+    - An iterator is an object that abstracts the notion of "a position
+      within a sequence," supporting a common interface (dereference with
+      `*`, advance with `++`, compare with `==`/`!=`, and for some
+      categories, `+`, `-`, `[]`, etc.) regardless of the underlying
+      container's actual memory layout.
+    - Yes — an iterator is precisely a GENERALIZATION of a raw pointer. A
+      raw pointer into a plain array already satisfies every requirement
+      of a "random access iterator" (which is exactly why
+      `std::vector<T>::iterator` is often literally implemented as a raw
+      `T*` in many standard library implementations) — the STL
+      generalizes this pointer-like interface to work uniformly across
+      containers with very different internal layouts (e.g. a linked
+      list's iterator internally follows next-pointers, but still exposes
+      `*it`/`++it` just like a pointer would), enabling generic algorithms
+      (like std::sort, std::find) to work across any container that
+      provides a conforming iterator type.
+
+Q10. What is object pooling? Why is it preferred over repeated new/delete
+     in low-latency/high-frequency systems?
+
+    - Object pooling pre-allocates a fixed set of objects once, then
+      REUSES them repeatedly via acquire()/release() calls instead of
+      truly constructing/destructing (and allocating/freeing) a fresh
+      object every time one is needed — an "acquired" object is reset to a
+      usable state rather than freshly heap-allocated from scratch.
+    - Preferred in low-latency/HFT systems because: repeated new/delete
+      calls have unpredictable and comparatively higher latency (global
+      allocator locking, potential fragmentation, variable-time free-list
+      searches) — unacceptable when you need MICROSECOND-level,
+      LOW-JITTER predictability. An object pool turns "allocate an object"
+      into "pop a pre-existing object off a free list" (and "release" into
+      "push it back") — both O(1) and extremely low-variance operations,
+      with essentially no interaction with the general-purpose heap
+      allocator on the hot path at all.
+
+================================================================================
+SECTION 3 — ADDITIONAL THEORY QUESTIONS (ANSWERS)
+================================================================================
+
+Q1. What is the PIMPL (Pointer to Implementation) idiom? Why does it
+    improve compile times and binary compatibility?
+
+    (See 1E Q2 above for the core explanation — repeated here per the
+    question bank's own duplication):
+    - PIMPL hides a class's private implementation behind an opaque
+      pointer to a forward-declared type, so the header exposes only the
+      public interface, not implementation details or their #include
+      dependencies.
+    - Compile times improve because changing the hidden implementation
+      doesn't force every including file to recompile (the header's
+      textual content is unaffected). Binary compatibility improves
+      because the PUBLIC class's memory layout (as seen by client code)
+      stays fixed regardless of internal changes, which matters a lot for
+      shared libraries where clients are compiled separately from the
+      library and shouldn't need to be recompiled for every internal
+      change.
+
+Q2. What is a handle-body pattern? How is it related to PIMPL?
+
+    - The handle-body (or handle/body, or "letter-envelope") pattern
+      separates a class into two parts: a lightweight "handle" object that
+      client code interacts with directly, and a separate "body" object
+      that holds the actual data/implementation, referenced (often via
+      reference counting, similar to shared_ptr) from the handle.
+    - PIMPL is essentially a SPECIFIC, simpler variant/application of this
+      broader pattern — PIMPL typically has one handle owning exactly one
+      body with unique ownership (no sharing), primarily for compile-time
+      decoupling, whereas the general handle-body pattern can support
+      SHARED bodies across multiple handles (useful for copy-on-write
+      semantics, for example) — the same underlying idea of separating
+      interface from a hidden implementation object accessed via a
+      pointer/reference.
+
+Q3. What is std::weak_ptr::lock()? Why is it needed?
+
+    - `.lock()` attempts to obtain a temporary, valid `shared_ptr` from a
+      `weak_ptr`. If the object the weak_ptr observes is STILL ALIVE
+      (some shared_ptr still owns it), `.lock()` returns a shared_ptr to
+      it (safely bumping the reference count for as long as you hold that
+      returned shared_ptr). If the object has ALREADY been destroyed,
+      `.lock()` returns an EMPTY (null) shared_ptr instead.
+    - It's needed because you can never safely dereference a weak_ptr
+      directly — since it doesn't keep the object alive, the object could
+      have been destroyed at any point since the weak_ptr was created.
+      `.lock()` is the safe, atomic way to check-and-obtain temporary
+      ownership in one step, avoiding a race between "check if still
+      alive" and "use it" (which would otherwise be a classic
+      time-of-check-to-time-of-use bug, especially in multithreaded code).
+
+Q4. What is the difference between std::make_unique and new with
+    unique_ptr? (Exception safety — make_unique is safer)
+
+    - `std::make_unique<T>(args...)` constructs the T object AND wraps it
+      in a unique_ptr in a single call, in one step.
+    - `std::unique_ptr<T> p(new T(args...));` does it in two logically
+      separate steps: first `new T(args...)` runs, THEN the resulting raw
+      pointer is passed to the unique_ptr constructor.
+    - The exception-safety issue arises in a more complex expression, e.g.
+      a function call like `f(std::unique_ptr<T>(new T()), otherFunc())` —
+      the C++ standard (pre-C++17) did not guarantee the ORDER in which
+      argument sub-expressions are evaluated. If `new T()` runs, then
+      `otherFunc()` is evaluated and THROWS an exception BEFORE the
+      unique_ptr's constructor gets to wrap the raw pointer, the raw
+      pointer from `new T()` is leaked — nothing owns it yet to clean it
+      up during the exception's stack unwinding. `make_unique` avoids this
+      entirely because construction and wrapping happen atomically inside
+      a single function call, with no gap where a leaked raw pointer could
+      exist. (C++17 tightened evaluation order rules, closing most of this
+      specific gap, but make_unique remains the recommended, safer, more
+      concise idiom regardless.)
+
+Q5. What is std::make_shared vs new with shared_ptr? (make_shared
+    allocates control block + object in one allocation — more efficient)
+
+    - `std::shared_ptr<T> p(new T(args...));` performs TWO separate heap
+      allocations: one for the T object itself (from `new T`), and a
+      SECOND, separate one for the shared_ptr's internal control block
+      (which holds the reference count and other bookkeeping).
+    - `std::make_shared<T>(args...)` allocates BOTH the T object and its
+      control block together, in a SINGLE heap allocation — more efficient
+      (fewer allocator calls, better cache locality since object and
+      control block sit next to each other) and also has the same
+      exception-safety benefit as make_unique in complex expressions. One
+      trade-off to be aware of: because the object and control block share
+      one allocation, the memory for the T object itself isn't freed until
+      ALL weak_ptrs referencing it are also gone (not just all shared_ptrs)
+      — with the two-allocation `new` + shared_ptr approach, the object's
+      memory can be freed as soon as the last shared_ptr is gone, even if
+      weak_ptrs still exist (only the smaller control block lingers). This
+      is a minor, rarely-relevant difference in most code, but has
+      mattered in some large-object-with-long-lived-weak_ptr scenarios.
+
+================================================================================
+SECTION 4 — TRICKY / GOTCHA QUESTIONS
+     (Sound right but aren't, or vice versa — classic pointer/reference/
+      smart-pointer interview traps.)
+================================================================================
+
+1. "If a raw pointer is not nullptr, it must be pointing to valid,
+   still-alive memory." TRICKY: FALSE — a dangling pointer (pointing to
+   memory that's already been freed) is almost never nullptr; it still
+   holds the OLD address, which now may be reused, unmapped, or garbage.
+   Checking `if (p != nullptr)` tells you nothing about whether the
+   memory it points to is actually still valid.
+
+2. "delete p; automatically sets p to nullptr, so it's safe to check
+   `if (p)` afterward." TRICKY: FALSE — `delete` frees the memory and
+   calls the destructor, but does NOT modify the pointer variable itself
+   — p still holds the OLD (now dangling) address after `delete p;`. You
+   must manually set `p = nullptr;` yourself if you want that safety net.
+
+3. "Using delete on a heap-allocated array (new T[n]) instead of
+   delete[] will still work correctly as long as T has no destructor to
+   worry about (e.g. T = int)." TRICKY: Partially true in PRACTICE for
+   trivial types on many implementations (no destructors to skip, so no
+   obviously "wrong" behavior visible), but it is technically UNDEFINED
+   BEHAVIOR regardless of the type — the standard doesn't carve out an
+   exception for trivial types, and different allocators/implementations
+   are free to behave differently (e.g. corrupting internal bookkeeping
+   used to track the array's size), so "it happened to work" is not the
+   same as "it's correct" — don't rely on it, even for `int`.
+
+4. "A const reference parameter guarantees the caller's object can never
+   be modified during the function call, period." TRICKY: FALSE (subtle)
+   — a const reference only prevents modification THROUGH THAT
+   REFERENCE, inside that function. If another part of the program holds
+   a non-const pointer/reference to the SAME object and mutates it
+   concurrently (e.g. in a different thread, or via a callback the
+   function itself invokes), the "const" parameter offers no protection
+   against that — const is a compile-time promise about how you'll use
+   that particular name, not a guarantee about the object's actual
+   mutability from every angle.
+
+5. "shared_ptr automatically prevents all memory leaks in a C++ program,
+   as long as you use it everywhere instead of raw pointers." TRICKY:
+   FALSE — a CIRCULAR reference between two shared_ptrs (A holds a
+   shared_ptr to B, B holds a shared_ptr back to A) keeps both objects
+   alive forever with a reference count that never reaches zero, leaking
+   memory just as surely as forgetting a `delete` would — shared_ptr
+   alone doesn't solve cycles; you need weak_ptr for that.
+
+6. "std::move(x) immediately transfers/moves the resources out of x." 
+   TRICKY: FALSE — std::move is JUST A CAST to an rvalue reference; it
+   doesn't move anything by itself. The object `x` is completely
+   unchanged immediately after the `std::move(x)` expression alone —
+   the actual "move" (stealing internal state) only happens if the
+   casted result is subsequently used to construct or assign into
+   something with a move constructor/assignment defined.
+
+7. "After doing `T b = std::move(a);`, the object `a` is guaranteed to be
+   empty/zeroed out." TRICKY: FALSE (subtle, but important) — the C++
+   standard only guarantees that a moved-from standard-library object is
+   left in a VALID BUT UNSPECIFIED state (safe to destroy or reassign, but
+   its exact contents are unspecified — e.g. don't assume `a.empty()` is
+   true for a moved-from std::vector, even though it usually is for common
+   implementations; the standard doesn't strictly promise it). For your
+   OWN custom move constructors, "empty/reset" is a common convention you
+   choose to implement, but it's your class's own contract, not something
+   the language itself enforces universally.
+
+8. "A dangling reference is safer than a dangling pointer because
+   references can't be null, so you can always trust a reference is
+   valid." TRICKY: FALSE, and actually backward in a practical sense — a
+   reference's inability to be null just means there's no "safe" sentinel
+   value to check against; a dangling reference LOOKS exactly like a
+   perfectly normal, valid variable at the point of use (no `*`/`->`
+   syntax hinting "this might be risky"), making the bug HARDER to spot
+   during review than a dangling pointer, which at least visually signals
+   "this involves indirection, be careful."
+
+9. "Returning a reference to a local variable from a function is a
+   compile error, so the compiler protects you from this bug." TRICKY:
+   FALSE — most compilers only WARN (and only with sufficient warning
+   flags enabled, e.g. -Wall -Wreturn-local-addr) about returning a
+   reference to a local variable; it is NOT a hard compile error in
+   standard C++, and the code will compile and run, exhibiting undefined
+   behavior (accessing a destroyed stack frame) at the call site.
+
+10. "make_shared is always strictly better than new + shared_ptr, with no
+    trade-offs." TRICKY: Mostly true and the right DEFAULT choice, but not
+    an absolute — because make_shared allocates the control block and
+    object together in one block, that combined memory isn't fully freed
+    until BOTH all shared_ptrs AND all weak_ptrs referencing it are gone
+    (with plain `new` + shared_ptr, the object's own memory can be freed
+    as soon as the last shared_ptr disappears, leaving only the smaller,
+    separate control block alive for any remaining weak_ptrs) — a genuine,
+    if usually minor, trade-off in scenarios with large objects and
+    long-outliving weak_ptrs.
+
+11. "A void pointer can be dereferenced directly, since it's just a
+    generic pointer that works for any type." TRICKY: FALSE — you cannot
+    dereference a `void*` directly at all; the compiler has no idea what
+    type/size of object it points to, so `*vp` is a compile error. You
+    must first cast it to a concrete pointer type
+    (`*static_cast<int*>(vp)`) before dereferencing.
+
+12. "int* const p and const int* p mean essentially the same thing, just
+    written differently." TRICKY: FALSE — they are opposite in what's
+    fixed. `int* const p` is a pointer that CANNOT be reassigned but CAN
+    modify the pointed-to int; `const int* p` is a pointer that CAN be
+    reassigned but CANNOT modify the pointed-to int through it. Mixing
+    these up is one of the most common C++ interview traps.
+
+13. "Reordering struct members never changes sizeof(struct) — padding is
+    fixed regardless of member order." TRICKY: FALSE — padding depends
+    DIRECTLY on member order (to keep each member aligned). Grouping
+    same/smaller-alignment members together and putting larger-alignment
+    members first can substantially reduce total padding and shrink
+    sizeof(struct) — a classic embedded/systems interview question
+    (see 1D Q13's example: 12 bytes vs 8 bytes just from reordering).
+
+14. "Since realloc might move the block, you should always write
+    `ptr = realloc(ptr, newSize);` to stay safe." TRICKY: FALSE (this is
+    actually a dangerous pattern) — if realloc FAILS, it returns NULL
+    while leaving the ORIGINAL block untouched and still valid; but
+    `ptr = realloc(ptr, newSize);` immediately overwrites your only
+    reference to that original block with NULL, LEAKING it. The safe
+    pattern is to realloc into a TEMPORARY variable first, check it for
+    NULL, and only then assign it back to `ptr`:
+    `void* tmp = realloc(ptr, newSize); if (tmp) ptr = tmp; else /* handle
+    failure, ptr is still valid */;`
+
+15. "An iterator is basically a pointer with a different name — they're
+    always interchangeable." TRICKY: FALSE — a raw pointer into an ARRAY
+    happens to satisfy the requirements of a random-access iterator, but
+    iterators are a much broader abstraction — e.g., a std::list's
+    iterator internally follows linked-list next/prev pointers and does
+    NOT support pointer arithmetic like `it + 5` (only `std::advance`/
+    repeated `++`), and a std::map's iterator navigates a tree structure.
+    Treating "iterator" and "pointer" as fully interchangeable breaks down
+    the moment you're working with a non-contiguous container.
+
+================================================================================
+END OF FILE
+================================================================================

@@ -1,0 +1,690 @@
+================================================================================
+     STL VECTOR — THEORY ANSWERS + TRICKY QUESTIONS + FULL BUILT-IN
+     FUNCTION / OPERATIONS REFERENCE
+================================================================================
+
+================================================================================
+SECTION 1A — VECTOR INTERNALS & MEMORY (ANSWERS)
+================================================================================
+
+Q1. What is a vector in C++? How is it different from a raw array?
+
+    - std::vector is a DYNAMIC ARRAY container from the STL — it stores
+      elements CONTIGUOUSLY in heap-allocated memory, automatically
+      grows as elements are added, and manages its own memory (no manual
+      new/delete needed).
+    - Difference from a raw array: a raw array (`int arr[10];`) has a
+      FIXED size decided at compile time (or, for `new int[n]`, at
+      allocation time but never changeable afterward) and carries NO
+      built-in length information once it decays to a pointer. A vector
+      knows its own size/capacity at all times, resizes automatically
+      (`push_back` grows it as needed), and cleans up its own memory
+      automatically via RAII when it goes out of scope.
+
+Q2. How does vector<int> work internally? What happens when it resizes
+    (push_back beyond capacity)?
+
+    - Internally, a vector manages a single contiguous heap buffer, plus
+      (conceptually) three values: a pointer to the start of the data, a
+      `size` (number of constructed elements), and a `capacity` (total
+      allocated slots before a resize is needed).
+    - When `push_back` is called and `size() == capacity()` (buffer is
+      full), the vector must GROW: it allocates a NEW, larger block
+      (typically ~2x the old capacity, implementation-defined — GCC's
+      libstdc++ uses exactly 2x), MOVES (or copies, if no move
+      constructor is available/noexcept) every existing element into the
+      new block, destroys the old elements, and frees the old block.
+      This single operation is O(N), but happens exponentially less often
+      as the vector grows, giving amortized O(1) per push_back overall
+      (see Q3).
+
+Q3. What is amortized O(1) for vector push_back? Explain the resizing
+    strategy.
+
+    - "Amortized O(1)" means that while any SINGLE push_back call might
+      occasionally cost O(N) (when a reallocation triggers), the AVERAGE
+      cost per call, over a long sequence of N push_backs, is O(1).
+    - The resizing strategy uses GEOMETRIC (doubling-style) growth rather
+      than a fixed increment — each resize roughly doubles capacity, so
+      the total cost of ALL the copying across N insertions sums to
+      O(1+2+4+...+N) ≈ O(2N) = O(N) overall — spread across N calls,
+      that's O(N)/N = O(1) amortized per call. (If it grew by a fixed
+      +1 each time instead, the total copying cost would be O(N) copies
+      happening O(N) times — true O(N^2) worst case — which is exactly
+      why geometric growth matters.)
+
+Q4. What is the difference between vector size() and capacity()?
+
+    - `size()`: the number of elements CURRENTLY stored in the vector
+      (how many you can actually index/iterate over).
+    - `capacity()`: the total number of elements the vector's CURRENTLY
+      ALLOCATED buffer can hold before it needs to reallocate — always
+      `>= size()`. The "spare room" is `capacity() - size()`.
+
+Q5. What does reserve() do? How is it different from resize()?
+
+    - `reserve(n)`: pre-allocates enough buffer CAPACITY for at least n
+      elements, WITHOUT changing `size()` or constructing any new
+      elements — purely a performance hint to avoid future
+      reallocations.
+    - `resize(n)`: actually CHANGES `size()` to n. If n > current size,
+      it CONSTRUCTS new elements (default- or value-initialized) to fill
+      the gap (and may trigger a reallocation if n exceeds capacity); if
+      n < current size, it DESTROYS the extra elements. Confusing the
+      two is a common source of "why is my vector full of zeros" or
+      index-out-of-range bugs.
+
+Q6. What does shrink_to_fit() do? Is it guaranteed to reduce capacity?
+
+    - `shrink_to_fit()` is a NON-BINDING REQUEST asking the
+      implementation to reduce `capacity()` down toward `size()`,
+      releasing unused memory. It is NOT guaranteed by the standard to
+      actually do anything — an implementation is free to ignore the
+      request entirely (similar in spirit to the `inline` keyword being
+      only a hint). In practice, most major implementations (libstdc++,
+      libc++, MSVC) do honor it by reallocating a tightly-sized buffer
+      and swapping it in, but this isn't a portability guarantee.
+
+Q7. What is the complexity of inserting at the beginning of a vector? How
+    would you make this faster?
+
+    - O(N) — inserting at position 0 requires shifting every existing
+      element one slot to the right to make room, and may also trigger a
+      reallocation if capacity is exceeded.
+    - To make front-insertion fast, use `std::deque<T>` instead, which
+      supports O(1) amortized insertion/removal at BOTH the front and
+      back (implemented internally as a sequence of fixed-size chunks
+      rather than one contiguous array) — at the cost of slightly worse
+      cache locality than vector for pure sequential iteration.
+
+Q8. Why is cache performance better for vector than linked list? Explain
+    spatial locality.
+
+    - Spatial locality: CPUs fetch memory in fixed-size chunks (cache
+      lines, commonly 64 bytes), speculatively pulling in NEARBY
+      addresses because programs tend to access nearby memory soon
+      after. A vector's elements are stored CONTIGUOUSLY, so accessing
+      `v[i]` pre-loads `v[i+1]`, `v[i+2]`, etc. into cache "for free,"
+      making sequential traversal very fast.
+    - A linked list violates this — each node is a SEPARATE heap
+      allocation potentially scattered anywhere in memory, so moving
+      from one node to the next via its pointer very often triggers a
+      fresh cache-line fetch (or a full trip to main memory), making
+      traversal dramatically slower in PRACTICE than a vector of the
+      same logical size, despite both being "O(N)" in Big-O terms.
+
+Q9. What happens to iterators, pointers, and references after
+    push_back?
+
+    - They may be INVALIDATED — specifically, if the push_back triggers
+      a REALLOCATION (size() was already equal to capacity()), the
+      ENTIRE underlying buffer moves to a new memory address, so ALL
+      existing iterators, pointers, and references into the vector
+      become dangling — even ones pointing at elements you never
+      touched. If NO reallocation happens (there was spare capacity),
+      existing iterators/pointers/references to elements BEFORE the new
+      one remain valid; only the "end" iterator changes.
+
+Q10. What is iterator invalidation in vector? Which operations cause it?
+
+    - Iterator invalidation is when a previously-obtained iterator (or
+      pointer/reference) into a container becomes UNSAFE TO USE, because
+      the container's internal state changed in a way that makes it no
+      longer point at valid/intended data.
+    - push_back/insert: MAY invalidate ALL iterators/pointers/references
+      if a reallocation occurs (the whole buffer moved); if no
+      reallocation occurs, only iterators AT OR AFTER the insertion
+      point are invalidated (for insert; push_back only affects `end()`
+      in that case).
+    - erase: invalidates the erased element's iterator AND all iterators
+      from the erased position ONWARD (since elements shift left to fill
+      the gap) — iterators BEFORE the erased position remain valid.
+    - clear(): invalidates ALL iterators/pointers/references (the
+      elements are destroyed, though the buffer's memory address itself
+      doesn't necessarily change).
+
+Q11. What is the difference between vector<bool> and vector<char>? Why
+     is vector<bool> considered a special case / a mistake?
+
+    - `vector<char>` behaves like any normal vector — `operator[]`
+      returns a real `char&` reference, elements are stored one full
+      byte each.
+    - `vector<bool>` is a SPECIAL, BIT-PACKED specialization in the
+      standard — each bool is stored as a single BIT (not a byte) to
+      save memory, which means `operator[]` CANNOT return a real `bool&`
+      (you can't take a reference to a single bit in ordinary memory) —
+      it instead returns a PROXY OBJECT that mimics reference-like
+      behavior. This breaks generic code that assumes `T&` works the
+      normal way (a common trap), which is why many style guides and
+      even members of the C++ standards committee have called
+      `vector<bool>` a design mistake — recommended alternatives are
+      `std::deque<bool>` or `std::bitset<N>` (fixed size) if you
+      specifically need a real bool container/reference semantics.
+
+Q12. When would you use vector::emplace_back() over push_back()?
+
+    - `emplace_back(args...)` CONSTRUCTS the new element IN PLACE at the
+      end, forwarding `args...` directly to the element type's
+      constructor — avoiding the creation of a TEMPORARY object and a
+      subsequent copy/move that `push_back(T(args...))` would otherwise
+      require.
+    - Prefer it when the element type is a non-trivial class/struct being
+      constructed FROM constructor arguments directly — e.g.
+      `v.emplace_back(1, "abc")` for a struct with a matching two-
+      argument constructor — generally preferred over push_back for such
+      types in modern C++. For simple types (int, etc.) or when you
+      already HAVE a constructed object to add, there's no meaningful
+      difference.
+
+Q13. What is the difference between vector::at() and vector::operator[]?
+
+    - `operator[]` gives DIRECT, UNCHECKED access — if the index is out
+      of bounds, it's UNDEFINED BEHAVIOR (no exception, may read
+      garbage or crash). Slightly faster in principle (no bounds check),
+      though the difference is often negligible in optimized code.
+    - `.at()` gives BOUNDS-CHECKED access — throws `std::out_of_range` if
+      the index is `>= size()`. Prefer `.at()` when the index comes from
+      untrusted/error-prone computation; prefer `[]` in tight,
+      already-verified loops.
+
+Q14. What is the erase-remove idiom? Why is erase() alone not enough?
+
+    - `erase()` at a SPECIFIC position removes just that one element
+      (shifting everything after it left) — O(N) for that single
+      removal. To remove ALL occurrences of a value, calling `erase()`
+      repeatedly in a loop for each match is INEFFICIENT (O(N) shifting
+      work PER removal, giving O(N^2) total for many matches) and also
+      risks the classic iterator-invalidation bug if not done carefully.
+    - The erase-remove idiom combines `std::remove` (which shifts all
+      NON-matching elements forward, in ONE O(N) pass, and returns a new
+      logical "end" iterator — but does NOT actually shrink the
+      container) with `erase()` called ONCE on the range from that new
+      logical end to the real end:
+          v.erase(std::remove(v.begin(), v.end(), value), v.end());
+      This achieves the full removal in a single O(N) pass followed by
+      one O(N) erase, rather than repeated O(N) erases — and is the
+      idiomatic, efficient way to remove all matching elements from a
+      vector.
+
+================================================================================
+SECTION 1B — VECTOR OPERATIONS & STL ALGORITHMS (ANSWERS)
+================================================================================
+
+Q1. What is the time complexity of push_back, pop_back, insert, erase,
+    access in vector?
+
+    - push_back: amortized O(1) (worst case O(N) on a reallocating call).
+    - pop_back: O(1).
+    - access (`[]`/`.at()`): O(1).
+    - insert (middle/front): O(N) (shifting required); insert at end
+      behaves like push_back.
+    - erase (middle/front): O(N) (shifting required to close the gap);
+      erase at the very end is O(1).
+
+Q2. What is the difference between vector::clear() and assigning an
+    empty vector?
+
+    - `v.clear()`: destroys all elements, sets `size()` to 0, but leaves
+      `capacity()` UNCHANGED (the allocated memory is kept around for
+      potential future reuse).
+    - `v = {};` (assigning an empty vector/initializer list): logically
+      similar in effect (size becomes 0), but whether the underlying
+      memory is ACTUALLY released depends on the implementation — it MAY
+      or may not free the old buffer (often it does NOT, for the same
+      "avoid reallocation if you push_back again soon" reasoning as
+      clear()). If you specifically want to RELEASE the memory in either
+      case, follow up with `v.shrink_to_fit();` (non-binding request) or
+      use the classic swap-with-temporary idiom:
+      `std::vector<T>(v).swap(v);` (or `std::vector<T>().swap(v);` to
+      also empty it).
+
+Q3. What is the difference between find() and binary_search() for
+    vectors?
+
+    - `std::find(v.begin(), v.end(), value)`: LINEAR search, O(N), works
+      on ANY vector (sorted or not) — returns an iterator to the first
+      match, or `end()` if not found.
+    - `std::binary_search(v.begin(), v.end(), value)`: O(log N), but
+      REQUIRES the range to already be SORTED — returns only a `bool`
+      (existence), not a position/iterator (use `lower_bound` if you
+      need the position too).
+
+Q4. What is lower_bound vs upper_bound on a sorted vector?
+
+    - `std::lower_bound(v.begin(), v.end(), x)`: returns an iterator to
+      the FIRST element that is NOT LESS THAN x (i.e., the first element
+      >= x) — this is also the correct INSERTION POINT to keep the
+      vector sorted if you wanted to insert x before any existing equal
+      elements.
+    - `std::upper_bound(v.begin(), v.end(), x)`: returns an iterator to
+      the FIRST element STRICTLY GREATER THAN x — the correct insertion
+      point to insert x AFTER any existing equal elements.
+    - Both run in O(log N) on a sorted range. Together, `[lower_bound(x),
+      upper_bound(x))` gives you the exact range of elements EQUAL to x
+      — useful for counting duplicates: `upper_bound - lower_bound`.
+
+Q5. What does std::sort use internally on vectors? What is its
+    complexity?
+
+    - Most standard library implementations use INTROSORT — a HYBRID
+      algorithm that starts with QUICKSORT (fast average case), falls
+      back to HEAPSORT if the recursion depth gets too large (guarding
+      against quicksort's O(N^2) worst case on adversarial input), and
+      switches to INSERTION SORT for small sub-ranges (where its low
+      constant-factor overhead beats quicksort/heapsort's overhead for
+      small N).
+    - Complexity: O(N log N) average AND worst case (the heapsort
+      fallback guarantees this, unlike plain quicksort's O(N^2) worst
+      case).
+
+Q6. What is stable_sort? When would you use it over sort?
+
+    - `std::stable_sort` sorts a range while PRESERVING THE RELATIVE
+      ORDER of elements that compare EQUAL (i.e., if two elements are
+      "equal" per the comparator but were originally in a particular
+      order, that relative order is guaranteed to be maintained after
+      sorting). Plain `std::sort` gives NO such guarantee for equal
+      elements.
+    - Typical complexity: O(N log N) if enough extra memory is
+      available (usually the case), but can degrade to O(N log^2 N) if
+      memory allocation fails and it falls back to an in-place merge.
+    - Use it when: you need MULTI-KEY sorting where "equal" elements
+      (by the current sort key) should retain their prior order from a
+      PREVIOUS sort pass (or their original insertion order) — e.g.
+      sorting a list of records by "department" while preserving their
+      existing order by "name" within each department (having already
+      sorted by name earlier).
+
+Q7. What is the difference between vector::assign() and the = operator?
+
+    - `v.assign(n, value)` or `v.assign(first, last)`: REPLACES ALL
+      current contents with n copies of value, or with a copy of a given
+      RANGE — flexible, can change both the TYPE of source (any
+      iterator range) and reuse the assign call for varied replacement
+      patterns.
+    - `v = other;` (copy assignment) or `v = {1,2,3};` (initializer-list
+      assignment): replaces contents with a copy of ANOTHER VECTOR (of
+      the same type) or an initializer list specifically — more limited
+      in what it can be assigned FROM compared to assign()'s
+      range-based flexibility, but more common/idiomatic for the simple
+      "replace with this other vector" case.
+
+Q8. What is std::move for vectors? What happens to the source vector
+    after move?
+
+    - `std::move(v)` casts `v` to an RVALUE REFERENCE, making it eligible
+      to be MOVED FROM (rather than copied) when used to construct or
+      assign into another vector — e.g. `vector<int> v2 =
+      std::move(v1);` transfers v1's internal buffer pointer to v2 in
+      O(1), instead of copying all N elements in O(N).
+    - After the move, the SOURCE vector (`v1` in the example) is left in
+      a VALID BUT UNSPECIFIED state — the standard only guarantees it's
+      safe to destroy or reassign; in practice, essentially all major
+      implementations leave it EMPTY (size 0), but this specific "empty"
+      behavior is a common/reliable IMPLEMENTATION behavior, not a
+      standard-mandated guarantee — don't write portable code that
+      strictly depends on the moved-from vector being empty, though
+      relying on it being SAFE to use (assign to it, call clear()/size()
+      on it, destroy it) is fully standard-guaranteed.
+
+Q9. How would you copy a vector efficiently? What are the different
+    ways?
+
+    - Copy constructor: `vector<int> v2 = v1;` or `vector<int> v2(v1);`
+      — the simplest, most idiomatic way; performs a full O(N) deep
+      copy of all elements.
+    - Copy assignment: `v2 = v1;` (if v2 already exists) — also O(N),
+      may reuse v2's existing buffer if it already has sufficient
+      capacity, avoiding a fresh allocation in some cases.
+    - `std::copy(v1.begin(), v1.end(), std::back_inserter(v2));` — O(N),
+      useful when you want to copy INTO an existing vector (appending)
+      or copy only a SUBRANGE rather than the whole vector.
+    - Range constructor: `vector<int> v2(v1.begin(), v1.end());` — O(N),
+      equivalent to the copy constructor for copying an entire vector,
+      but also works for copying just a SUBRANGE or from a DIFFERENT
+      container type entirely (e.g. constructing a vector from a list's
+      iterators).
+    - All of these are fundamentally O(N) — there's no way to "copy" N
+      independent elements faster than visiting each one; "efficient"
+      copying in practice mostly means AVOIDING unnecessary copies in
+      the first place (e.g. using `std::move` or passing by
+      const-reference instead of by value when a real independent copy
+      isn't actually needed).
+
+================================================================================
+SECTION 2 — TRICKY / GOTCHA QUESTIONS
+     (Sound right but aren't, or vice versa — vector-specific interview
+      traps, matching the style of your "new + free" example. Includes
+      full explanations of the quick-fire output questions from your
+      bank's Section 6.)
+================================================================================
+
+1. "vector<int> v = {1, 2, 3}; auto it = v.begin(); v.push_back(4);
+   cout << *it; — this always prints 1." TRICKY: FALSE / UNDEFINED
+   BEHAVIOR — `push_back` may trigger a REALLOCATION if the vector's
+   capacity was already exactly 3 (very likely for a 3-element
+   initializer-list-constructed vector). If it reallocates, the ENTIRE
+   buffer moves to a new memory address, and `it` — obtained BEFORE the
+   push_back — becomes a DANGLING iterator. Dereferencing it (`*it`) is
+   undefined behavior: it might happen to print 1 (if the old memory
+   hasn't been reused/overwritten yet), print garbage, or crash — you
+   cannot rely on any particular outcome.
+
+2. "vector<int> v(5, 0); v.resize(3); — this frees the memory for the
+   2 removed elements, so capacity() becomes 3." TRICKY: FALSE — 
+   `resize()` down to a smaller size DESTROYS the extra elements
+   (reducing `size()` to 3) but does NOT release the underlying memory —
+   `capacity()` remains 5 (unchanged). Only `shrink_to_fit()` (a
+   non-binding request) or the swap-with-temporary idiom can actually
+   reduce capacity.
+
+3. "vector<int> v; v.reserve(100); cout << v.size(); — prints 100, since
+   reserve allocates 100 slots." TRICKY: FALSE — `reserve(100)` only
+   changes `capacity()` to (at least) 100; it does NOT construct any
+   elements or change `size()` at all. `v.size()` still prints 0
+   immediately after `reserve(100)`; only `v.capacity()` reflects the
+   100.
+
+4. "for (auto it = v.begin(); it != v.end(); ++it) if (*it == 2)
+   v.erase(it); — this correctly erases all 2s from the vector, just
+   like removing items from a list while iterating in other languages."
+   TRICKY: FALSE, and this is UNDEFINED BEHAVIOR — `erase(it)`
+   invalidates `it` itself (and every iterator from that position
+   onward), so the subsequent `++it` in the for-loop's update clause
+   operates on an ALREADY-INVALIDATED iterator — undefined behavior,
+   which might skip elements, crash, or behave inconsistently across
+   runs/compilers. The correct pattern reassigns the iterator from
+   erase()'s return value and explicitly avoids the loop's own `++it`
+   on that iteration:
+          for (auto it = v.begin(); it != v.end(); ) {
+              if (*it == 2) it = v.erase(it);   // erase returns next valid it
+              else ++it;
+          }
+      (Or, for removing ALL occurrences of a value — not just
+      conditionally per iteration — the erase-remove idiom is both
+      simpler AND more efficient: see Section 1A Q14.)
+
+5. "vector<int> v1(10); and vector<int> v2; v2.reserve(10); — these are
+   functionally identical, since both 'reserve space for 10 ints'."
+   TRICKY: FALSE — `vector<int> v1(10);` creates a vector with SIZE 10,
+   containing 10 DEFAULT-INITIALIZED (value-initialized, so 0 for int)
+   elements — `v1[5]` is valid and reads 0. `v2.reserve(10);` creates a
+   vector with SIZE 0 (capacity 10) — NO elements exist yet;
+   `v2[5]` is UNDEFINED BEHAVIOR (out of bounds, since size() is still
+   0) even though the underlying memory happens to be allocated. This
+   size-vs-capacity distinction is one of the single most common vector
+   interview traps.
+
+6. "std::vector<bool> works exactly like std::vector<char> or
+   std::vector<int>, just with bool elements — you can freely take a
+   bool& reference to any element." TRICKY: FALSE — `vector<bool>` is a
+   special, BIT-PACKED specialization; `operator[]` returns a PROXY
+   OBJECT, not a real `bool&` — code that tries to bind a genuine
+   `bool&` reference to an element (`bool& ref = v[i];`) will not
+   compile the way it does for every other vector type, and generic
+   template code that assumes `T&` works uniformly can break
+   specifically for this type. Many consider this a design mistake in
+   the standard.
+
+7. "Since std::sort is O(N log N), it's always faster than
+   std::stable_sort for the same input." TRICKY: Misleading — both are
+   typically O(N log N) in practice for `std::sort` and (with
+   sufficient available memory) `std::stable_sort` as well — the real
+   difference isn't reliably "sort is always faster," it's that
+   `stable_sort` PRESERVES the relative order of equal elements while
+   `sort` does not, and `stable_sort` can occasionally degrade to
+   O(N log^2 N) if memory allocation fails, which `sort` (typically
+   introsort, in-place) doesn't need to worry about. Choose based on
+   whether you NEED stability, not purely on a performance
+   assumption that may not hold in practice for typical inputs.
+
+8. "After std::vector<int> v2 = std::move(v1);, v1 is guaranteed to be
+   empty (size() == 0), and you can rely on this in portable code."
+   TRICKY: FALSE (subtle but important) — the C++ standard only
+   guarantees a moved-from vector is left in a VALID BUT UNSPECIFIED
+   state (safe to destroy, reassign, or call basic operations like
+   size()/clear() on) — it does NOT strictly guarantee the moved-from
+   vector is empty. In PRACTICE, virtually every major implementation
+   does leave it empty, but writing code that assumes this as a
+   language guarantee (rather than a common practical behavior) is
+   technically relying on unspecified behavior.
+
+9. "reserve() and resize() are basically interchangeable — both just
+   make sure the vector has enough room for N elements." TRICKY: FALSE
+   — `reserve(n)` only affects `capacity()` (no elements constructed,
+   `size()` unchanged); `resize(n)` changes `size()` itself, actually
+   CONSTRUCTING (or destroying) elements to reach exactly n. Using
+   `reserve()` when you actually need `v[i]` to be valid for i < n (i.e.
+   you need real, constructed elements to index into) is a bug — you
+   need `resize()` for that; `reserve()` alone leaves size() at 0 (or
+   whatever it was before), so indexing into the "reserved" space is
+   undefined behavior.
+
+10. "emplace_back always performs strictly better than push_back, so you
+    should replace every push_back call with emplace_back." TRICKY:
+    Overstated — for SIMPLE types (int, double, or when you already have
+    a fully-constructed object ready to add), emplace_back and
+    push_back perform essentially identically (the compiler often
+    generates the same code either way) — the real benefit of
+    emplace_back specifically shows up when constructing a NON-TRIVIAL
+    object FROM CONSTRUCTOR ARGUMENTS directly, avoiding an intermediate
+    temporary object's construction + copy/move. Blindly replacing every
+    push_back with emplace_back isn't wrong, but it's not universally
+    "strictly better" either — it's most impactful specifically for
+    constructor-argument-based insertion of non-trivial types.
+
+================================================================================
+SECTION 3 — VECTOR: FULL BUILT-IN FUNCTION & OPERATIONS REFERENCE
+     (usage, complexity, and when to reach for each)
+================================================================================
+
+--- CONSTRUCTION ---
+
+  vector<T> v;                     — empty vector, size 0, capacity 0
+                                      (or small implementation-defined
+                                      initial capacity for some impls).
+  vector<T> v(n);                  — n DEFAULT-initialized elements
+                                      (0 for int, empty for string, etc).
+                                      O(N).
+  vector<T> v(n, value);           — n copies of `value`. O(N).
+  vector<T> v = {1, 2, 3};         — initializer-list construction. O(N).
+  vector<T> v(other.begin(), other.end());
+                                    — range constructor, copies a range
+                                      from ANY compatible iterator pair
+                                      (even from a different container
+                                      type). O(N).
+  vector<T> v2 = v1;               — copy constructor, full deep copy.
+                                      O(N).
+  vector<T> v2 = std::move(v1);    — move constructor, O(1) — steals
+                                      v1's internal buffer; v1 left
+                                      valid-but-unspecified (usually
+                                      empty in practice).
+
+--- SIZE / CAPACITY ---
+
+  v.size()          — O(1). Current element count.
+  v.capacity()       — O(1). Allocated slots before next reallocation.
+  v.empty()          — O(1). True if size() == 0. Prefer over
+                       `size() == 0` for clarity/consistency across
+                       containers.
+  v.max_size()       — O(1). Theoretical maximum size (rarely the real
+                       practical limit — actual limit is available
+                       memory).
+  v.reserve(n)       — O(N) if reallocation triggered, else O(1). Use
+                       BEFORE a loop of known-length insertions to avoid
+                       repeated reallocation.
+  v.resize(n)        — O(|n - size()|). Changes size(); constructs new
+                       elements if growing, destroys extras if shrinking.
+  v.resize(n, val)   — same, but new elements are copies of `val`
+                       instead of default-initialized.
+  v.shrink_to_fit()  — O(N) if it reallocates (typical), non-binding
+                       request to release unused capacity.
+
+--- ELEMENT ACCESS ---
+
+  v[i]               — O(1), UNCHECKED. Fastest; use in verified loops.
+  v.at(i)            — O(1) + bounds check, throws std::out_of_range.
+  v.front()          — O(1). First element (== v[0]). UB if empty.
+  v.back()           — O(1). Last element (== v[size()-1]). UB if empty.
+  v.data()           — O(1). Raw pointer to underlying contiguous
+                       buffer — use when interfacing with C APIs
+                       (memcpy, syscalls, etc).
+
+--- MODIFIERS ---
+
+  v.push_back(x)         — amortized O(1), worst-case O(N) on
+                            reallocating call. The default way to append.
+  v.emplace_back(args...)— amortized O(1). Constructs element in place
+                            from constructor args — avoids a temporary +
+                            copy/move for non-trivial types.
+  v.pop_back()            — O(1). Removes last element; does NOT shrink
+                            capacity(). UB if vector is empty.
+  v.insert(pos, x)        — O(N) (shifts elements from pos onward);
+                            O(1) amortized special case if pos == end().
+  v.insert(pos, n, x)     — O(N + n). Insert n copies of x at pos.
+  v.insert(pos, first, last)
+                          — O(N + range size). Insert a range at pos.
+  v.emplace(pos, args...) — O(N). Like insert, but constructs in place.
+  v.erase(pos)            — O(N) (shifts elements after pos left).
+                            Returns iterator to element that followed
+                            the erased one.
+  v.erase(first, last)    — O(N). Erase a RANGE. Same shifting cost.
+  v.clear()               — O(N) (destructor calls). size()->0,
+                            capacity() UNCHANGED.
+  v.swap(other)           — O(1). Swaps internal buffers/state of two
+                            same-type vectors regardless of their sizes
+                            — the classic mechanism behind the
+                            shrink-to-fit-via-swap idiom.
+  v.assign(n, value)      — O(N). Replace contents with n copies.
+  v.assign(first, last)   — O(N). Replace contents with a copied range.
+  v.assign(init_list)     — O(N). Replace contents with an initializer
+                            list.
+
+--- ITERATORS ---
+
+  v.begin() / v.end()     — O(1). Iterators to first / one-past-last
+                            element. Foundation for range-for and STL
+                            algorithms.
+  v.cbegin() / v.cend()   — O(1). CONST iterators — guarantee read-only
+                            access even on a non-const vector; useful
+                            for expressing intent, and for `auto`-based
+                            code where you want to prevent accidental
+                            modification.
+  v.rbegin() / v.rend()   — O(1). REVERSE iterators — traverse from
+                            last element to first without manual index
+                            math.
+
+--- COMPARISON ---
+
+  v1 == v2, v1 != v2, v1 < v2, etc.
+    — O(N) (element-wise comparison, with an O(1) fast-path size check
+      first for == / != since differing sizes can never be equal).
+      Lexicographic ordering for </>/<=/>=.
+
+================================================================================
+SECTION 4 — STL ALGORITHMS COMMONLY USED WITH VECTORS
+     (usage, complexity, when to reach for each)
+================================================================================
+
+  std::sort(v.begin(), v.end())
+    - O(N log N) average/worst (introsort). The default general-purpose
+      sort. Add a comparator (lambda or functor) for custom ordering:
+      `std::sort(v.begin(), v.end(), [](int a, int b){ return a > b; });`
+
+  std::stable_sort(v.begin(), v.end())
+    - O(N log N) typical (O(N log^2 N) worst case if extra memory isn't
+      available). Use when equal elements' relative/prior order must be
+      preserved (multi-key sorting).
+
+  std::partial_sort(v.begin(), v.begin()+k, v.end())
+    - O(N log k). Sorts only enough to know the first k elements
+      correctly (in order); the rest are left in unspecified order. Use
+      when you only need the "top K" sorted, not the whole vector.
+
+  std::nth_element(v.begin(), v.begin()+n, v.end())
+    - O(N) average. Partially sorts such that the element at position n
+      is the one that WOULD be there in a fully sorted vector, with all
+      smaller elements before it and all larger after (but neither side
+      internally sorted). Use for "find the Kth smallest/largest" without
+      paying for a full sort.
+
+  std::find(v.begin(), v.end(), value)
+    - O(N). Linear scan; use on unsorted data or for a one-off lookup.
+
+  std::binary_search / std::lower_bound / std::upper_bound
+    - O(log N), REQUIRE sorted input. See 1B Q3/Q4 above for details and
+      when to use which.
+
+  std::reverse(v.begin(), v.end())
+    - O(N). Reverses elements in place.
+
+  std::unique(v.begin(), v.end())
+    - O(N), REQUIRES sorted input to remove ALL duplicates (removes only
+      CONSECUTIVE duplicates) — returns new logical end; follow with
+      `v.erase(newEnd, v.end());` to actually shrink (the classic "sort +
+      unique + erase" dedup idiom).
+
+  std::remove(v.begin(), v.end(), value) + v.erase(...)
+    - O(N). The erase-remove idiom — see 1A Q14 for full explanation.
+
+  std::accumulate(v.begin(), v.end(), 0)  (from <numeric>)
+    - O(N). Sums elements (or applies a custom binary operation) —
+      avoids writing a manual loop for sums/products/custom folds.
+
+  std::count(v.begin(), v.end(), value) / std::count_if(..., predicate)
+    - O(N). Count occurrences matching a value / predicate.
+
+  std::max_element / std::min_element
+    - O(N). Returns iterator to max/min — dereference to get the value.
+
+  std::transform(v.begin(), v.end(), v.begin(), func)
+    - O(N). Applies `func` to every element, writing results back
+      (can write to a DIFFERENT destination range too) — common for
+      elementwise transforms (e.g. uppercasing, squaring every element).
+
+  std::partition(v.begin(), v.end(), predicate)
+    - O(N). Rearranges so all elements satisfying the predicate come
+      before all that don't (NOT fully sorted, just partitioned) —
+      returns iterator to the partition point. Faster than a full sort
+      when you only need a 2-way split (e.g. Dutch national flag style
+      problems, even/odd separation).
+
+  std::rotate(v.begin(), v.begin()+k, v.end())
+    - O(N). Rotates the range so the element at position k becomes the
+      new first element — useful for "rotate array left/right by k".
+
+  std::next_permutation(v.begin(), v.end()) /
+  std::prev_permutation(v.begin(), v.end())
+    - O(N) per call. Rearranges into the next/previous lexicographic
+      permutation, returns false if none exists (wraps to
+      smallest/largest). Classic building block for permutation-
+      generation problems.
+
+  std::priority_queue<T> (built commonly on top of a vector<T> by
+  default as its underlying container)
+    - push/pop: O(log N), top: O(1). Use for "Kth largest," merge-K-
+      sorted-lists, and any running max/min-tracking problem.
+
+--- QUICK DECISION GUIDE ---
+
+  Need...                                    | Use
+  --------------------------------------------|---------------------------
+  Append at end, unknown final size           | push_back / emplace_back
+  Know final size ahead of time               | reserve(n) then push_back
+  Need N real, indexable elements NOW         | resize(n), not reserve(n)
+  Remove all occurrences of a value           | erase-remove idiom
+  Remove while conditionally iterating        | it = v.erase(it) pattern
+  Fast membership test, no order needed       | unordered_set (not vector)
+  Frequent front AND back insertion           | std::deque instead
+  Frequent middle insertion/deletion          | std::list, or reconsider
+  Safe indexing (may be out of range)         | .at(i) instead of [i]
+  Only need "top K" sorted                    | partial_sort / nth_element
+  Find Kth smallest/largest, no full sort     | nth_element / priority_queue
+  Raw pointer for a C API                     | .data()
+  Truly release unused capacity               | shrink_to_fit() (non-binding)
+                                               | or swap-with-temporary idiom
+  Construct non-trivial elements from args    | emplace_back over push_back
+
+================================================================================
+END OF FILE
+================================================================================

@@ -1,0 +1,2501 @@
+================================================================================
+        C++ + DSA COMPLETE LEARNING ROADMAP (BEGINNER TO ADVANCED)
+           Single File | Step-by-Step | With Practice Problems
+================================================================================
+
+HOW TO USE THIS FILE:
+  - Follow phases in order. Do NOT skip.
+  - Mark topics done with [x] as you finish them.
+  - Solve ALL listed problems before moving to the next topic.
+  - Spend time understanding — not just copying code.
+  - Consistency > Speed. 1-2 hours daily is better than 10 hours on weekends.
+
+COLOR LEGEND (for terminal reading):
+  [C++] = C++ language concept
+  [DSA] = Data Structure or Algorithm concept
+  [BOTH] = Applies to both / practiced together
+
+================================================================================
+PHASE 1 — SETUP & ENVIRONMENT (Week 1) (April 22, 2026 - April 28, 2026)
+================================================================================
+
+STEP 1: Install C++ Compiler & IDE                                        [C++]
+------------------------------------------------------------------------
+  LEARN:
+    - Install GCC on Linux: sudo apt install g++ build-essential
+    - Check version: g++ --version
+    - Set up VS Code with "C/C++" extension by Microsoft
+    - OR use CLion / Vim / Nano — whatever you are comfortable with
+    - Understand what a compiler does: source code -> machine code
+    - Learn about header files (.h) and source files (.cpp)
+    - Learn compilation commands:
+        g++ hello.cpp -o hello
+        ./hello
+    - Learn compilation with flags:
+        g++ -std=c++17 -Wall -O2 hello.cpp -o hello
+
+  WRITE THESE PROGRAMS:
+    [x] Hello World
+    [x] Print your name, age, city using cout
+    [x] Compile with -Wall flag and fix all warnings
+
+--------------------------------------------------------------------------------
+
+STEP 2: Basic Syntax — Comments, Semicolons, Structure                   [C++]
+------------------------------------------------------------------------
+  LEARN:
+    - Single-line comments: // this is a comment
+    - Multi-line comments: /* ... */
+    - Every statement ends with semicolon ;
+    - #include <iostream> — what it means
+    - using namespace std; — what it means and when to avoid it
+    - int main() — entry point of every C++ program
+    - return 0; — what it signals to the OS
+    - Whitespace and indentation rules
+
+  WRITE THESE PROGRAMS:
+    [x] Program with at least 5 comments explaining each line
+    [ ] A program that uses both single and multi-line comments
+
+================================================================================
+PHASE 2 — VARIABLES, DATA TYPES & OPERATORS (Weeks 1-2) (April 22, 2026 - May 05, 2026)
+================================================================================
+
+STEP 3: Variables and Data Types                                         [C++]
+------------------------------------------------------------------------
+  LEARN:
+    PRIMITIVE TYPES:
+      int       — whole numbers (-2B to 2B), 4 bytes
+      float     — decimal, 4 bytes, ~7 digits precision
+      double    — decimal, 8 bytes, ~15 digits precision
+      char      — single character, 1 byte, uses ASCII
+      bool      — true or false, 1 byte
+      void      — no type (used in functions)
+
+    TYPE MODIFIERS:
+      short int   — 2 bytes
+      long int    — 8 bytes
+      long long   — 8 bytes (use for large numbers in DSA)
+      unsigned    — no negative values, doubles positive range
+
+    MODERN C++:
+      auto x = 10;     — compiler infers type
+      typedef int ll;  — old way to alias
+      using ll = long long;  — modern way (preferred)
+
+    CONSTANTS:
+      const int MAX = 100;   — cannot be changed
+      constexpr int SZ = 50; — evaluated at compile time
+
+    SIZEOF:
+      sizeof(int)    — prints size in bytes
+      sizeof(x)      — size of variable
+
+  WRITE THESE PROGRAMS:
+    [ ] Print size of all data types using sizeof()
+    [ ] Temperature converter: Celsius to Fahrenheit
+    [ ] Simple interest calculator: SI = (P * R * T) / 100
+    [ ] Area and perimeter of circle, rectangle, triangle
+
+--------------------------------------------------------------------------------
+
+STEP 4: Input and Output                                                 [C++]
+------------------------------------------------------------------------
+  LEARN:
+    - cout << "Hello" << endl;     — output
+    - cout << "Hello\n";           — faster than endl (no flush)
+    - cin >> x;                    — read one value
+    - cin >> x >> y;               — read multiple values
+    - cin.ignore();                — clear buffer
+    - getline(cin, str);           — read full line with spaces
+    - Escape sequences: \n \t \\ \" \'
+
+  WRITE THESE PROGRAMS:
+    [ ] Read name and age, print a greeting sentence
+    [ ] Read two numbers, print their sum, difference, product, quotient
+    [ ] Read a full sentence using getline and print it reversed word by word
+
+--------------------------------------------------------------------------------
+
+STEP 5: Operators                                                        [C++]
+------------------------------------------------------------------------
+  LEARN:
+    ARITHMETIC:
+      +  addition
+      -  subtraction
+      *  multiplication
+      /  division (integer division if both operands are int)
+      %  modulo (remainder)
+      ++ increment (pre: ++x, post: x++)
+      -- decrement (pre: --x, post: x--)
+
+    RELATIONAL (return bool):
+      ==  equal to
+      !=  not equal to
+      <   less than
+      >   greater than
+      <=  less than or equal
+      >=  greater than or equal
+
+    LOGICAL:
+      &&  AND — both must be true
+      ||  OR  — at least one must be true
+      !   NOT — flips true/false
+
+    BITWISE (operate on binary representation):
+      &   AND
+      |   OR
+      ^   XOR
+      ~   NOT (complement)
+      <<  left shift  (x << 1 = x * 2)
+      >>  right shift (x >> 1 = x / 2)
+
+    ASSIGNMENT:
+      =   assign
+      +=  add and assign
+      -=  subtract and assign
+      *=  multiply and assign
+      /=  divide and assign
+      %=  mod and assign
+
+    TERNARY:
+      condition ? value_if_true : value_if_false
+      Example: int max = (a > b) ? a : b;
+
+    sizeof OPERATOR:
+      sizeof(int)  — returns size in bytes
+
+    OPERATOR PRECEDENCE (high to low, simplified):
+      ()  >  !  ~  ++  --  >  *  /  %  >  +  -  >  <<  >>
+      >  <  >  <=  >=  >  ==  !=  >  &  >  ^  >  |  >  &&  >  ||  >  ?:  >  =
+
+  WRITE THESE PROGRAMS:
+    [ ] Check if a number is even or odd using %
+    [ ] Find maximum of two numbers without using if (use ternary)
+    [ ] Check if a year is a leap year
+    [ ] Swap two numbers without a third variable (using XOR: a^=b; b^=a; a^=b;)
+    [ ] Check if a number is a power of 2 using bitwise: n & (n-1) == 0
+    [ ] Count number of set bits (1s) in an integer using bit shifting
+
+--------------------------------------------------------------------------------
+
+STEP 6: Control Flow — Conditionals                                      [C++]
+------------------------------------------------------------------------
+  LEARN:
+    if (condition) { ... }
+    if (...) { ... } else { ... }
+    if (...) { ... } else if (...) { ... } else { ... }
+
+    switch (variable) {
+      case val1: ...; break;
+      case val2: ...; break;
+      default:   ...;
+    }
+
+    - switch works with int, char — NOT with float or string
+    - Always use break; in switch cases unless you want fall-through
+    - Nested if-else for complex conditions
+
+  WRITE THESE PROGRAMS:
+    [ ] Grade calculator (90+ = A, 80+ = B, etc.)
+    [ ] Calculator: read two numbers and an operator (+,-,*,/) using switch
+    [ ] Check if triangle is valid given 3 sides
+    [ ] Check if a character is vowel or consonant (use switch)
+    [ ] Find the largest of three numbers
+
+--------------------------------------------------------------------------------
+
+STEP 7: Control Flow — Loops                                             [C++]
+------------------------------------------------------------------------
+  LEARN:
+    FOR LOOP:
+      for (init; condition; update) { ... }
+      for (int i = 0; i < n; i++) { ... }
+
+    WHILE LOOP:
+      while (condition) { ... }
+
+    DO-WHILE LOOP:
+      do { ... } while (condition);
+      Executes at least once.
+
+    BREAK — exits loop immediately
+    CONTINUE — skips current iteration, goes to next
+    NESTED LOOPS — loop inside loop (used in matrix, patterns)
+
+    RANGE-BASED FOR (Modern C++):
+      for (int x : arr) { ... }
+
+  WRITE THESE PROGRAMS:
+    [ ] Print 1 to N
+    [ ] Print multiplication table of a number
+    [ ] Sum of digits of a number (e.g., 1234 -> 1+2+3+4 = 10)
+    [ ] Reverse a number (e.g., 1234 -> 4321)
+    [ ] Check if a number is palindrome
+    [ ] Print all primes up to N (using nested loops first, then optimize)
+    [ ] Print these patterns:
+          *         *****     *
+          **        ****      **
+          ***       ***       ***
+          ****      **        ****
+          *****     *         *****
+    [ ] Fibonacci series up to N terms
+    [ ] Find factorial of N using a loop
+
+================================================================================
+PHASE 3 — FUNCTIONS & RECURSION (Weeks 2-3) (April 29, 2026 - May 12, 2026)
+================================================================================
+
+STEP 8: Functions                                                        [C++]
+------------------------------------------------------------------------
+  LEARN:
+    DECLARATION & DEFINITION:
+      return_type function_name(parameters);   // declaration
+      return_type function_name(parameters) {  // definition
+        // body
+        return value;
+      }
+
+    PASS BY VALUE vs PASS BY REFERENCE:
+      void inc(int x)  { x++; }      // x is a copy, original unchanged
+      void inc(int &x) { x++; }      // x is a reference, original changed
+
+    DEFAULT ARGUMENTS:
+      void greet(string name = "World") { ... }
+
+    FUNCTION OVERLOADING:
+      int add(int a, int b) { return a+b; }
+      double add(double a, double b) { return a+b; }
+      Same name, different parameter types — compiler picks the right one.
+
+    INLINE FUNCTIONS:
+      inline int square(int x) { return x*x; }
+      Hint to compiler to replace call with actual code (avoids call overhead).
+
+    FUNCTION POINTERS:
+      int (*fp)(int, int) = add;
+      fp(3, 4);
+
+  WRITE THESE PROGRAMS:
+    [ ] Function to check if a number is prime
+    [ ] Function to find GCD of two numbers (Euclidean algorithm)
+    [ ] Function to count digits in a number
+    [ ] Overloaded function: area of circle (1 param) and rectangle (2 params)
+    [ ] Function that takes array and size, returns sum and maximum
+
+--------------------------------------------------------------------------------
+
+STEP 9: Recursion                                                        [C++]
+------------------------------------------------------------------------
+  LEARN:
+    - A function calling itself
+    - MUST have a base case (stopping condition) — else: infinite recursion
+    - Each call uses stack memory (call stack)
+    - Too deep recursion = stack overflow
+
+    TYPES:
+      Direct recursion:  f() calls f()
+      Indirect recursion: f() calls g(), g() calls f()
+      Tail recursion:  recursive call is the LAST operation (optimizable)
+      Tree recursion:  one call leads to multiple recursive calls
+
+    VISUALIZE THE CALL STACK — draw it on paper for first few problems.
+
+  PRACTICE PROBLEMS:
+    [ ] Factorial of N: fact(n) = n * fact(n-1), base: fact(0) = 1
+    [ ] Fibonacci(n): fib(n) = fib(n-1) + fib(n-2)
+    [ ] Sum of first N natural numbers
+    [ ] Power: pow(base, exp) = base * pow(base, exp-1)
+    [ ] Count digits in a number recursively
+    [ ] Reverse a string recursively
+    [ ] Check if string is palindrome recursively
+    [ ] Tower of Hanoi: understand and implement
+    [ ] Print 1 to N and N to 1 using recursion (no loop)
+    [ ] Generate all subsets of a string (intro to backtracking)
+
+================================================================================
+PHASE 4 — ARRAYS & STRINGS (Weeks 3-4) (May 06, 2026 - May 19, 2026)
+================================================================================
+
+STEP 10: Arrays (1D)                                                    [BOTH]
+------------------------------------------------------------------------
+  LEARN:
+    DECLARATION:
+      int arr[5];              — uninitialized
+      int arr[5] = {1,2,3,4,5};
+      int arr[] = {1,2,3};    — size inferred
+      int arr[5] = {0};       — all zeros
+
+    ACCESS:
+      arr[0], arr[1], ..., arr[n-1]
+      Index starts at 0. Out of bound = undefined behavior.
+
+    TRAVERSAL:
+      for (int i = 0; i < n; i++) cout << arr[i];
+
+    PASSING TO FUNCTION:
+      void print(int arr[], int n) { ... }
+      Arrays decay to pointers when passed — changes inside function affect original.
+
+    DYNAMIC ARRAY:
+      int* arr = new int[n];   — heap allocation
+      delete[] arr;            — free memory
+
+  PRACTICE PROBLEMS:
+    [ ] Find maximum and minimum element
+    [ ] Reverse an array
+    [ ] Check if array is sorted
+    [ ] Left rotate array by 1, then by K positions
+    [ ] Find second largest element
+    [ ] Remove duplicates from sorted array
+    [ ] Count frequency of each element
+    [ ] Linear Search: find index of element
+    [ ] Two sum: find pair with given sum (brute force first)
+    [ ] Move all zeros to end (maintain relative order of others)
+    [ ] Dutch National Flag: sort array of 0s, 1s, 2s in single pass
+    [ ] Kadane's Algorithm: maximum sum subarray
+    [ ] Prefix Sum: build prefix array, answer range sum queries in O(1)
+
+--------------------------------------------------------------------------------
+
+STEP 11: Arrays (2D / Matrices)                                         [BOTH]
+------------------------------------------------------------------------
+  LEARN:
+    int mat[3][4];
+    int mat[3][4] = {{1,2,3,4},{5,6,7,8},{9,10,11,12}};
+
+    TRAVERSAL:
+      for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+          cout << mat[i][j];
+
+  PRACTICE PROBLEMS:
+    [ ] Print matrix row by row, column by column
+    [ ] Transpose of a matrix (swap mat[i][j] with mat[j][i])
+    [ ] Rotate matrix 90 degrees clockwise
+    [ ] Spiral order traversal
+    [ ] Diagonal traversal
+    [ ] Search in row-wise and column-wise sorted matrix
+    [ ] Matrix multiplication
+
+--------------------------------------------------------------------------------
+
+STEP 12: Pointers                                                        [C++]
+------------------------------------------------------------------------
+  LEARN:
+    int x = 10;
+    int* p = &x;   — p stores address of x
+    *p             — dereference: get value at address
+    &x             — address-of operator
+
+    POINTER ARITHMETIC:
+      p++  — moves to next int (adds sizeof(int) bytes to address)
+      p--  — moves to previous
+
+    NULL POINTER:
+      int* p = nullptr;   — modern C++
+      if (p != nullptr)   — always check before dereferencing
+
+    VOID POINTER:
+      void* vp;  — can hold any type's address, must cast to use
+
+    POINTER TO POINTER:
+      int** pp = &p;
+
+    POINTERS AND ARRAYS:
+      int arr[] = {1,2,3};
+      int* p = arr;      — p points to arr[0]
+      *(p+1) == arr[1]   — pointer arithmetic equals array indexing
+
+    DYNAMIC MEMORY:
+      int* p = new int;        — allocate single int on heap
+      int* arr = new int[n];   — allocate array on heap
+      delete p;                — free single
+      delete[] arr;            — free array
+      Always delete what you new. Memory leak = allocated but never freed.
+
+  PRACTICE PROBLEMS:
+    [ ] Print value and address using pointer
+    [ ] Swap two numbers using pointers (function)
+    [ ] Traverse array using pointer arithmetic
+    [ ] Dynamically allocate array of size N, fill, print, delete
+    [ ] Implement a simple stack using dynamic array and pointer
+
+--------------------------------------------------------------------------------
+
+STEP 13: References                                                      [C++]
+------------------------------------------------------------------------
+  LEARN:
+    int x = 10;
+    int& ref = x;   — ref IS x (same memory location)
+    ref = 20;       — x is now 20
+
+    DIFFERENCES FROM POINTER:
+      - Reference cannot be null
+      - Reference cannot be reassigned to another variable
+      - No need to dereference (no * needed)
+      - Must be initialized at declaration
+
+    CONST REFERENCE (preferred for passing large objects):
+      void print(const string& s) { ... }
+      — No copy is made, but s cannot be modified inside function
+
+  PRACTICE PROBLEMS:
+    [ ] Swap two numbers using references
+    [ ] Pass large struct to function using const reference (measure speed diff)
+    [ ] Return reference from function (understand when safe / unsafe)
+
+--------------------------------------------------------------------------------
+
+STEP 14: Strings                                                        [BOTH]
+------------------------------------------------------------------------
+  LEARN:
+    C-STYLE STRINGS (char arrays):
+      char s[] = "hello";
+      strlen(s), strcpy, strcat, strcmp — from <cstring>
+
+    std::string (preferred):
+      #include <string>
+      string s = "hello";
+      s.length() or s.size()
+      s[i]               — access character
+      s.substr(pos, len) — substring
+      s.find("lo")       — find position of substring (-1 if not found)
+      s.erase(pos, len)  — remove characters
+      s.insert(pos, str) — insert
+      s.replace(pos, len, str)
+      s += "world"       — concatenation
+      s.empty()          — check if empty
+      s.reverse()        — does NOT exist, use reverse(s.begin(), s.end())
+      to_string(42)      — int to string
+      stoi("42")         — string to int
+
+    STRING STREAMS:
+      #include <sstream>
+      stringstream ss;
+      ss << "hello " << 42;
+      string result = ss.str();
+
+  PRACTICE PROBLEMS:
+    [ ] Reverse a string
+    [ ] Check if string is palindrome
+    [ ] Count vowels and consonants
+    [ ] Count words in a sentence
+    [ ] Check if two strings are anagrams
+    [ ] Remove all spaces from a string
+    [ ] Find first non-repeating character
+    [ ] Longest common prefix of array of strings
+    [ ] Convert all characters to uppercase/lowercase manually
+    [ ] Check if one string is rotation of another (hint: s1+s1 contains s2)
+
+================================================================================
+PHASE 5 — COMPLEXITY ANALYSIS (Week 4-5) (May 13, 2026 - May 26, 2026)
+================================================================================
+
+STEP 15: Big O Notation — Time & Space Complexity                       [BOTH]
+------------------------------------------------------------------------
+  LEARN:
+    WHY IT MATTERS:
+      A program that works on 10 elements might time-out on 10 million.
+      Big O tells you HOW your code scales with input size N.
+
+    COMMON COMPLEXITIES (best to worst):
+      O(1)        — Constant      — array access, hash map lookup
+      O(log N)    — Logarithmic   — binary search, balanced BST
+      O(N)        — Linear        — single loop, linear search
+      O(N log N)  — Linearithmic  — merge sort, heap sort, good sorting
+      O(N^2)      — Quadratic     — nested loops, bubble sort
+      O(N^3)      — Cubic         — triple nested loops, naive matrix mult
+      O(2^N)      — Exponential   — brute force subsets, naive recursion
+      O(N!)       — Factorial     — permutation generation
+
+    RULES:
+      - Drop constants: O(2N) = O(N)
+      - Drop lower terms: O(N^2 + N) = O(N^2)
+      - Consider WORST CASE unless stated otherwise
+      - Nested loops multiply: O(N) inside O(N) = O(N^2)
+      - Sequential loops add: O(N) + O(M) = O(N+M)
+
+    SPACE COMPLEXITY:
+      - Extra memory your algorithm uses (not counting input)
+      - Recursion uses O(depth) stack space
+      - Creating extra array of size N = O(N) space
+
+    BEST, AVERAGE, WORST CASE:
+      Quick sort: best O(N log N), worst O(N^2) if bad pivot
+
+    AMORTIZED ANALYSIS:
+      Dynamic array push_back: usually O(1), occasionally O(N) to resize.
+      Amortized = average over many operations = O(1).
+
+  PRACTICE (analyze these):
+    [ ] What is complexity of your reverse array code?
+    [ ] What is complexity of finding max in unsorted array?
+    [ ] What is complexity of nested loop printing all pairs?
+    [ ] What is time and space complexity of recursive Fibonacci?
+    [ ] Analyze your sorting algorithms as you learn them
+
+================================================================================
+PHASE 6 — OBJECT ORIENTED PROGRAMMING (Weeks 5-7) (May 20, 2026 - June 09, 2026)
+================================================================================
+
+STEP 16: Classes and Objects                                             [C++]
+------------------------------------------------------------------------
+  LEARN:
+    class Animal {
+    private:
+      string name;
+      int age;
+    public:
+      Animal(string n, int a) : name(n), age(a) {}  // constructor
+      ~Animal() {}                                   // destructor
+      string getName() { return name; }
+      void setName(string n) { name = n; }
+    };
+
+    Animal dog("Rex", 3);
+    dog.getName();
+
+    ACCESS SPECIFIERS:
+      private   — only accessible inside the class
+      public    — accessible everywhere
+      protected — accessible inside class and derived classes
+
+    CONSTRUCTORS:
+      Default constructor    — no parameters
+      Parameterized          — takes arguments
+      Copy constructor       — takes const reference of same class
+      Initializer list       — preferred for initializing members
+
+    DESTRUCTOR:
+      ~ClassName() { ... }
+      Called automatically when object goes out of scope.
+      Used to free dynamically allocated memory.
+
+    THIS POINTER:
+      Points to the current object.
+      Use when parameter name shadows member name.
+
+    STATIC MEMBERS:
+      Shared across all objects of the class.
+      static int count;
+      ClassName::count
+
+    FRIEND FUNCTIONS:
+      Can access private members of a class.
+      friend void display(Animal a);
+
+    CONST MEMBER FUNCTIONS:
+      void show() const { ... }  — promises not to modify object
+
+  PRACTICE PROGRAMS:
+    [ ] BankAccount class: balance, deposit(), withdraw(), getBalance()
+    [ ] Student class: name, marks[], calculateGrade()
+    [ ] Rectangle class: width, height, area(), perimeter()
+    [ ] Counter class with static count of objects created
+    [ ] Matrix class with add() and multiply() functions
+
+--------------------------------------------------------------------------------
+
+STEP 17: Inheritance                                                     [C++]
+------------------------------------------------------------------------
+  LEARN:
+    class Animal { ... };
+    class Dog : public Animal { ... };
+
+    TYPES:
+      Single       — one base, one derived
+      Multiple     — multiple bases: class C : public A, public B
+      Multilevel   — A -> B -> C
+      Hierarchical — one base, many derived
+      Hybrid       — combination
+
+    CONSTRUCTOR ORDER:
+      Base constructor runs first, then derived.
+      Destructor: derived first, then base.
+
+    ACCESS IN INHERITANCE:
+      public inheritance   — public stays public, protected stays protected
+      private inheritance  — all become private
+      protected inheritance — public becomes protected
+
+    VIRTUAL BASE CLASS:
+      Solves diamond problem in multiple inheritance.
+      class B : virtual public A { ... };
+
+  PRACTICE PROGRAMS:
+    [ ] Shape base class -> Circle, Rectangle, Triangle derived classes
+    [ ] Employee base -> Manager, Developer derived with calculateSalary()
+    [ ] Vehicle -> Car, Truck -> ElectricCar (multilevel)
+
+--------------------------------------------------------------------------------
+
+STEP 18: Polymorphism & Abstraction                                      [C++]
+------------------------------------------------------------------------
+  LEARN:
+    COMPILE-TIME (Static) POLYMORPHISM:
+      Function overloading — same name, different params
+      Operator overloading — redefine operators for your class
+
+    RUNTIME (Dynamic) POLYMORPHISM:
+      Virtual functions + Base class pointer
+
+      class Shape {
+      public:
+        virtual double area() = 0;  // pure virtual — makes class abstract
+      };
+      class Circle : public Shape {
+        double area() override { return 3.14 * r * r; }
+      };
+
+      Shape* s = new Circle(5);
+      s->area();  // calls Circle's area(), NOT Shape's
+
+    VIRTUAL FUNCTION TABLE (vtable):
+      Compiler creates a table of function pointers for virtual functions.
+      Slight runtime overhead but enables polymorphism.
+
+    ABSTRACT CLASS:
+      Has at least one pure virtual function.
+      Cannot be instantiated directly.
+      Acts as interface/contract.
+
+    VIRTUAL DESTRUCTOR:
+      Always make destructor virtual in base class when using polymorphism.
+      Ensures derived destructor is called properly.
+
+    OPERATOR OVERLOADING:
+      Vector operator+(const Vector& v) { ... }
+      ostream& operator<<(ostream& os, const MyClass& obj) { ... }
+
+  PRACTICE PROGRAMS:
+    [ ] Abstract Shape class with area() and perimeter() pure virtual
+        -> Implement for Circle, Rectangle, Triangle
+    [ ] Overload + operator for a Complex number class
+    [ ] Overload << operator to print your class with cout
+    [ ] Overload == and != for a Point class
+    [ ] Payment system: base Payment -> CreditCard, UPI, Cash derived
+
+================================================================================
+PHASE 7 — STL (Standard Template Library) (Weeks 7-8) (June 03, 2026 - June 16, 2026)
+================================================================================
+
+STEP 19: STL Containers                                                  [C++]
+------------------------------------------------------------------------
+  LEARN:
+    VECTOR (dynamic array):
+      vector<int> v;
+      v.push_back(x);   — add to end O(1) amortized
+      v.pop_back();     — remove from end O(1)
+      v[i]              — access O(1)
+      v.size()          — number of elements
+      v.empty()         — check if empty
+      v.front(), v.back()
+      v.insert(v.begin()+i, x)  — insert at position O(N)
+      v.erase(v.begin()+i)      — remove at position O(N)
+      v.clear()         — remove all
+      sort(v.begin(), v.end())
+      reverse(v.begin(), v.end())
+
+    LIST (doubly linked list):
+      list<int> l;
+      l.push_front(x), l.push_back(x)
+      l.pop_front(), l.pop_back()
+      No random access (no l[i])
+
+    DEQUE (double-ended queue):
+      deque<int> dq;
+      push_front, push_back, pop_front, pop_back
+      Random access supported
+
+    STACK (LIFO):
+      stack<int> st;
+      st.push(x), st.pop(), st.top(), st.empty()
+
+    QUEUE (FIFO):
+      queue<int> q;
+      q.push(x), q.pop(), q.front(), q.back(), q.empty()
+
+    PRIORITY QUEUE (heap):
+      priority_queue<int> pq;          — max heap by default
+      priority_queue<int, vector<int>, greater<int>> pq;  — min heap
+      pq.push(x), pq.pop(), pq.top()
+
+    SET (sorted unique elements):
+      set<int> s;
+      s.insert(x), s.erase(x), s.find(x), s.count(x)
+      s.lower_bound(x), s.upper_bound(x)
+      Iteration is in sorted order. All operations O(log N).
+
+    MULTISET:
+      Like set but allows duplicates.
+
+    MAP (sorted key-value pairs):
+      map<string, int> m;
+      m["key"] = value;
+      m.find("key"), m.count("key")
+      m.erase("key")
+      Iteration in sorted key order. All operations O(log N).
+
+    UNORDERED_MAP (hash map — faster, unsorted):
+      unordered_map<string, int> um;
+      Average O(1) for insert, find, erase.
+      Worst case O(N) due to hash collisions.
+
+    UNORDERED_SET:
+      Like set but hash-based. Average O(1) operations.
+
+    PAIR:
+      pair<int, string> p = {1, "hello"};
+      p.first, p.second
+      make_pair(1, "hello")
+
+    TUPLE:
+      tuple<int, string, double> t = {1, "hi", 3.14};
+      get<0>(t), get<1>(t), get<2>(t)
+
+  PRACTICE PROBLEMS:
+    [ ] Read N numbers into vector, sort and print
+    [ ] Use map to count frequency of words in a sentence
+    [ ] Check if two arrays have common elements using unordered_set
+    [ ] Find top K frequent elements using map + priority_queue
+    [ ] Implement browser back/forward using two stacks
+    [ ] Use queue for level-order traversal of your array representation
+
+--------------------------------------------------------------------------------
+
+STEP 20: STL Algorithms & Iterators                                      [C++]
+------------------------------------------------------------------------
+  LEARN:
+    #include <algorithm>
+
+    SORTING:
+      sort(v.begin(), v.end());                    — ascending
+      sort(v.begin(), v.end(), greater<int>());    — descending
+      sort(v.begin(), v.end(), [](int a, int b){ return a > b; }); — custom
+      stable_sort — preserves relative order of equal elements
+
+    SEARCHING:
+      find(v.begin(), v.end(), x)        — returns iterator, O(N)
+      binary_search(v.begin(), v.end(), x) — returns bool, O(log N)
+      lower_bound(v.begin(), v.end(), x) — first >= x
+      upper_bound(v.begin(), v.end(), x) — first > x
+
+    MODIFYING:
+      reverse(v.begin(), v.end())
+      fill(v.begin(), v.end(), 0)
+      copy(v.begin(), v.end(), w.begin())
+      transform(v.begin(), v.end(), w.begin(), [](int x){ return x*2; })
+
+    OTHERS:
+      max_element(v.begin(), v.end())  — returns iterator to max
+      min_element(v.begin(), v.end())  — returns iterator to min
+      count(v.begin(), v.end(), x)     — count occurrences
+      unique(v.begin(), v.end())       — removes consecutive duplicates
+      next_permutation(v.begin(), v.end())
+
+    #include <numeric>
+      accumulate(v.begin(), v.end(), 0)    — sum
+      iota(v.begin(), v.end(), 1)          — fill with 1,2,3,...
+
+    ITERATORS:
+      v.begin()   — iterator to first element
+      v.end()     — iterator PAST last element
+      v.rbegin()  — reverse iterator (from end)
+      ++it        — advance iterator
+      *it         — dereference (get value)
+      auto it = v.begin(); — use auto for convenience
+
+    LAMBDA EXPRESSIONS:
+      [](int x) { return x > 5; }            — basic lambda
+      [&](int x) { return x > threshold; }   — capture by reference
+      [=](int x) { return x > threshold; }   — capture by value
+
+  PRACTICE PROBLEMS:
+    [ ] Sort vector of strings by length using custom comparator
+    [ ] Find first element > 10 using find_if
+    [ ] Use next_permutation to print all permutations of {1,2,3}
+    [ ] Count elements satisfying a condition using count_if + lambda
+    [ ] Use accumulate to find sum and product
+
+================================================================================
+PHASE 8 — ADVANCED C++ FEATURES (Weeks 8-9) (June 10, 2026 - June 23, 2026)
+================================================================================
+
+STEP 21: Templates                                                       [C++]
+------------------------------------------------------------------------
+  LEARN:
+    FUNCTION TEMPLATES:
+      template <typename T>
+      T add(T a, T b) { return a + b; }
+      add<int>(3, 4);      — explicit
+      add(3, 4);           — compiler infers T = int
+
+    CLASS TEMPLATES:
+      template <typename T>
+      class Stack {
+        vector<T> data;
+      public:
+        void push(T x) { data.push_back(x); }
+        T pop() { T x = data.back(); data.pop_back(); return x; }
+      };
+      Stack<int> intStack;
+      Stack<string> strStack;
+
+    TEMPLATE SPECIALIZATION:
+      template <>
+      int add<int>(int a, int b) { return a + b; }  // special case for int
+
+  PRACTICE PROGRAMS:
+    [ ] Generic swap function using templates
+    [ ] Generic max function for any comparable type
+    [ ] Generic Stack class using templates
+    [ ] Generic Pair class
+
+--------------------------------------------------------------------------------
+
+STEP 22: Exception Handling                                              [C++]
+------------------------------------------------------------------------
+  LEARN:
+    try {
+      // code that might throw
+      throw runtime_error("Something went wrong");
+    } catch (runtime_error& e) {
+      cout << e.what();
+    } catch (...) {
+      cout << "Unknown error";
+    }
+
+    STANDARD EXCEPTIONS:
+      runtime_error, logic_error, out_of_range,
+      invalid_argument, bad_alloc, overflow_error
+
+    CUSTOM EXCEPTIONS:
+      class MyException : public exception {
+        const char* what() const noexcept override {
+          return "My custom error";
+        }
+      };
+
+    RAII (Resource Acquisition Is Initialization):
+      Acquire resource in constructor, release in destructor.
+      If exception thrown, destructor still called — no leak.
+
+  PRACTICE PROGRAMS:
+    [ ] Safe division function that throws on divide by zero
+    [ ] Stack with out_of_range exception on empty pop
+    [ ] File reading with exception handling
+
+--------------------------------------------------------------------------------
+
+STEP 23: Smart Pointers & Modern C++                                     [C++]
+------------------------------------------------------------------------
+  LEARN:
+    WHY SMART POINTERS:
+      Raw pointers must be manually deleted. Forgetting = memory leak.
+      Smart pointers handle cleanup automatically.
+
+    UNIQUE_PTR:
+      unique_ptr<int> p = make_unique<int>(42);
+      Only ONE owner. Cannot be copied, only moved.
+      Automatically deleted when goes out of scope.
+
+    SHARED_PTR:
+      shared_ptr<int> p = make_shared<int>(42);
+      Reference counted — multiple owners.
+      Deleted when last shared_ptr is destroyed.
+
+    WEAK_PTR:
+      weak_ptr<int> wp = sp;
+      Does not own. Prevents circular references with shared_ptr.
+
+    MODERN C++ FEATURES:
+      auto       — type inference
+      nullptr    — use instead of NULL or 0
+      range-based for: for (auto& x : container) { ... }
+      constexpr  — compile-time constant
+      static_assert(condition, "message")
+      Uniform initialization: int x{5}; vector<int> v{1,2,3};
+      Structured bindings (C++17):
+        auto [first, second] = make_pair(1, "hi");
+        for (auto& [key, val] : myMap) { ... }
+      if with initializer (C++17):
+        if (auto it = m.find(key); it != m.end()) { ... }
+
+  PRACTICE PROGRAMS:
+    [ ] Rewrite BankAccount class using unique_ptr for internal data
+    [ ] Shared linked list nodes using shared_ptr
+    [ ] Demonstrate structured bindings with map iteration
+
+--------------------------------------------------------------------------------
+
+STEP 24: File Handling                                                   [C++]
+------------------------------------------------------------------------
+  LEARN:
+    #include <fstream>
+
+    WRITE TO FILE:
+      ofstream file("output.txt");
+      file << "Hello World\n";
+      file.close();
+
+    READ FROM FILE:
+      ifstream file("input.txt");
+      string line;
+      while (getline(file, line)) { cout << line; }
+      file.close();
+
+    READ/WRITE (fstream):
+      fstream file("data.txt", ios::in | ios::out);
+
+    FILE MODES:
+      ios::in      — read
+      ios::out     — write (overwrites)
+      ios::app     — append
+      ios::binary  — binary mode
+
+    ERROR CHECKING:
+      if (!file.is_open()) { cerr << "Cannot open file"; }
+      if (file.fail()) { ... }
+
+  PRACTICE PROGRAMS:
+    [ ] Write numbers 1-100 to a file, read and print sum
+    [ ] Copy contents of one file to another
+    [ ] Count words and lines in a text file
+    [ ] Store student records in file, read and display
+
+================================================================================
+PHASE 9 — LINKED LISTS (Weeks 9-10) (June 17, 2026 - June 30, 2026)
+================================================================================
+
+STEP 25: Singly Linked List                                              [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    STRUCTURE:
+      struct Node {
+        int data;
+        Node* next;
+        Node(int d) : data(d), next(nullptr) {}
+      };
+
+    OPERATIONS TO IMPLEMENT FROM SCRATCH:
+      insert at beginning    — update head
+      insert at end          — traverse to last, update next
+      insert at position     — traverse to pos-1, rewire pointers
+      delete at beginning    — move head forward
+      delete at end          — traverse to second-last
+      delete by value        — find node, rewire previous->next
+      search                 — traverse and compare
+      length                 — count nodes
+      display/print          — traverse and print
+
+    KEY ALGORITHMS:
+      Reverse linked list    — 3 pointer technique (prev, curr, next)
+      Find middle            — Floyd's slow/fast pointer
+      Detect cycle           — Floyd's cycle detection
+      Remove cycle           — find meeting point, then find cycle start
+      Merge two sorted lists — compare heads, link smaller
+      Intersection point     — two pointer approach
+
+  PRACTICE PROBLEMS:
+    [ ] Implement all basic operations from scratch
+    [ ] Reverse the linked list (iterative + recursive)
+    [ ] Find middle element (single pass using slow/fast pointers)
+    [ ] Detect and remove a cycle
+    [ ] Merge two sorted linked lists
+    [ ] Check if linked list is a palindrome
+    [ ] Find Nth node from end
+    [ ] Remove duplicates from sorted linked list
+    [ ] Add two numbers represented as linked lists (digits in nodes)
+    [ ] Find intersection point of two linked lists
+
+--------------------------------------------------------------------------------
+
+STEP 26: Doubly & Circular Linked Lists                                  [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    DOUBLY LINKED LIST:
+      struct Node {
+        int data;
+        Node* prev;
+        Node* next;
+      };
+      Insert and delete easier — no need to track previous separately.
+      Can traverse backward.
+
+    CIRCULAR LINKED LIST:
+      Last node's next points to head (not nullptr).
+      Traversal: stop when you reach head again.
+      Circular doubly linked list: both circular.
+
+  PRACTICE PROBLEMS:
+    [ ] Implement DLL: insert at front, end, position; delete; reverse
+    [ ] Implement circular LL: insert, delete, traverse
+    [ ] Flatten a multilevel doubly linked list
+    [ ] LRU Cache implementation using DLL + HashMap
+
+================================================================================
+PHASE 10 — STACKS & QUEUES (Week 10-11) (June 24, 2026 - July 07, 2026)
+================================================================================
+
+STEP 27: Stack — Implementation & Problems                               [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    LIFO — Last In First Out
+    Operations: push, pop, peek/top, isEmpty
+
+    IMPLEMENT USING ARRAY:
+      int arr[MAX]; int top = -1;
+      push: arr[++top] = x;
+      pop:  return arr[top--];
+      peek: return arr[top];
+
+    IMPLEMENT USING LINKED LIST:
+      Insert at head (push), remove from head (pop). O(1) both.
+
+    USE STL:
+      stack<int> st;
+      st.push(x); st.pop(); st.top(); st.empty();
+
+  PRACTICE PROBLEMS:
+    [ ] Balanced parentheses: check if (){}[] are balanced
+    [ ] Next Greater Element: for each element, find next greater to its right
+    [ ] Previous Greater Element
+    [ ] Stock Span Problem
+    [ ] Largest Rectangle in Histogram (hard but classic)
+    [ ] Min Stack: stack that supports getMin() in O(1)
+    [ ] Evaluate postfix expression
+    [ ] Convert infix to postfix
+    [ ] Reverse a string using stack
+    [ ] Sort a stack using another stack (no other data structure)
+
+--------------------------------------------------------------------------------
+
+STEP 28: Queue — Implementation & Problems                               [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    FIFO — First In First Out
+    Operations: enqueue, dequeue, front, rear, isEmpty
+
+    CIRCULAR QUEUE:
+      Use array with front and rear pointers.
+      (rear + 1) % MAX == front means full.
+
+    DEQUE (Double-Ended Queue):
+      Can insert/delete from both ends.
+      STL deque<int>
+
+    PRIORITY QUEUE:
+      Element with highest priority dequeued first.
+      STL priority_queue<int>
+
+  PRACTICE PROBLEMS:
+    [ ] Implement queue using two stacks
+    [ ] Implement stack using two queues
+    [ ] Sliding Window Maximum (use deque)
+    [ ] First Non-Repeating Character in stream
+    [ ] Generate binary numbers 1 to N using queue
+    [ ] Interleave first and second half of queue
+    [ ] BFS traversal of a graph (use queue)
+    [ ] Rotten Oranges (multi-source BFS)
+
+================================================================================
+PHASE 11 — HASHING (Week 11) (July 01, 2026 - July 07, 2026)
+================================================================================
+
+STEP 29: Hash Maps & Hash Sets                                           [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    CONCEPT:
+      Hash function maps key -> index.
+      Ideal: O(1) insert, search, delete.
+      Collision: two keys map to same index.
+
+    COLLISION HANDLING:
+      Chaining: each bucket is a linked list.
+      Open Addressing: probe for next empty slot (linear, quadratic probing).
+
+    STL USAGE:
+      unordered_map<int, int> freq;
+      freq[x]++;
+      if (freq.count(x)) { ... }   — check existence
+      for (auto& [k, v] : freq) { ... }
+
+      unordered_set<int> seen;
+      seen.insert(x);
+      if (seen.count(x)) { ... }
+
+    LOAD FACTOR:
+      Elements / Buckets. High load factor = more collisions.
+      Rehashing: when load factor exceeds threshold, double buckets and rehash.
+
+  PRACTICE PROBLEMS:
+    [ ] Count frequency of each element in array
+    [ ] Two Sum: find pair with given sum (O(N) using hash map)
+    [ ] Check if two strings are anagrams using frequency map
+    [ ] First non-repeating character in string
+    [ ] Longest consecutive sequence in array (O(N) approach)
+    [ ] Subarray with zero sum: find if exists
+    [ ] Count distinct elements in every window of size K
+    [ ] Group anagrams together
+    [ ] Pair with given difference
+    [ ] Longest subarray with equal 0s and 1s
+
+================================================================================
+PHASE 12 — SEARCHING & SORTING (Weeks 11-12) (July 01, 2026 - July 14, 2026)
+================================================================================
+
+STEP 30: Searching Algorithms                                            [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    LINEAR SEARCH: O(N)
+      Check each element one by one.
+      Works on unsorted arrays.
+
+    BINARY SEARCH: O(log N)
+      Array must be SORTED.
+      Repeatedly halve search space.
+
+      int binarySearch(int arr[], int n, int target) {
+        int low = 0, high = n - 1;
+        while (low <= high) {
+          int mid = low + (high - low) / 2;  // prevent overflow
+          if (arr[mid] == target) return mid;
+          else if (arr[mid] < target) low = mid + 1;
+          else high = mid - 1;
+        }
+        return -1;
+      }
+
+    STL BINARY SEARCH:
+      binary_search(v.begin(), v.end(), x)  — true/false
+      lower_bound(v.begin(), v.end(), x)    — first >= x
+      upper_bound(v.begin(), v.end(), x)    — first > x
+
+    TERNARY SEARCH: O(log N) — for finding peak in unimodal function
+
+  PRACTICE PROBLEMS:
+    [ ] Binary search — basic implementation
+    [ ] Search in rotated sorted array
+    [ ] Find first and last occurrence of element
+    [ ] Square root of N using binary search (integer part)
+    [ ] Find peak element
+    [ ] Search in 2D sorted matrix
+    [ ] Aggressive Cows (classic binary search on answer)
+    [ ] Book Allocation Problem (binary search on answer)
+    [ ] Kth missing positive number
+    [ ] Find minimum in rotated sorted array
+
+--------------------------------------------------------------------------------
+
+STEP 31: Sorting Algorithms                                              [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    COMPARISON-BASED:
+      Bubble Sort    O(N^2) — swap adjacent if out of order
+      Selection Sort O(N^2) — find min, place at front
+      Insertion Sort O(N^2) — build sorted portion left to right
+      Merge Sort     O(N log N) — divide, sort halves, merge
+      Quick Sort     O(N log N) avg — partition around pivot
+      Heap Sort      O(N log N) — use heap to extract min/max
+
+    NON-COMPARISON:
+      Counting Sort O(N+K) — count freq, works for small integers
+      Radix Sort    O(d*N) — sort digit by digit
+      Bucket Sort   O(N)   — distribute into buckets, sort each
+
+    STABILITY:
+      Stable sort preserves relative order of equal elements.
+      Merge Sort, Insertion Sort, Counting Sort = stable.
+      Quick Sort, Heap Sort = NOT stable.
+
+    IMPLEMENT FROM SCRATCH:
+      Bubble, Selection, Insertion — straightforward.
+      Merge Sort — recursive, merge() function is key.
+      Quick Sort — partition() function, pivot selection matters.
+
+  PRACTICE PROBLEMS:
+    [ ] Implement all basic sorts and test on same input
+    [ ] Sort Colors (Dutch National Flag — O(N), O(1) space)
+    [ ] Merge Intervals
+    [ ] Largest Number from array digits
+    [ ] Kth Largest Element in array
+    [ ] Count Inversions using merge sort
+    [ ] Sort an array of 0s, 1s, 2s (without counting)
+    [ ] Meeting Rooms: max meetings in single room
+
+================================================================================
+PHASE 13 — ARRAY TECHNIQUES (Week 12) (July 08, 2026 - July 14, 2026)
+================================================================================
+
+STEP 32: Two Pointer Technique                                           [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    Two pointers work on SORTED arrays or from both ends.
+
+    OPPOSITE ENDS:
+      int l = 0, r = n - 1;
+      while (l < r) { ... l++; or r--; }
+
+    SAME DIRECTION:
+      Both moving forward, one faster than other.
+      Used in removing duplicates, partitioning.
+
+    FAST & SLOW POINTERS:
+      Used in linked lists (cycle detection, middle element).
+
+  PRACTICE PROBLEMS:
+    [ ] Two Sum in sorted array (use two pointers, O(N))
+    [ ] 3Sum: find all triplets summing to zero
+    [ ] 4Sum
+    [ ] Container With Most Water
+    [ ] Trapping Rain Water
+    [ ] Remove duplicates from sorted array in-place
+    [ ] Palindrome check using two pointers
+    [ ] Merge two sorted arrays without extra space
+    [ ] Minimum difference pair from two sorted arrays
+
+--------------------------------------------------------------------------------
+
+STEP 33: Sliding Window Technique                                        [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    FIXED WINDOW:
+      Maintain window of size K.
+      On each step: add new element (right), remove old element (left).
+
+    VARIABLE WINDOW:
+      Expand right pointer. When condition breaks, shrink from left.
+
+  PRACTICE PROBLEMS:
+    [ ] Maximum sum subarray of size K
+    [ ] First negative in every window of size K
+    [ ] Count occurrences of anagram in string
+    [ ] Longest substring without repeating characters
+    [ ] Minimum window substring (containing all chars of pattern)
+    [ ] Longest subarray with sum <= K
+    [ ] Fruits Into Baskets (exactly 2 types of fruits)
+    [ ] Permutation in String
+    [ ] Longest subarray with sum = K
+
+--------------------------------------------------------------------------------
+
+STEP 34: Prefix Sum & Kadane's Algorithm                                 [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    PREFIX SUM:
+      prefix[i] = arr[0] + arr[1] + ... + arr[i]
+      Range sum [l, r] = prefix[r] - prefix[l-1]  — O(1) after O(N) build
+
+    2D PREFIX SUM:
+      For matrices — precompute, answer submatrix sum queries in O(1).
+
+    KADANE'S ALGORITHM:
+      Maximum subarray sum in O(N).
+      curr = max(arr[i], curr + arr[i])
+      ans  = max(ans, curr)
+
+  PRACTICE PROBLEMS:
+    [ ] Range sum queries using prefix sum
+    [ ] Subarray with given sum (using prefix + hashmap)
+    [ ] Maximum subarray sum (Kadane's)
+    [ ] Maximum product subarray
+    [ ] Minimum subarray sum
+    [ ] Equilibrium index (sum of left = sum of right)
+    [ ] Longest subarray with equal 0s and 1s (prefix + hashmap)
+    [ ] Subarray sum divisible by K
+
+================================================================================
+PHASE 14 — TREES (Weeks 13-16) (July 15, 2026 - August 11, 2026)
+================================================================================
+
+STEP 35: Binary Tree — Basics & Traversals                               [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    TERMINOLOGY:
+      Root — top node
+      Leaf — node with no children
+      Height — longest path from root to leaf
+      Depth — distance from root to a node
+      Level — root at level 0 (or 1)
+      Parent, Child, Sibling, Ancestor, Descendant
+
+    NODE STRUCTURE:
+      struct TreeNode {
+        int val;
+        TreeNode* left;
+        TreeNode* right;
+        TreeNode(int v) : val(v), left(nullptr), right(nullptr) {}
+      };
+
+    TYPES OF BINARY TREES:
+      Full — every node has 0 or 2 children
+      Complete — all levels filled except possibly last (filled left to right)
+      Perfect — all levels completely filled
+      Balanced — height is O(log N)
+      Skewed — all nodes on one side
+
+    TRAVERSALS:
+      Preorder  (Root-Left-Right):  visit, go left, go right
+      Inorder   (Left-Root-Right):  go left, visit, go right
+      Postorder (Left-Right-Root):  go left, go right, visit
+      Level Order (BFS):            use queue, process level by level
+
+      Iterative versions:
+        Preorder/Inorder — use stack
+        Level Order — use queue
+        Morris traversal — O(1) space using threading
+
+  PRACTICE PROBLEMS:
+    [ ] Implement all 4 traversals recursively
+    [ ] Implement inorder and preorder iteratively using stack
+    [ ] Height (max depth) of tree
+    [ ] Count total nodes
+    [ ] Count leaf nodes
+    [ ] Mirror/Invert a binary tree
+    [ ] Check if two trees are identical
+    [ ] Check if tree is symmetric
+    [ ] Maximum depth and minimum depth
+    [ ] Print left view, right view, top view, bottom view
+    [ ] Diameter of binary tree (longest path between any two nodes)
+    [ ] Lowest Common Ancestor (LCA)
+    [ ] Path from root to a given node
+    [ ] Path sum: does any root-to-leaf path have given sum?
+    [ ] All root to leaf paths
+    [ ] Maximum path sum (can start and end at any node)
+    [ ] Zigzag (spiral) level order traversal
+    [ ] Vertical order traversal
+    [ ] Right side view of tree
+
+--------------------------------------------------------------------------------
+
+STEP 36: Binary Search Tree (BST)                                        [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    PROPERTY:
+      For every node: left subtree values < node, right subtree values > node.
+      Inorder traversal of BST gives SORTED sequence.
+
+    OPERATIONS:
+      Search  — O(H) where H = height. Best O(log N), worst O(N) (skewed)
+      Insert  — go left if smaller, right if larger, insert at null
+      Delete  — 3 cases: leaf, one child, two children (replace with inorder successor)
+      Min     — go left until null
+      Max     — go right until null
+
+    VALIDATION:
+      Check if tree satisfies BST property.
+      Common mistake: only checking parent, not the full range constraint.
+      Correct: isValidBST(node, min, max)
+
+  PRACTICE PROBLEMS:
+    [ ] Insert and search in BST
+    [ ] Delete a node from BST
+    [ ] Find min and max in BST
+    [ ] Inorder successor and predecessor
+    [ ] Validate if a given tree is BST
+    [ ] Kth smallest and Kth largest element in BST
+    [ ] Floor and ceiling in BST
+    [ ] Sorted array to balanced BST
+    [ ] BST to sorted doubly linked list
+    [ ] Merge two BSTs
+    [ ] Largest BST in a binary tree
+    [ ] Recover BST (two nodes swapped by mistake)
+    [ ] Count BST nodes in a given range
+
+--------------------------------------------------------------------------------
+
+STEP 37: Heaps (Priority Queue)                                          [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    HEAP PROPERTY:
+      Min Heap — parent <= both children. Root = minimum.
+      Max Heap — parent >= both children. Root = maximum.
+      Always a COMPLETE binary tree (stored as array).
+
+    ARRAY REPRESENTATION:
+      Parent of i: (i-1)/2
+      Left child:  2*i + 1
+      Right child: 2*i + 2
+
+    OPERATIONS:
+      Insert (heapify up):   add at end, bubble up while parent > child
+      Extract min/max:       remove root, put last at root, heapify down
+      Peek:                  return root, O(1)
+      Build heap:            from unsorted array, O(N) — not O(N log N)!
+
+    HEAP SORT:
+      Build max heap, extract max repeatedly -> sorted array.
+      O(N log N), in-place.
+
+    STL:
+      priority_queue<int> maxH;         — max heap
+      priority_queue<int, vector<int>, greater<int>> minH;  — min heap
+
+  PRACTICE PROBLEMS:
+    [ ] Implement min heap from scratch (insert + extract min)
+    [ ] Kth Largest Element in array (use min heap of size K)
+    [ ] Kth Smallest Element
+    [ ] Merge K sorted arrays
+    [ ] Top K frequent elements
+    [ ] Running Median (maintain two heaps)
+    [ ] Connect ropes with minimum cost
+    [ ] Reorganize string (no two adjacent same chars)
+    [ ] Task Scheduler
+    [ ] Find median from data stream
+
+--------------------------------------------------------------------------------
+
+STEP 38: Advanced Trees — AVL, Segment Tree, Fenwick Tree, Trie          [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    AVL TREE (Self-Balancing BST):
+      Balance factor = height(left) - height(right)
+      Must be -1, 0, or 1 at every node.
+      4 rotation types: LL, RR, LR, RL.
+      Guarantees O(log N) all operations.
+
+    SEGMENT TREE:
+      For range queries (sum, min, max) with updates.
+      Build: O(N), Query: O(log N), Update: O(log N).
+      Stored as array of size 4*N.
+      Lazy Propagation: batch updates in O(log N).
+
+    FENWICK TREE (Binary Indexed Tree / BIT):
+      Simpler than segment tree.
+      Supports prefix sum queries and point updates in O(log N).
+      Uses bit manipulation: i += (i & -i) or i -= (i & -i).
+
+    TRIE (Prefix Tree):
+      Tree where each path from root = a string prefix.
+      Each node has up to 26 children (for lowercase letters).
+      Insert: O(L), Search: O(L) where L = word length.
+
+      struct TrieNode {
+        TrieNode* children[26];
+        bool isEnd;
+      };
+
+  PRACTICE PROBLEMS:
+    SEGMENT TREE:
+    [ ] Range sum query with point updates
+    [ ] Range minimum query
+    [ ] Range maximum query
+    [ ] Range sum with range updates (lazy propagation)
+
+    FENWICK TREE:
+    [ ] Prefix sum queries and updates
+    [ ] Count inversions using BIT
+
+    TRIE:
+    [ ] Insert and search words
+    [ ] Count words with given prefix
+    [ ] Longest word with all prefixes in dictionary
+    [ ] Word break problem
+    [ ] Maximum XOR of two numbers using Trie
+
+================================================================================
+PHASE 15 — GRAPHS (Weeks 16-19) (August 05, 2026 - September 01, 2026)
+================================================================================
+
+STEP 39: Graph Representation & Basics                                   [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    TERMINOLOGY:
+      Vertex (node), Edge (connection between nodes)
+      Directed — edges have direction (one-way)
+      Undirected — edges go both ways
+      Weighted — edges have weights/costs
+      Degree — number of edges connected to a vertex
+      In-degree, Out-degree — for directed graphs
+      Path — sequence of vertices connected by edges
+      Cycle — path that starts and ends at same vertex
+      DAG — Directed Acyclic Graph (no cycles)
+      Connected graph — path exists between every pair of vertices
+
+    REPRESENTATIONS:
+      Adjacency Matrix: mat[u][v] = 1 if edge exists. O(V^2) space.
+        Good for dense graphs or checking edge existence O(1).
+      Adjacency List: list of neighbors for each vertex. O(V+E) space.
+        Good for sparse graphs (most real-world graphs).
+      Edge List: list of (u, v) or (u, v, weight) pairs.
+        Used in Kruskal's algorithm.
+
+    GRAPH TYPES:
+      Tree — connected undirected graph with N-1 edges
+      Complete graph — every pair of vertices connected
+      Bipartite — vertices split into 2 groups, edges only between groups
+
+  PRACTICE PROGRAMS:
+    [ ] Build adjacency list for undirected and directed graphs
+    [ ] Build adjacency matrix
+    [ ] Print all neighbors of a vertex
+    [ ] Count edges and vertices
+
+--------------------------------------------------------------------------------
+
+STEP 40: BFS — Breadth First Search                                      [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    ALGORITHM:
+      Use a queue.
+      Start from source: mark visited, push to queue.
+      While queue not empty:
+        Dequeue vertex u.
+        For each neighbor v of u:
+          If not visited: mark visited, push v.
+
+    APPLICATIONS:
+      Shortest path in unweighted graph (count edges).
+      Level order traversal of graph.
+      Check if graph is bipartite (2-colorable).
+      Connected components.
+      Multi-source BFS (start from multiple sources simultaneously).
+
+    TIME COMPLEXITY: O(V + E)
+    SPACE COMPLEXITY: O(V) for visited + queue
+
+  PRACTICE PROBLEMS:
+    [ ] BFS traversal of graph
+    [ ] Shortest path in unweighted graph (count hops)
+    [ ] Check if graph is bipartite (2-color using BFS)
+    [ ] Number of connected components
+    [ ] Flood Fill (image-like grid BFS)
+    [ ] Rotten Oranges (multi-source BFS)
+    [ ] Word Ladder (BFS on implicit graph)
+    [ ] 01 Matrix (distance to nearest 0)
+    [ ] Walls and Gates
+    [ ] Minimum steps to reach target
+
+--------------------------------------------------------------------------------
+
+STEP 41: DFS — Depth First Search                                        [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    ALGORITHM:
+      Recursive (uses call stack) or explicit stack.
+      Mark visited, explore each unvisited neighbor recursively.
+
+    APPLICATIONS:
+      Cycle detection (directed and undirected).
+      Topological sort (for DAGs).
+      Path finding (find any path between two vertices).
+      Connected components, strongly connected components.
+      Finding bridges and articulation points.
+
+    TOPOLOGICAL SORT:
+      Only for DAGs.
+      Linear ordering of vertices such that for every edge u->v, u comes before v.
+      Method 1: DFS-based (add to stack after exploring all neighbors).
+      Method 2: Kahn's algorithm (BFS with in-degrees).
+
+  PRACTICE PROBLEMS:
+    [ ] DFS traversal of graph
+    [ ] Detect cycle in undirected graph
+    [ ] Detect cycle in directed graph (using color: white/gray/black)
+    [ ] Topological sort (DFS method)
+    [ ] Topological sort (Kahn's BFS method)
+    [ ] Number of islands (grid DFS)
+    [ ] Count provinces (connected components in adj matrix)
+    [ ] Find all paths from source to destination
+    [ ] Course Schedule (detect cycle in prereqs)
+    [ ] Course Schedule II (topological order)
+    [ ] Eventual Safe States
+
+--------------------------------------------------------------------------------
+
+STEP 42: Shortest Path Algorithms                                         [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    DIJKSTRA'S ALGORITHM — O((V + E) log V):
+      Single source, non-negative weights.
+      Use min heap (priority queue).
+      Greedy: always process vertex with minimum distance.
+      dist[src] = 0, all others = INF.
+      For each extracted vertex: relax all neighbors.
+
+    BELLMAN-FORD — O(V*E):
+      Single source, handles NEGATIVE weights.
+      Detects negative cycles.
+      Relax all edges V-1 times.
+      If still possible to relax -> negative cycle.
+
+    FLOYD-WARSHALL — O(V^3):
+      ALL pairs shortest path.
+      dp[i][j] = min distance from i to j.
+      For each intermediate k: dp[i][j] = min(dp[i][j], dp[i][k]+dp[k][j])
+
+  PRACTICE PROBLEMS:
+    [ ] Dijkstra's on standard graph
+    [ ] Network Delay Time
+    [ ] Cheapest Flights Within K Stops (modified Dijkstra/Bellman-Ford)
+    [ ] Path With Minimum Effort
+    [ ] Find City With Smallest Number of Neighbors (Floyd-Warshall)
+    [ ] Negative Weight Cycle Detection (Bellman-Ford)
+    [ ] Shortest Path in Grid with Obstacles
+
+--------------------------------------------------------------------------------
+
+STEP 43: Minimum Spanning Tree & Union-Find                              [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    SPANNING TREE:
+      Subgraph connecting all vertices with minimum edges (V-1 edges).
+      Minimum Spanning Tree (MST) — spanning tree with minimum total weight.
+
+    KRUSKAL'S ALGORITHM — O(E log E):
+      Sort edges by weight.
+      Add edge if it doesn't form a cycle (use Union-Find to check).
+
+    PRIM'S ALGORITHM — O((V+E) log V):
+      Start from any vertex.
+      Always add minimum weight edge connecting MST to non-MST vertex.
+      Use min heap.
+
+    UNION-FIND (Disjoint Set Union):
+      find(x) — which component does x belong to?
+      union(x, y) — merge components of x and y.
+      Optimizations:
+        Path Compression: point directly to root during find.
+        Union by Rank: attach smaller tree under larger.
+      With both: nearly O(1) per operation (amortized O(alpha(N))).
+
+  PRACTICE PROBLEMS:
+    [ ] Implement Union-Find with path compression + union by rank
+    [ ] Kruskal's MST
+    [ ] Prim's MST
+    [ ] Number of Provinces (connected components using Union-Find)
+    [ ] Redundant Connection (find edge that creates cycle)
+    [ ] Accounts Merge
+    [ ] Making a Large Island
+    [ ] Number of Islands II (dynamic, add islands one by one)
+
+================================================================================
+PHASE 16 — RECURSION & BACKTRACKING (Weeks 19-21) (August 26, 2026 - September 15, 2026)
+================================================================================
+
+STEP 44: Recursion Deep Dive                                             [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    RECURSION TREE:
+      Draw the tree of calls. Understand overlap in Fibonacci.
+      Helps calculate time complexity.
+
+    MEMOIZATION:
+      Cache results of subproblems to avoid recomputation.
+      Map<input, output> memo;
+      If memo has answer, return it directly.
+
+    COMMON PATTERNS:
+      Pick/Not pick: include current element or skip it.
+      Explore all choices at each step.
+
+  PRACTICE PROBLEMS:
+    [ ] Print all subsets of a set {1,2,3}
+    [ ] Print all permutations of string/array
+    [ ] Josephus Problem
+    [ ] Flood Fill (recursive grid)
+    [ ] Binary search — recursive version
+    [ ] Quick sort — recursive
+    [ ] Merge sort — recursive
+    [ ] Power set (all 2^N subsets)
+    [ ] Letter combinations of phone number
+
+--------------------------------------------------------------------------------
+
+STEP 45: Backtracking                                                    [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    TEMPLATE:
+      void solve(state, choices) {
+        if (base_case) { record/print; return; }
+        for (each choice) {
+          make_choice;
+          solve(new_state, remaining_choices);
+          undo_choice;   // BACKTRACK
+        }
+      }
+
+    PRUNING:
+      Cut branches early when we know they won't lead to solution.
+      Crucial for performance.
+
+  PRACTICE PROBLEMS:
+    [ ] N-Queens: place N queens on NxN board, no two attack each other
+    [ ] Sudoku Solver
+    [ ] Rat in a Maze
+    [ ] Word Search in grid
+    [ ] Generate all valid parentheses of N pairs
+    [ ] Subset Sum: find subsets that sum to K
+    [ ] Combination Sum (elements can repeat)
+    [ ] Combination Sum II (no repeats, each element used once)
+    [ ] Permutations of array (with and without duplicates)
+    [ ] M-Coloring Problem (graph coloring)
+    [ ] Palindrome Partitioning
+
+--------------------------------------------------------------------------------
+
+STEP 46: Divide and Conquer                                              [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    PARADIGM:
+      1. Divide problem into smaller subproblems.
+      2. Conquer: solve recursively.
+      3. Combine: merge results.
+
+    RECURRENCE RELATIONS:
+      Merge Sort:  T(N) = 2T(N/2) + O(N) -> O(N log N)
+      Binary Search: T(N) = T(N/2) + O(1) -> O(log N)
+      Karatsuba:   T(N) = 3T(N/2) + O(N) -> O(N^1.585)
+
+    MASTER THEOREM:
+      T(N) = aT(N/b) + f(N)
+      Compare f(N) with N^(log_b(a)) to determine solution.
+
+  PRACTICE PROBLEMS:
+    [ ] Merge Sort implementation
+    [ ] Quick Sort implementation
+    [ ] Count Inversions in array (modified merge sort)
+    [ ] Find peak element (D&C, O(log N))
+    [ ] Median of two sorted arrays (hard but classic)
+    [ ] Closest pair of points (conceptual)
+    [ ] Find majority element (Boyer-Moore or D&C)
+    [ ] Pow(x, n) — fast exponentiation
+
+================================================================================
+PHASE 17 — GREEDY ALGORITHMS (Week 21-22) (September 09, 2026 - September 22, 2026)
+================================================================================
+
+STEP 47: Greedy Algorithms                                               [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    GREEDY APPROACH:
+      At each step, make locally optimal choice.
+      Hope/prove it leads to globally optimal solution.
+      NOT always correct — must prove or use DP as fallback.
+
+    TWO CONDITIONS FOR GREEDY TO WORK:
+      1. Greedy Choice Property: local optimal = global optimal.
+      2. Optimal Substructure: optimal solution contains optimal solutions to subproblems.
+
+    WHEN GREEDY FAILS:
+      0/1 Knapsack — use DP instead (greedy fails).
+      Fractional Knapsack — greedy works (take by value/weight ratio).
+      Coin Change (min coins) — greedy fails for arbitrary coin sets, use DP.
+
+  PRACTICE PROBLEMS:
+    [ ] Activity Selection (max non-overlapping intervals)
+    [ ] N Meetings in One Room
+    [ ] Fractional Knapsack
+    [ ] Job Sequencing with Deadlines
+    [ ] Huffman Encoding (build optimal prefix code)
+    [ ] Minimum Platforms needed for trains
+    [ ] Minimum Number of Coins (for standard coin system)
+    [ ] Assign Cookies (maximize satisfied children)
+    [ ] Jump Game (can you reach end?)
+    [ ] Jump Game II (minimum jumps to reach end)
+    [ ] Partition Labels
+    [ ] Candy Distribution
+    [ ] Gas Station
+    [ ] Egyptian Fractions
+
+================================================================================
+PHASE 18 — DYNAMIC PROGRAMMING (Weeks 22-27) (September 16, 2026 - October 27, 2026)
+================================================================================
+
+STEP 48: DP — Foundations & 1D Problems                                  [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    WHAT IS DP:
+      Solve problems by breaking into overlapping subproblems.
+      Store solutions to avoid recomputation.
+
+    TWO APPROACHES:
+      Top-Down (Memoization):
+        Recursive + cache (map or array).
+        Solve only the subproblems you actually need.
+      Bottom-Up (Tabulation):
+        Iterative, fill table from base cases up.
+        Usually faster (no recursion overhead).
+
+    DP STATE:
+      Define clearly: what does dp[i] mean?
+      State transition: how does dp[i] relate to dp[i-1], dp[i-2], etc.?
+
+    DP TABLE:
+      Initialize base cases, then fill in order.
+
+  PRACTICE PROBLEMS:
+    [ ] Fibonacci — memoized recursion, then tabulation
+    [ ] Climbing Stairs (N stairs, 1 or 2 steps at a time)
+    [ ] House Robber (non-adjacent max sum)
+    [ ] House Robber II (circular array)
+    [ ] Decode Ways (number of ways to decode string)
+    [ ] Jump Game (greedy OK, but practice DP too)
+    [ ] Maximum Sum Subarray (Kadane's — think of it as DP)
+    [ ] Longest Increasing Subsequence (LIS)
+    [ ] Longest Bitonic Subsequence
+    [ ] Number of LIS
+    [ ] Count ways to reach Nth stair
+    [ ] Minimum cost climbing stairs
+    [ ] Coin Change I: minimum coins to make amount
+    [ ] Coin Change II: count number of ways
+
+--------------------------------------------------------------------------------
+
+STEP 49: DP — 2D & Classic Problems                                      [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    0/1 KNAPSACK:
+      dp[i][w] = max value using first i items with capacity w.
+      For each item: skip (dp[i-1][w]) or take (val[i] + dp[i-1][w-wt[i]]).
+      
+    LCS (Longest Common Subsequence):
+      dp[i][j] = LCS of first i chars of s1 and first j chars of s2.
+      If s1[i]==s2[j]: dp[i][j] = dp[i-1][j-1] + 1
+      Else: dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+
+    EDIT DISTANCE:
+      Minimum insert/delete/replace to convert s1 to s2.
+      dp[i][j]: min ops for s1[0..i] and s2[0..j].
+
+  PRACTICE PROBLEMS:
+    [ ] 0/1 Knapsack — standard
+    [ ] Subset Sum
+    [ ] Partition Equal Subset Sum
+    [ ] Count of subsets with given sum
+    [ ] Longest Common Subsequence
+    [ ] Longest Common Substring
+    [ ] Edit Distance (Levenshtein)
+    [ ] Shortest Common Supersequence
+    [ ] Matrix Chain Multiplication
+    [ ] Egg Dropping Problem
+    [ ] Burst Balloons
+    [ ] Palindrome Partitioning II (minimum cuts)
+    [ ] Boolean Parenthesization
+    [ ] Scramble String
+    [ ] Interleaving Strings
+
+--------------------------------------------------------------------------------
+
+STEP 50: DP — On Grids, Strings, Trees & Patterns                        [DSA]
+------------------------------------------------------------------------
+  PRACTICE PROBLEMS:
+    GRID DP:
+    [ ] Unique Paths (grid from top-left to bottom-right)
+    [ ] Unique Paths II (with obstacles)
+    [ ] Minimum Path Sum in Grid
+    [ ] Triangle (min path sum top to bottom)
+    [ ] Dungeon Game
+    [ ] Cherry Pickup
+
+    STRING DP:
+    [ ] Longest Palindromic Subsequence
+    [ ] Minimum Insertions to make Palindrome
+    [ ] Distinct Subsequences
+    [ ] Wildcard Matching
+    [ ] Regular Expression Matching
+    [ ] Word Break I and II
+
+    TREE DP:
+    [ ] Max path sum in binary tree
+    [ ] Diameter of tree (DP perspective)
+    [ ] House Robber on Tree (no two adjacent nodes)
+    [ ] Binary Tree Cameras
+
+    ADVANCED DP PATTERNS:
+    [ ] DP with bitmask: TSP, assignment problem, matching
+    [ ] Digit DP: count numbers with property in range [L, R]
+    [ ] Interval DP: stone merging, matrix chain
+
+================================================================================
+PHASE 19 — BIT MANIPULATION (Week 27-28) (October 21, 2026 - November 03, 2026)
+================================================================================
+
+STEP 51: Bit Manipulation                                                [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    BINARY REPRESENTATION:
+      5 in binary = 101
+      Negative numbers: two's complement
+
+    OPERATIONS:
+      x & y    — AND (both bits must be 1)
+      x | y    — OR (at least one bit is 1)
+      x ^ y    — XOR (exactly one bit is 1, used to find different bits)
+      ~x       — NOT (flip all bits)
+      x << k   — left shift (multiply by 2^k)
+      x >> k   — right shift (divide by 2^k)
+
+    COMMON TRICKS:
+      Check if even/odd:       x & 1 == 0 means even
+      Check if power of 2:     x & (x-1) == 0 (and x > 0)
+      Get ith bit:             (x >> i) & 1
+      Set ith bit:             x | (1 << i)
+      Clear ith bit:           x & ~(1 << i)
+      Toggle ith bit:          x ^ (1 << i)
+      Count set bits:          Brian Kernighan: while(x) { count++; x &= x-1; }
+      Isolate rightmost 1:     x & (-x)
+      Clear rightmost 1:       x & (x-1)
+      Swap two numbers:        a^=b; b^=a; a^=b;
+      XOR trick:               a^a = 0, a^0 = a
+
+  PRACTICE PROBLEMS:
+    [ ] Check if number is power of 2
+    [ ] Count set bits (popcount) — Brian Kernighan's method
+    [ ] Find only odd-occurring number in array (XOR all elements)
+    [ ] Find two non-repeating numbers (XOR + partition)
+    [ ] Subset generation using bitmask (1<<n subsets of n elements)
+    [ ] Reverse bits of an integer
+    [ ] Maximum XOR of two numbers in array (Trie approach)
+    [ ] XOR of all numbers from 1 to N (find pattern)
+    [ ] Total Hamming distance between all pairs
+    [ ] Single Number I, II, III
+
+================================================================================
+PHASE 20 — ADVANCED GRAPH ALGORITHMS (Weeks 28-30) (October 28, 2026 - November 17, 2026)
+================================================================================
+
+STEP 52: Advanced Graph Topics                                           [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    BRIDGES & ARTICULATION POINTS (Tarjan's):
+      Bridge — edge whose removal disconnects graph.
+      Articulation Point — vertex whose removal disconnects graph.
+      Uses DFS + discovery time + low values.
+
+    STRONGLY CONNECTED COMPONENTS (SCC):
+      Kosaraju's: two DFS passes.
+      Tarjan's: single DFS using stack.
+
+    EULERIAN PATH/CIRCUIT:
+      Euler Circuit: visits every edge exactly once, returns to start.
+        Exists if all vertices have even degree.
+      Euler Path: visits every edge once.
+        Exists if exactly 0 or 2 vertices have odd degree.
+
+    NETWORK FLOW (BASICS):
+      Max flow from source to sink.
+      Ford-Fulkerson: augmenting paths using BFS/DFS.
+      Edmonds-Karp: BFS-based Ford-Fulkerson, O(VE^2).
+      Min-cut Max-flow theorem.
+
+  PRACTICE PROBLEMS:
+    [ ] Find all bridges in graph
+    [ ] Find all articulation points
+    [ ] Kosaraju's SCC algorithm
+    [ ] Tarjan's SCC
+    [ ] Euler circuit existence check
+    [ ] Reconstruct Itinerary (Hierholzer's algorithm)
+    [ ] Max flow — basic Ford-Fulkerson
+
+--------------------------------------------------------------------------------
+
+STEP 53: String Algorithms — Advanced                                     [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    KMP ALGORITHM: O(N+M)
+      Pattern matching without backtracking.
+      Precompute failure function (lps array).
+      lps[i] = length of longest proper prefix of pattern[0..i] that is also suffix.
+
+    RABIN-KARP: O(N+M) average
+      Hash-based pattern matching.
+      Rolling hash — update in O(1) as window slides.
+
+    Z-ALGORITHM: O(N+M)
+      z[i] = length of longest substring starting from i that is prefix of string.
+
+    MANACHER'S ALGORITHM: O(N)
+      Find all palindromic substrings.
+      Expand around center, use previously computed info.
+
+    SUFFIX ARRAY: O(N log N) build
+      Sorted array of all suffixes.
+      With LCP array — many string problems solvable in O(N log N).
+
+    AHO-CORASICK: O(N + sum of pattern lengths + matches)
+      Multi-pattern matching simultaneously.
+      Build trie + failure links.
+
+  PRACTICE PROBLEMS:
+    [ ] Pattern search using KMP
+    [ ] Pattern search using Rabin-Karp
+    [ ] Longest palindromic substring (Manacher's)
+    [ ] Count palindromic substrings
+    [ ] Shortest period of a string (using KMP failure function)
+    [ ] Count pattern occurrences in text
+    [ ] Minimum characters to add to make string palindrome
+
+================================================================================
+PHASE 21 — ADVANCED DATA STRUCTURES (Weeks 30-32) (November 11, 2026 - December 01, 2026)
+================================================================================
+
+STEP 54: Sparse Table, Square Root Decomposition, Heavy-Light Decomp     [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    SPARSE TABLE:
+      For STATIC range queries (no updates).
+      Precompute: sparse[i][j] = min/max of arr[i..i+2^j-1]
+      Query any range in O(1) for idempotent ops (min/max).
+      Build: O(N log N). Query: O(1).
+
+    SQUARE ROOT DECOMPOSITION (Mo's Algorithm):
+      Divide array into blocks of size sqrt(N).
+      For offline range queries.
+      Process queries sorted by block of left endpoint.
+      Each query processes in O(sqrt(N)) on average.
+
+    HEAVY-LIGHT DECOMPOSITION:
+      For trees: decompose into chains.
+      Allows path queries on trees in O(log^2 N).
+      Combine with segment tree.
+
+  PRACTICE PROBLEMS:
+    SPARSE TABLE:
+    [ ] Range minimum query (static)
+    [ ] Range maximum query (static)
+    [ ] Range GCD query
+
+    SQRT DECOMPOSITION / MO'S:
+    [ ] Range sum queries (offline, with Mo's)
+    [ ] Distinct values in range (Mo's)
+
+--------------------------------------------------------------------------------
+
+STEP 55: Multithreading Basics (C++)                                     [C++]
+------------------------------------------------------------------------
+  LEARN:
+    #include <thread>
+
+    BASICS:
+      thread t1(function, args...);
+      t1.join();    — wait for thread to finish
+      t1.detach();  — run independently
+
+    MUTEX (mutual exclusion):
+      mutex m;
+      m.lock(); ... m.unlock();
+      lock_guard<mutex> lg(m);   — automatic unlock
+
+    CONDITION VARIABLE:
+      condition_variable cv;
+      cv.wait(lock, predicate);
+      cv.notify_one();
+      cv.notify_all();
+
+    ATOMIC:
+      atomic<int> count{0};
+      count++;   — thread-safe increment
+
+    RACE CONDITION:
+      Two threads modify shared data simultaneously -> undefined behavior.
+      Prevent with mutex or atomic.
+
+    FUTURE & PROMISE:
+      promise<int> p;
+      future<int> f = p.get_future();
+      p.set_value(42);   // in one thread
+      int val = f.get(); // in another thread
+
+    ASYNC:
+      auto result = async(launch::async, function, args...);
+      result.get();
+
+  PRACTICE PROGRAMS:
+    [ ] Create two threads printing "Hello" and "World" alternately
+    [ ] Thread-safe counter using mutex
+    [ ] Producer-consumer problem using condition variable
+    [ ] Parallel sum of large array
+
+================================================================================
+PHASE 22 — ADVANCED DP & PROBLEM PATTERNS (Weeks 32-36) (November 25, 2026 - December 29, 2026)
+================================================================================
+
+STEP 56: Advanced DP Techniques                                          [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    BITMASK DP:
+      State includes subset of elements (represented as bitmask).
+      dp[mask] = optimal value when we've included elements in 'mask'.
+      O(2^N * N).
+      Used for: TSP, assignment problems, subset DP.
+
+    DIGIT DP:
+      Count numbers in range [0, N] satisfying some property.
+      State: (position, tight_constraint, other_params).
+
+    DP ON INTERVALS (Range DP):
+      dp[i][j] = optimal solution for subarray/subproblem [i, j].
+      Matrix chain: compute order of matrix multiplications.
+      Burst balloons, stone merging, palindrome partitioning.
+
+    CONVEX HULL TRICK / DIVIDE & CONQUER DP OPTIMIZATION:
+      Reduce O(N^2) DP to O(N log N) using geometric insight.
+      Used when transition is of form dp[i] = min(dp[j] + cost(j, i)).
+
+    TREE DP RE-ROOTING:
+      Compute answer for each node as root without re-running DFS.
+      2 DFS: one downward, one upward to propagate answers.
+
+  PRACTICE PROBLEMS:
+    BITMASK DP:
+    [ ] Minimum cost to visit all cities (TSP)
+    [ ] Minimum XOR sum of two arrays
+    [ ] Number of ways to assign tasks to workers
+
+    DIGIT DP:
+    [ ] Count numbers with digit sum = K in [1, N]
+    [ ] Count numbers without consecutive 1s in binary representation
+
+    INTERVAL DP:
+    [ ] Matrix Chain Multiplication
+    [ ] Burst Balloons
+    [ ] Minimum Cost to Merge Stones
+    [ ] Strange Printer
+
+    ADVANCED:
+    [ ] Minimum Jumps (DP + deque optimization)
+    [ ] Largest Rectangle in Histogram (DP perspective)
+
+================================================================================
+PHASE 23 — MATHEMATICAL ALGORITHMS (Weeks 36-38) (December 23, 2026 - January 12, 2027)
+================================================================================
+
+STEP 57: Number Theory for Competitive Programming                       [DSA]
+------------------------------------------------------------------------
+  LEARN:
+    PRIME NUMBERS:
+      Check primality: O(sqrt(N)).
+      Sieve of Eratosthenes: find all primes up to N in O(N log log N).
+      Segmented sieve: for primes in range [L, R].
+
+    GCD & LCM:
+      Euclidean algorithm: gcd(a, b) = gcd(b, a%b), base: gcd(a, 0) = a. O(log N).
+      lcm(a, b) = (a/gcd(a,b)) * b  — divide first to prevent overflow.
+      Extended Euclidean: find x, y such that ax + by = gcd(a, b).
+
+    MODULAR ARITHMETIC:
+      (a + b) % m = ((a % m) + (b % m)) % m
+      (a * b) % m = ((a % m) * (b % m)) % m
+      (a - b) % m = ((a % m) - (b % m) + m) % m  — add m to handle negative
+      Modular inverse: a^(-1) mod m = a^(m-2) mod m  (Fermat's, when m is prime).
+
+    FAST EXPONENTIATION:
+      x^n in O(log n) using binary exponentiation.
+      ll power(ll base, ll exp, ll mod) {
+        ll result = 1;
+        while (exp > 0) {
+          if (exp & 1) result = result * base % mod;
+          base = base * base % mod;
+          exp >>= 1;
+        }
+        return result;
+      }
+
+    EULER'S TOTIENT:
+      phi(n) = count of numbers in [1, n] coprime to n.
+      phi(p) = p-1 for prime p.
+      phi(p^k) = p^(k-1) * (p-1).
+      Multiplicative: phi(mn) = phi(m)*phi(n) if gcd(m,n)=1.
+
+    CHINESE REMAINDER THEOREM:
+      System of congruences x ≡ a1 (mod m1), x ≡ a2 (mod m2), ...
+      Unique solution when moduli are pairwise coprime.
+
+    MATRIX EXPONENTIATION:
+      Compute M^n in O(K^3 log n) where K = matrix size.
+      Used to speed up linear recurrences: Fibonacci in O(log n).
+
+  PRACTICE PROBLEMS:
+    [ ] Sieve of Eratosthenes — find all primes up to 10^6
+    [ ] Count prime factors of N
+    [ ] GCD and LCM of array of numbers
+    [ ] Fast power: x^n mod m
+    [ ] Modular inverse
+    [ ] Number of divisors of N
+    [ ] Sum of divisors
+    [ ] Euler's Totient function for all numbers up to N
+    [ ] Fibonacci using matrix exponentiation
+    [ ] Count integers in [L, R] coprime to N
+
+================================================================================
+PHASE 24 — DESIGN PATTERNS (C++) (Weeks 38-39) (January 06, 2027 - January 19, 2027)
+================================================================================
+
+STEP 58: Software Design Patterns                                        [C++]
+------------------------------------------------------------------------
+  LEARN:
+    CREATIONAL PATTERNS:
+      Singleton — only one instance exists.
+        static instance, private constructor.
+      Factory — create objects without specifying exact class.
+        Factory method returns base class pointer.
+      Builder — construct complex object step by step.
+      Abstract Factory — family of related objects.
+      Prototype — clone existing object.
+
+    STRUCTURAL PATTERNS:
+      Adapter — make incompatible interfaces work together.
+      Decorator — add behavior to object without modifying class.
+      Proxy — placeholder/wrapper for another object.
+      Facade — simple interface to complex subsystem.
+      Composite — tree structure for part-whole hierarchies.
+
+    BEHAVIORAL PATTERNS:
+      Observer — notify dependents of state changes.
+      Strategy — define family of algorithms, make them interchangeable.
+      Command — encapsulate request as object.
+      Iterator — sequential access without exposing internal structure.
+      Template Method — skeleton of algorithm, subclasses fill details.
+      State — object changes behavior based on internal state.
+
+    SOLID PRINCIPLES:
+      S — Single Responsibility: class does ONE thing.
+      O — Open/Closed: open for extension, closed for modification.
+      L — Liskov Substitution: derived class can replace base class.
+      I — Interface Segregation: many small interfaces > one large.
+      D — Dependency Inversion: depend on abstractions, not concretes.
+
+  PRACTICE PROGRAMS:
+    [ ] Singleton — thread-safe logger
+    [ ] Factory — shape factory (circle, rectangle, triangle)
+    [ ] Observer — event system (button click notifies listeners)
+    [ ] Strategy — sorting strategy (bubble, merge, quick interchangeable)
+    [ ] Decorator — add discounts/taxes to base price
+    [ ] Builder — build complex Pizza order step by step
+
+================================================================================
+PHASE 25 — PROBLEM PATTERNS & COMPETITION PREP (Weeks 39-42+) (January 13, 2027 - February 09, 2027)
+================================================================================
+
+STEP 59: Common Problem Patterns                                        [BOTH]
+------------------------------------------------------------------------
+  MASTER THESE PATTERNS:
+    1. SLIDING WINDOW — substring/subarray problems with constraint
+    2. TWO POINTER — sorted array, pair sum, remove duplicates
+    3. FAST & SLOW POINTER — cycle detection, middle of list
+    4. MERGE INTERVALS — overlapping interval problems
+    5. CYCLIC SORT — arrays with numbers in range [1, N]
+    6. IN-PLACE LINKED LIST REVERSAL — reverse sublists
+    7. TREE BFS — level-order, right/left view, zigzag
+    8. TREE DFS — path sum, LCA, diameter
+    9. GRAPH BFS — shortest path, multi-source
+    10. GRAPH DFS — connected components, cycle, topo sort
+    11. BINARY SEARCH ON ANSWER — when to find min/max satisfying condition
+    12. TOP K ELEMENTS — heap of size K
+    13. K-WAY MERGE — merge K sorted arrays/lists
+    14. 0/1 KNAPSACK — pick or skip each item
+    15. UNBOUNDED KNAPSACK — pick item multiple times
+    16. FIBONACCI DP — each state depends on previous 1-2 states
+    17. LCS PATTERN — two sequences, find common property
+    18. PALINDROME DP — expand around center or dp[i][j]
+    19. UNION-FIND — dynamic connectivity, grouping
+    20. BACKTRACKING — generate all, prune invalid paths
+
+  PRACTICE (LeetCode Problem Set):
+    EASY (start here — build confidence):
+    [ ] Two Sum
+    [ ] Valid Parentheses
+    [ ] Merge Two Sorted Lists
+    [ ] Best Time to Buy and Sell Stock
+    [ ] Valid Palindrome
+    [ ] Reverse Linked List
+    [ ] Contains Duplicate
+    [ ] Missing Number
+    [ ] Intersection of Two Arrays
+    [ ] Move Zeroes
+    [ ] Climbing Stairs
+    [ ] Maximum Depth of Binary Tree
+    [ ] Binary Search
+    [ ] Sqrt(x)
+    [ ] First Bad Version
+
+    MEDIUM (main focus):
+    [ ] Longest Substring Without Repeating Characters
+    [ ] 3Sum
+    [ ] Container With Most Water
+    [ ] Longest Palindromic Substring
+    [ ] Jump Game
+    [ ] Merge Intervals
+    [ ] Unique Paths
+    [ ] Coin Change
+    [ ] Number of Islands
+    [ ] Course Schedule
+    [ ] Kth Largest Element in Array
+    [ ] Lowest Common Ancestor of BST
+    [ ] Word Search
+    [ ] Subsets
+    [ ] Combination Sum
+
+    HARD (once you are solid on medium):
+    [ ] Trapping Rain Water
+    [ ] Largest Rectangle in Histogram
+    [ ] N-Queens
+    [ ] Median of Two Sorted Arrays
+    [ ] Merge K Sorted Lists
+    [ ] Word Ladder II
+    [ ] Maximum Product Subarray... wait that's medium
+    [ ] Edit Distance
+    [ ] Burst Balloons
+    [ ] Regular Expression Matching
+
+--------------------------------------------------------------------------------
+
+STEP 60: Mathematics for DSA                                            [BOTH]
+------------------------------------------------------------------------
+  LEARN:
+    NUMBER THEORY (covered in Phase 23 — review here):
+      Primes, GCD, LCM, modular arithmetic.
+
+    COMBINATORICS:
+      Permutations: P(n,r) = n! / (n-r)!
+      Combinations: C(n,r) = n! / (r! * (n-r)!)
+      Binomial coefficients: Pascal's triangle.
+      Catalan Numbers: C(n) = (1/(n+1)) * C(2n, n).
+        Count: valid parentheses, BST structures, polygon triangulations.
+      Pigeonhole Principle: if N+1 items in N containers, one has 2.
+      Inclusion-Exclusion.
+
+    PROBABILITY BASICS:
+      Probability of event = favorable / total outcomes.
+      Expected value: E[X] = sum(x * P(X=x)).
+
+    LOGARITHMS:
+      log2(N) = log(N) / log(2).
+      Appears in binary search, balanced trees, heap.
+
+  PRACTICE PROBLEMS:
+    [ ] Count binary strings of length N with no consecutive 1s (Fibonacci!)
+    [ ] Number of BSTs with N keys (Catalan numbers)
+    [ ] Count ways to parenthesize N+1 matrices (Catalan)
+    [ ] Birthday problem: probability two people share birthday
+
+================================================================================
+APPENDIX — RESOURCES & SCHEDULE
+================================================================================
+
+RECOMMENDED RESOURCES
+----------------------
+  BOOKS:
+    Beginner C++:       "C++ Primer" — Stanley Lippman
+    Intermediate C++:   "Effective C++" — Scott Meyers
+    Modern C++:         "Effective Modern C++" — Scott Meyers
+    Advanced C++:       "The C++ Programming Language" — Bjarne Stroustrup
+    DSA Beginner:       "Data Structures and Algorithms Made Easy" — Narasimha Karumanchi
+    DSA Standard:       "Introduction to Algorithms (CLRS)" — Cormen et al.
+    DSA Practical:      "Algorithm Design Manual" — Steven Skiena
+    Competitive:        "Competitive Programming 3" — Steven & Felix Halim
+    Interviews:         "Cracking the Coding Interview" — Gayle Laakmann McDowell
+    Interviews:         "Elements of Programming Interviews" — Aziz, Lee, Prakash
+
+  ONLINE PLATFORMS:
+    LeetCode            — https://leetcode.com        (primary practice)
+    Codeforces          — https://codeforces.com      (competitive programming)
+    GeeksForGeeks       — https://www.geeksforgeeks.org (concepts + problems)
+    CodeChef            — https://www.codechef.com    (long contests)
+    AtCoder             — https://atcoder.jp           (excellent problem quality)
+    HackerRank          — https://www.hackerrank.com  (structured tracks)
+    CSES Problem Set    — https://cses.fi/problemset  (competitive fundamentals)
+    CP-Algorithms       — https://cp-algorithms.com   (algorithms with proofs)
+    Visualgo            — https://visualgo.net         (algorithm visualization)
+
+  YOUTUBE CHANNELS:
+    Abdul Bari          — DSA fundamentals, very clear
+    WilliamFiset        — Graph algorithms, advanced DSA
+    Striver (TakeUWForward) — DSA patterns, SDE sheet
+    Neetcode            — LeetCode patterns, clean explanations
+    Back to Back SWE    — interview-style explanations
+    MIT 6.006           — Intro to Algorithms (full course)
+    Princeton Coursera  — Algorithms Part I & II
+
+  TOOLS FOR LINUX:
+    Compile:    g++ -std=c++17 -Wall -O2 file.cpp -o file
+    Debug:      g++ -g file.cpp -o file && gdb ./file
+    Valgrind:   valgrind --leak-check=full ./file     (memory leak detection)
+    ASan:       g++ -fsanitize=address -g file.cpp -o file
+    Timing:     time ./file
+    Diff:       diff output.txt expected.txt
+
+DAILY PRACTICE SCHEDULE
+------------------------
+  BEGINNER PHASE (Phases 1-8):
+    30 min — read theory, implement concept
+    60 min — solve 2-3 easy practice problems from the list above
+    15 min — review and understand mistakes
+
+  INTERMEDIATE PHASE (Phases 9-17):
+    30 min — read new topic, implement
+    60 min — solve 1-2 medium problems
+    30 min — revisit and re-solve yesterday's problem without reference
+
+  ADVANCED PHASE (Phases 18-25):
+    60 min — solve 1 hard / 2 medium problems
+    30 min — competitive programming (Codeforces div 3-4 problems)
+    30 min — review patterns, strengthen weak areas
+
+WEEKLY GOALS
+------------
+  Week 1-4:    Complete Phases 1-5. Solve 10 problems per week.
+  Week 5-8:    Complete Phases 6-10. Solve 15 problems per week.
+  Week 9-13:   Complete Phases 11-15. Solve 20 problems per week.
+  Week 14-20:  Complete Phases 16-20. Solve 25 problems per week.
+  Week 21-30:  Complete Phases 21-25. Solve 30 problems per week.
+  Week 31+:    Mixed practice. Participate in weekly contests.
+
+PROBLEM COUNT TARGETS
+---------------------
+  Topic              | Easy | Medium | Hard | Total
+  -------------------|------|--------|------|------
+  Arrays             |  30  |   40   |  10  |  80
+  Strings            |  25  |   30   |  10  |  65
+  Linked Lists       |  20  |   25   |   5  |  50
+  Stacks & Queues    |  15  |   20   |   5  |  40
+  Hashing            |  20  |   25   |   5  |  50
+  Trees              |  20  |   40   |  15  |  75
+  Graphs             |  15  |   40   |  20  |  75
+  Greedy             |  10  |   25   |   5  |  40
+  Backtracking       |   5  |   20   |  10  |  35
+  Dynamic Programming|  10  |   50   |  30  |  90
+  Heaps              |  10  |   20   |   5  |  35
+  Bit Manipulation   |  10  |   15   |   5  |  30
+  TOTAL              | 190  |  350   | 125  | 665
+
+COMPETITION ROADMAP
+--------------------
+  BEGINNER (0-3 months):
+    LeetCode Easy problems — aim for 50-100 solved.
+    HackerRank certifications (30 days of code).
+    Codeforces Div 4 contests.
+
+  INTERMEDIATE (3-9 months):
+    LeetCode Medium — aim for 150-200 solved.
+    Codeforces Div 3 and Div 2.
+    CodeChef Div 2 long challenges.
+    Striver's SDE Sheet (191 problems).
+
+  ADVANCED (9+ months):
+    LeetCode Hard — aim for 50+ solved.
+    Codeforces Div 1 (target rating 1600+).
+    ICPC regional participation.
+    Google Code Jam, Facebook Hacker Cup.
+
+================================================================================
+END OF ROADMAP
+================================================================================
+
+QUICK CHECKLIST — DID YOU...
+  [ ] Set up Linux environment and compile successfully?
+  [ ] Write every program yourself (not copy-paste)?
+  [ ] Solve ALL practice problems for each topic before moving on?
+  [ ] Analyze time and space complexity of each solution?
+  [ ] Try to optimize your first solution?
+  [ ] Practice consistently every day?
+  [ ] Join a weekly coding contest at your level?
+  [ ] Review and re-solve problems from 2-3 days ago?
+
+"Consistency beats intensity. 1 hour every day beats 10 hours on weekends."
+"Understand patterns — don't memorize solutions."
+"Write code, not just read it."
+
+================================================================================

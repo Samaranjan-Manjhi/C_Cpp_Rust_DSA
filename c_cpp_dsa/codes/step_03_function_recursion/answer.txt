@@ -1,0 +1,582 @@
+================================================================================
+     FUNCTIONS & RECURSION — THEORY ANSWERS + TRICKY QUESTIONS
+================================================================================
+
+================================================================================
+SECTION 1A — CORE FUNCTIONS THEORY (ANSWERS)
+================================================================================
+
+Q1. What is the difference between pass by value and pass by reference?
+
+    - Pass by value: the function receives a COPY of the argument. Changes
+      inside the function do not affect the caller's original variable.
+      Costs a copy (can be expensive for large objects).
+    - Pass by reference (T&): the function receives an alias to the
+      caller's original variable. Changes inside the function DO affect the
+      caller's variable. No copy is made — cheaper for large objects, and
+      the only way to let a function modify the caller's data directly
+      (besides pointers).
+    - Related: pass by pointer (T*) is similar to reference but the
+      pointer can be null and can be reseated; pass by const reference
+      (const T&) avoids the copy while still preventing modification —
+      the common idiom for large read-only parameters.
+
+Q2. What is function overloading? Can you overload based on return type
+    alone?
+
+    - Function overloading: defining multiple functions with the SAME name
+      but different parameter lists (different number and/or types of
+      parameters). The compiler picks the right one at compile time based
+      on the arguments passed (resolved via overload resolution).
+    - No — you cannot overload based on return type alone. The compiler
+      must be able to disambiguate purely from the function call syntax
+      (name + argument list), and return type isn't part of that at the
+      call site (e.g., `int f(); double f();` is a compile error — an
+      ambiguous redeclaration, not a valid overload).
+
+Q3. What is a default argument? Where must it appear in the parameter list?
+
+    - A default argument is a value automatically supplied for a parameter
+      if the caller doesn't provide one, e.g. `void f(int x, int y = 10);`
+      — calling `f(5)` is equivalent to `f(5, 10)`.
+    - Once a parameter has a default value, ALL parameters after it must
+      also have default values (defaults must be trailing/rightmost) —
+      e.g. `void f(int a, int b = 1, int c);` is a compile error because c
+      has no default but follows one.
+
+Q4. What is an inline function? When does the compiler ignore the inline
+    hint?
+
+    - `inline` is a request to the compiler to substitute the function's
+      body directly at the call site instead of generating a normal
+      call/return, eliminating call overhead — historically also used to
+      avoid "multiple definition" linker errors when a function is defined
+      in a header included by multiple translation units.
+    - It is only a HINT, not a command — the compiler is free to ignore it
+      and decide independently whether to inline (modern compilers usually
+      make this decision based on their own heuristics regardless of the
+      keyword). Compilers typically ignore/skip inlining when: the function
+      is large/complex, it's recursive, it involves loops or is too costly
+      to duplicate at every call site, its address is taken (needs a real
+      address), or it's virtual and called through a base pointer (dynamic
+      dispatch can't be resolved at compile time).
+
+Q5. What is recursion? What are its advantages and disadvantages vs
+    iteration?
+
+    - Recursion: a function calling itself (directly or indirectly) to
+      solve a problem by breaking it into smaller subproblems of the same
+      form, with a base case that stops the recursion.
+    - Advantages: often a much cleaner, more natural expression of
+      problems that are inherently recursive/tree-like (traversals,
+      divide-and-conquer, backtracking); can lead to shorter, more readable
+      code.
+    - Disadvantages: each call adds a stack frame — higher memory overhead
+      than a loop, risk of stack overflow for deep recursion; function call
+      overhead (pushing/popping frames) is typically slower than a simple
+      loop iteration; can be harder to reason about performance/complexity
+      without careful analysis (e.g. naive recursive Fibonacci is
+      exponential without memoization).
+
+Q6. What is tail recursion? Why is it better? Does C++ optimize it?
+
+    - Tail recursion: the recursive call is the VERY LAST operation in the
+      function — nothing happens after it returns (no pending
+      multiplication/addition on the result). Example:
+          int fact_tail(int n, int acc) {
+              if (n <= 1) return acc;
+              return fact_tail(n - 1, n * acc);   // tail call
+          }
+    - It's "better" because it CAN be optimized by the compiler into a
+      simple loop (reusing the same stack frame instead of pushing a new
+      one for each call) — this is called Tail Call Optimization (TCO),
+      turning O(n) stack space into O(1).
+    - Does C++ optimize it? Not guaranteed by the standard — it's a
+      compiler-dependent optimization. GCC and Clang CAN perform TCO, but
+      typically only at higher optimization levels (-O2/-O3), and only if
+      the call is truly in tail position and no destructors/cleanup need to
+      run after the call. You should never rely on TCO happening in C++ —
+      unlike languages such as Scheme where it's mandated by the spec.
+
+Q7. What is stack overflow in the context of recursion?
+
+    - Each recursive call pushes a new stack frame (return address, local
+      variables, saved registers) onto the call stack, which has a fixed,
+      limited size. If recursion goes too deep (e.g., missing/incorrect
+      base case, or a problem size too large for the available stack),
+      the stack's memory limit is exceeded — this is a stack overflow,
+      typically crashing the program (segmentation fault) since it usually
+      corrupts adjacent memory or hits a guard page.
+
+Q8. What is the difference between local and global variables?
+
+    - Local variables: declared inside a function/block; scope is limited
+      to that function/block; storage is (by default) on the stack, created
+      when the block is entered and destroyed when it exits; not visible
+      outside their scope.
+    - Global variables: declared outside any function, at file/namespace
+      scope; visible throughout the translation unit (and other files via
+      extern); stored in static/global memory, exist for the entire program
+      lifetime. Overuse of globals is discouraged (harder to reason about
+      state, thread-safety issues, hidden dependencies between functions).
+
+Q9. What is a static local variable? How long does it live?
+
+    - A local variable declared with `static` inside a function retains its
+      value BETWEEN calls to that function, instead of being re-initialized
+      every call. It's initialized only once (the first time control passes
+      through its declaration) and lives for the entire duration of the
+      program (static storage duration), even though its NAME/scope is
+      still limited to the function it's declared in.
+    - Example: a counter that increments each time a function is called and
+      remembers its count across calls, without needing a global variable.
+
+Q10. Can a function return multiple values in C++? How?
+
+    - Not directly with the plain "return" mechanism (a function has one
+      return type), but there are several idiomatic ways to effectively
+      return multiple values:
+      - std::pair<T1, T2> or std::tuple<T1, T2, T3, ...> — bundle multiple
+        values into one returned object, unpacked via structured bindings
+        (`auto [a, b] = f();` in C++17+).
+      - A struct with named fields — clearer than pair/tuple for multiple
+        related values.
+      - Out-parameters passed by reference (or pointer) — the function
+        writes results into caller-supplied reference parameters and
+        (optionally) also returns a status/error code.
+
+================================================================================
+SECTION 1B — ADVANCED FUNCTIONS THEORY (ANSWERS)
+================================================================================
+
+Q1. What is a function pointer? Show the syntax.
+
+    - A function pointer is a variable that stores the ADDRESS of a
+      function, allowing you to call that function indirectly through the
+      pointer, pass it as an argument, store it in a data structure, or
+      reassign it to point to a different function with the same
+      signature.
+    - Syntax: `int (*fp)(int, int);` declares fp as a pointer to a function
+      taking two ints and returning int. Assign with `fp = &someFunc;` (or
+      just `fp = someFunc;` — function-to-pointer decay makes `&` optional).
+      Call with `fp(3, 4);` or `(*fp)(3, 4);` — both are valid.
+
+Q2. What is a callback function? Give a real-world example.
+
+    - A callback is a function passed as an argument to another function,
+      to be invoked ("called back") by that function at an appropriate
+      point — inverting control so the receiving function decides WHEN to
+      run the logic you supplied.
+    - Real-world example: `qsort()` in C takes a comparator function
+      pointer to decide sort order; in GUI/event-driven code, a
+      "button click" handler registered ahead of time and invoked later
+      when the click actually happens; in your DLP/kernel work, an event
+      handler registered with fanotify or ESF that gets invoked when a
+      matching file-system event occurs is conceptually the same pattern.
+
+Q3. What is std::function? How is it different from a raw function pointer?
+
+    - std::function<Signature> (e.g., std::function<int(int,int)>) is a
+      general-purpose, TYPE-ERASED wrapper that can hold ANY callable
+      matching that signature — a plain function, a function pointer, a
+      lambda (including ones with captures), a functor, or the result of
+      std::bind.
+    - A raw function pointer can only point to a plain function (or a
+      captureless lambda, since those can decay to a function pointer) —
+      it CANNOT store a lambda with captures or a functor with member
+      state, because those carry extra data beyond just a code address.
+      std::function pays a small runtime cost (usually heap allocation for
+      captures beyond a small buffer, plus virtual-call-like indirection)
+      for this flexibility, whereas a function pointer is just a raw
+      address with zero extra overhead.
+
+Q4. What is std::bind? Give an example.
+
+    - std::bind creates a new callable by binding some arguments of an
+      existing function/callable to fixed values (partial application),
+      optionally reordering parameters using placeholders (std::placeholders::_1, _2, ...).
+    - Example:
+          int add(int a, int b) { return a + b; }
+          auto add5 = std::bind(add, 5, std::placeholders::_1);
+          add5(10); // returns 15 (calls add(5, 10))
+      Note: in modern C++ (C++11+), a lambda `[](int x){ return add(5, x); }`
+      is usually preferred over std::bind — it's clearer, often faster to
+      compile, and easier to debug.
+
+Q5. What is a functor (function object)? Why use it instead of a regular
+    function?
+
+    - A functor is any object of a class that overloads `operator()`, so it
+      can be "called" like a function: `obj(args...)`.
+    - Advantages over a plain function: it can carry STATE (member
+      variables) between calls, be configured via its constructor (e.g., a
+      "multiply by N" functor where N is set at construction), and — being
+      an actual type — can be inlined more aggressively by the compiler
+      when used with templates (e.g., std::sort with a functor comparator
+      is often faster than with a function pointer, since the compiler can
+      see and inline operator() at compile time, whereas a function pointer
+      call is an indirect call the compiler may not be able to inline).
+
+Q6. What is a lambda? How does the capture clause work? Explain [=], [&],
+    [x], [&x], [this].
+
+    - A lambda is an anonymous, inline function object created at the point
+      of use: `[capture](params) -> returnType { body }`. Under the hood,
+      the compiler generates a unique class with an overloaded operator()
+      — a lambda IS syntactic sugar for a functor.
+    - The capture clause controls what OUTER variables the lambda's body
+      can access, and how:
+        [=]    capture ALL used outer variables BY VALUE (copies).
+        [&]    capture ALL used outer variables BY REFERENCE.
+        [x]    capture only variable x, BY VALUE.
+        [&x]   capture only variable x, BY REFERENCE.
+        [this] capture the `this` pointer of the enclosing object BY VALUE
+               (as a pointer), giving access to the enclosing object's
+               members inside the lambda.
+    - By-value captures are snapshot at lambda-creation time and are
+      const by default (can't be modified inside the lambda unless marked
+      `mutable`); by-reference captures always see the CURRENT value of
+      the outer variable at call time (dangerous if the lambda outlives the
+      variable it references — dangling reference).
+
+Q7. What is the difference between [=] and [&] in lambda capture?
+
+    - [=] copies every used outer variable into the lambda object at the
+      time the lambda is created — the lambda has its own independent
+      snapshot, safe to use even after the original variable is destroyed
+      or changes, but changes made inside the lambda (with `mutable`) don't
+      propagate back out.
+    - [&] captures every used outer variable by reference — the lambda
+      always sees the LATEST value, and modifications inside the lambda DO
+      affect the original variable. Risk: if the lambda is stored/called
+      after the referenced variable's scope has ended (e.g., a lambda
+      escaping a function that captured a local variable by reference),
+      you get a dangling reference — undefined behavior.
+
+Q8. Can a lambda be recursive? How do you achieve it?
+
+    - Not directly by name (a lambda has no name to refer to from inside
+      its own body, unlike a normal function), but there are workarounds:
+      - Assign the lambda to a std::function first, then capture that
+        std::function BY REFERENCE so the lambda can call itself through
+        the named variable:
+            std::function<int(int)> fact = [&](int n) -> int {
+                return n <= 1 ? 1 : n * fact(n - 1);
+            };
+      - Or use a Y-combinator-style approach / pass the lambda itself as an
+        argument to itself (more advanced/generic-lambda based technique in
+        modern C++).
+
+Q9. What is memoization using C++ lambdas?
+
+    - Memoization is caching the results of expensive/recursive function
+      calls so repeated calls with the same input return the cached result
+      instead of recomputing.
+    - With lambdas, this is commonly done by capturing an external cache
+      (e.g., a std::unordered_map<int,int>) by reference inside a recursive
+      lambda (built the same way as Q8, via std::function), checking the
+      map first before doing the recursive work, and storing the result
+      before returning:
+          std::unordered_map<int,long long> cache;
+          std::function<long long(int)> fib = [&](int n) -> long long {
+              if (n <= 1) return n;
+              if (cache.count(n)) return cache[n];
+              return cache[n] = fib(n-1) + fib(n-2);
+          };
+      This turns naive exponential-time recursive Fibonacci into linear
+      time.
+
+Q10. What is the return type deduction for functions in C++14? (auto
+     keyword for return type)
+
+    - Since C++14, you can write `auto` as a function's return type and
+      let the compiler DEDUCE the actual return type from the return
+      statement(s) in the function body — similar to how `auto` deduces a
+      variable's type from its initializer.
+      Example: `auto add(int a, int b) { return a + b; }` — deduced as int.
+    - Rules/gotchas: if there are multiple return statements, they must all
+      deduce to the SAME type (or it's a compile error); the function
+      definition (with body) must be visible to callers before use, since
+      the return type can't be known from just a declaration/prototype —
+      this makes `auto` return types unsuitable for typical
+      declaration-in-header / definition-in-source-file splits unless you
+      also use trailing return type syntax with decltype.
+
+Q11. What is the difference between a macro and an inline function?
+
+    - A macro (#define) is handled by the PREPROCESSOR, purely as TEXT
+      SUBSTITUTION before compilation even begins — it has no concept of
+      types, scope, or semantics; it doesn't respect scoping rules and can
+      cause subtle bugs from lack of type checking or missing
+      parenthesization (e.g. `#define SQUARE(x) x*x` breaks on
+      `SQUARE(a+b)` expanding to `a+b*a+b`).
+    - An inline function is a real function, TYPE-CHECKED by the compiler,
+      respects scope/namespaces, can be overloaded, can be a member
+      function (with access to `this`), and can be stepped through in a
+      debugger — while still being a candidate for the compiler to
+      substitute its body at call sites for performance. Inline functions
+      are strictly safer and preferred in modern C++; macros are mostly
+      reserved for things that genuinely can't be functions (conditional
+      compilation, header guards, stringizing/token-pasting).
+
+Q12. What is the difference between deep copy and shallow copy?
+
+    - Shallow copy: copies an object's members as-is, including any
+      pointers — the copy's pointer members point to the SAME underlying
+      memory as the original. If the original owns a resource (e.g.
+      heap-allocated array) and both objects' destructors try to free it,
+      you get a double-free / dangling-pointer bug. This is what the
+      COMPILER-GENERATED default copy constructor/assignment does for
+      classes containing raw pointers.
+    - Deep copy: allocates NEW, independent memory for the copy and copies
+      the actual pointed-to data, so the original and copy are fully
+      independent — modifying one doesn't affect the other, and each can be
+      destroyed safely without double-freeing. Classes that own raw
+      resources need a user-defined copy constructor/assignment operator
+      (or, in modern C++, prefer RAII wrappers like std::vector/std::string/
+      std::unique_ptr, which handle this correctly for you).
+    - Relevant to function parameter passing: passing an object BY VALUE
+      invokes its copy constructor — if that's the compiler-generated
+      shallow copy on a class managing a raw resource, you can get
+      resource-management bugs purely by passing the object to a function.
+
+================================================================================
+SECTION 1C — FRESH RECURSION & FUNCTION THEORY (ANSWERS)
+================================================================================
+
+Q1. Can you call a virtual function from a constructor? What happens?
+
+    - Yes, it compiles and runs, but NOT with the polymorphic behavior you
+      might expect. During base class construction, the object's vtable
+      pointer is set up for the BASE class (the derived part of the object
+      doesn't exist yet / hasn't been constructed), so calling a virtual
+      function from the base constructor calls the BASE class's version —
+      even if the actual object is of a derived type. Once the derived
+      class's constructor runs (after the base constructor completes), the
+      vtable is updated and virtual calls from there onward dispatch
+      correctly. This surprises many developers who expect full
+      polymorphism throughout construction; it's generally considered a
+      C++ gotcha/anti-pattern to rely on virtual dispatch inside
+      constructors or destructors.
+
+Q2. What is the difference between deep recursion and tail recursion? Does
+    GCC/Clang optimize tail calls in C++?
+
+    - Deep recursion (in the general sense used here, "non-tail" or
+      "head" recursion): the recursive call happens, and THEN more work is
+      done with its result before the function returns (e.g.
+      `return n * fact(n-1);` — the multiplication happens after the
+      recursive call returns). Each level MUST keep its stack frame alive
+      until the recursive call returns, because there's pending work.
+    - Tail recursion: the recursive call is the LAST action, with nothing
+      left to do afterward — the current stack frame is no longer needed
+      once the call is made, which is exactly what enables the frame to be
+      reused instead of stacked.
+    - GCC/Clang CAN perform Tail Call Optimization, but only at higher
+      optimization levels (-O2/-O3) and only when the call is truly in tail
+      position with no pending cleanup (e.g., no non-trivial destructors
+      that must run after the call returns) — it is NOT guaranteed by the
+      C++ standard, unlike some functional languages, so deeply recursive
+      C++ code should not blindly assume TCO will save it from a stack
+      overflow, especially in debug builds (-O0) where TCO is typically
+      disabled entirely.
+
+Q3. What is memoization vs tabulation? When do you prefer each?
+
+    - Memoization ("top-down" DP): keep the natural recursive structure of
+      the problem, but cache results of subproblems in a map/array so each
+      distinct subproblem is only computed once; subsequent calls with the
+      same input return the cached value immediately.
+    - Tabulation ("bottom-up" DP): build up a table iteratively from the
+      smallest base-case subproblems up to the final answer, with no
+      recursion at all — usually implemented with simple loops filling an
+      array in order.
+    - Prefer memoization when: the recursive/natural formulation is much
+      easier to write and reason about, or when not all subproblems in the
+      full table are actually needed (memoization only computes what's
+      actually reached).
+    - Prefer tabulation when: you want to avoid recursion/call-stack
+      overhead entirely (better for very large inputs, no stack overflow
+      risk), or when you can further optimize space (e.g., only keeping the
+      last 2 rows instead of the whole table), which is often easier to see
+      in the iterative bottom-up form.
+
+Q4. What is a pure function? What is a side effect? Why does this matter?
+
+    - A pure function: always returns the same output for the same input,
+      and produces no observable side effects (doesn't modify global
+      state, doesn't mutate its arguments, doesn't do I/O, doesn't depend
+      on anything other than its arguments).
+    - A side effect: any observable change a function makes BEYOND
+      returning a value — modifying a global/static variable, mutating an
+      object passed by reference, writing to a file/console, changing a
+      class member.
+    - Why it matters: pure functions are trivially easier to test (no setup
+      of external state needed), reason about (no hidden dependencies),
+      parallelize/cache (memoization is always safe since output only
+      depends on input), and refactor (can be replaced by their result
+      without changing program behavior — referential transparency). This
+      is foundational to functional-programming style and increasingly
+      relevant even in C++ for concurrent/multi-threaded correctness.
+
+Q5. Explain the difference between call stack and call heap.
+
+    - Note: "call heap" isn't really standard terminology — the memory
+      areas are usually just called the "stack" and the "heap." The
+      question is likely testing whether you understand the difference
+      between stack memory (used for function calls) and heap memory (used
+      for dynamic allocation), sometimes loosely phrased as "call stack vs
+      heap."
+    - Call stack: a LIFO region of memory that tracks active function
+      calls — each call pushes a stack frame containing local variables,
+      parameters, and the return address; automatically managed (grows on
+      call, shrinks on return); fixed/limited size (stack overflow if
+      exceeded); very fast allocation/deallocation (just moving a pointer).
+    - Heap: a region for dynamic memory allocation (`new`/`malloc`), NOT
+      tied to function call lifetime — memory persists until explicitly
+      freed (`delete`/`free`) or managed via smart pointers; much larger
+      capacity than the stack but slower to allocate (goes through an
+      allocator), and manual mismanagement can cause leaks or dangling
+      pointers. Recursion uses the STACK (one frame per call) — this is
+      exactly why deep/unbounded recursion risks stack overflow, whereas
+      heap-based iterative data structures (e.g., an explicit stack/queue
+      you manage yourself with `new`) can grow far larger since they use
+      heap memory instead.
+
+================================================================================
+SECTION 2 — TRICKY / GOTCHA QUESTIONS
+     (Things that sound right but aren't, or vice versa — good interview
+      traps for Functions & Recursion.)
+================================================================================
+
+1. "You can overload two functions that differ only in return type, as
+   long as the parameter lists are the same." TRICKY: FALSE — overload
+   resolution is based purely on the parameter list (name + argument
+   types) visible at the call site; return type is never part of the
+   signature used to disambiguate. `int f(); double f();` is a redefinition
+   error, not a valid overload.
+
+2. "Marking a function `inline` guarantees the compiler will inline it and
+   removes call overhead." TRICKY: FALSE — `inline` is only a suggestion;
+   the compiler decides based on its own cost/benefit heuristics and may
+   ignore it entirely (e.g., for large functions), while conversely it may
+   also inline functions you never marked `inline` at all, if optimization
+   flags allow it.
+
+3. "Tail-recursive functions in C++ are automatically converted into loops
+   by the compiler, just like in functional languages." TRICKY: FALSE —
+   C++ does NOT guarantee tail call optimization. GCC/Clang MAY do it at
+   -O2/-O3 under the right conditions, but there's no standard guarantee,
+   and at -O0 (debug builds) it typically won't happen at all — so a
+   "tail recursive" factorial can still stack-overflow in debug mode.
+
+4. "A static local variable inside a function behaves just like a global
+   variable — same lifetime, same everything." TRICKY: Partially FALSE —
+   it shares the LIFETIME of a global (constructed once, lives for the
+   whole program), but NOT the scope/visibility — a static local variable
+   is still only accessible/nameable from within the function it's
+   declared in, unlike a true global which is visible throughout the
+   translation unit (or beyond, via extern).
+
+5. "[=] in a lambda capture means the lambda takes a full deep copy of
+   everything, so it's always safe even if the original variables are
+   destroyed." TRICKY: Mostly true for value types, but FALSE if any
+   captured variable is itself a pointer or reference — [=] copies the
+   POINTER value, not what it points to; if the pointed-to object is
+   destroyed, the lambda has a dangling pointer even though it "captured
+   by value." Also, [=] does NOT capture `this` by making a copy of the
+   object in C++ before C++20's `[=, this]` clarification — historically it
+   captured the `this` POINTER, meaning member variable access through a
+   [=]-lambda can still dangle if the enclosing object is destroyed.
+
+6. "A lambda can call itself directly by referring to its own name inside
+   its body, the same way a normal function can." TRICKY: FALSE — a
+   lambda's name (the variable you assign it to) doesn't exist yet inside
+   its OWN body at the point the lambda expression is being defined/
+   compiled, so you cannot recurse by name directly. You need to route
+   through std::function captured by reference (or another workaround) to
+   achieve recursive lambdas.
+
+7. "delete on a function pointer works just like delete on a new'd
+   object." TRICKY: FALSE — you never `delete` a function pointer. A
+   function's code isn't heap-allocated by `new` at all; a function
+   pointer just stores the address of compiled code in the program's
+   text/code segment. Attempting `delete` on it is meaningless/a compile
+   error in normal usage.
+
+8. "std::function has zero overhead compared to a raw function pointer,
+   since it's just a wrapper." TRICKY: FALSE — std::function typically has
+   real runtime overhead: it may heap-allocate (for captures larger than
+   its small-buffer-optimization threshold), and calling through it
+   involves a layer of type-erased indirection (similar in spirit to a
+   virtual call) that the compiler usually cannot inline — unlike a direct
+   function pointer call or, better, a functor/lambda used directly with a
+   template (which CAN be inlined).
+
+9. "Every recursive function can be trivially rewritten as tail-recursive
+   just by moving code around." TRICKY: FALSE — some recursive problems
+   fundamentally need to combine two or more recursive results after both
+   return (e.g., naive Fibonacci `fib(n-1) + fib(n-2)`, or tree traversals
+   with two children) — these are not tail-recursive in their natural
+   form and converting them typically requires restructuring with
+   accumulator parameters or an entirely different algorithm (e.g.
+   iterative/DP), not just moving statements around.
+
+10. "A pure function can still modify a global variable, as long as it
+    returns the correct output." TRICKY: FALSE — by definition a pure
+    function has NO side effects at all, and modifying a global variable
+    IS a side effect regardless of whether the return value is "correct."
+    A function that returns right answers but also mutates external state
+    is not pure.
+
+11. "Passing a large object by const reference (const T&) is always at
+    least as fast as passing by value, so you should always use const T&
+    for function parameters." TRICKY: Mostly true for large/expensive-to-
+    copy objects, but FALSE as a blanket rule — for small, cheap-to-copy
+    types (int, double, a small struct of a few primitives, or a raw
+    pointer), passing by value can be as fast or faster than passing by
+    reference, because a reference itself is implemented as a pointer
+    under the hood (an extra indirection/dereference), and modern compilers
+    often optimize small by-value parameters into registers. "Always use
+    const T&" is a common oversimplification of a real, but
+    size/cost-dependent, guideline.
+
+12. "A recursive function without an explicit base case will always cause
+    infinite recursion and a stack overflow." TRICKY: Mostly true, but not
+    strictly — some recursive functions terminate via an IMPLICIT
+    condition baked into the recursive step itself (e.g., integer overflow
+    wrapping a counter back to a sentinel value, or a shrinking
+    container/index reaching an empty state that's checked structurally
+    rather than via an explicit `if (base case) return;` line) — though
+    relying on this is fragile and considered bad practice; the safer,
+    intended reading of the statement is still essentially true for any
+    well-written recursive function.
+
+13. "Since default arguments are resolved at compile time based on the
+    static type, a default argument in a base class virtual function will
+    always be 'inherited' and used correctly even when called
+    polymorphically through a derived pointer." TRICKY: This is a genuine
+    trap in the opposite direction — default arguments are bound
+    STATICALLY (based on the declared/static type of the pointer/reference
+    used to call the function), while virtual dispatch is DYNAMIC (based
+    on the actual object type). This means if a derived class overrides
+    the function with a DIFFERENT default argument, calling it through a
+    Base* will use the BASE class's default argument value, even though the
+    DERIVED class's overridden function body actually executes — a classic
+    "mixing static and dynamic binding" gotcha.
+
+14. "A functor is basically just a fancy name for a function pointer —
+    they're interchangeable in all contexts." TRICKY: FALSE — a functor is
+    an OBJECT of a class with operator() overloaded, which can carry state
+    and be a distinct type; a function pointer is a bare address with no
+    state. In template contexts (e.g., std::sort<Iterator, Comparator>),
+    a functor is typically a completely separate TYPE per use, letting the
+    compiler inline operator() at compile time, whereas a function pointer
+    parameter is a runtime value the compiler usually can't inline through
+    — meaning code using functors as comparators is often measurably
+    faster than the "equivalent" code using function pointers, despite both
+    looking conceptually similar.
+
+================================================================================
+END OF FILE
+================================================================================

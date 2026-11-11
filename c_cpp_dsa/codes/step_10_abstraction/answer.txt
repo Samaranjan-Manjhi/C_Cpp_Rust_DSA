@@ -1,0 +1,446 @@
+================================================================================
+     ABSTRACTION — THEORY ANSWERS + TRICKY QUESTIONS
+================================================================================
+
+================================================================================
+SECTION 1A — PURE VIRTUAL FUNCTIONS & ABSTRACT CLASSES (ANSWERS)
+================================================================================
+
+Q1. What is a pure virtual function? What is an abstract class?
+
+    - A pure virtual function is declared with `= 0` at the end of its
+      declaration: `virtual void draw() = 0;` — it forces every concrete
+      DERIVED class to provide its own override, or else that derived
+      class remains abstract too.
+    - An abstract class is any class containing AT LEAST ONE pure virtual
+      function. It CANNOT be instantiated directly — it exists purely to
+      define a shared interface/contract (and possibly some shared
+      implementation) that concrete derived classes must complete.
+
+Q2. What is a pure virtual function? Can it have a body?
+
+    - (Same definition as Q1.) YES — somewhat counterintuitively, a pure
+      virtual function CAN have a default implementation body (defined
+      either inline or out-of-class, e.g. `void Base::draw() { /* default
+      logic */ }` even though it's declared `virtual void draw() = 0;`).
+      Derived classes are STILL required to override it to become
+      concrete/instantiable, but they can explicitly choose to call the
+      base's default implementation from within their own override
+      (`Base::draw();`) if they want to reuse/extend shared logic rather
+      than reimplementing everything from scratch.
+
+Q3. What is an abstract class? Can you instantiate it?
+
+    - (See Q1 for definition.) No — you CANNOT instantiate an abstract
+      class directly (`AbstractClass obj;` is a compile error). You can
+      only use it via POINTERS or REFERENCES to it, and only CONCRETE
+      derived classes — ones that override ALL of the abstract class's
+      pure virtual functions — can actually be instantiated.
+
+Q4. What is an interface in C++? How do you implement it?
+
+    - C++ has no dedicated `interface` keyword (unlike Java/C#). An
+      "interface" in C++ is conventionally implemented as an ABSTRACT
+      CLASS where ALL member functions are pure virtual, and ideally
+      there are NO data members and no implemented behavior at all —
+      purely a CONTRACT specifying what operations a conforming class
+      must support, with no shared state or default logic. Example:
+          class IShape {
+          public:
+              virtual double area() const = 0;
+              virtual double perimeter() const = 0;
+              virtual ~IShape() = default;
+          };
+
+Q5. What is the difference between an abstract class and a concrete
+    class?
+
+    - An abstract class has at least one pure virtual function and
+      CANNOT be instantiated on its own — it exists to define a shared
+      interface/partial implementation for derived classes to complete.
+    - A concrete class has NO unimplemented pure virtual functions (every
+      inherited pure virtual has been overridden, if any exist at all) —
+      it CAN be instantiated directly, since it's fully "complete."
+
+Q6. When should you use an abstract class vs a pure interface in C++?
+
+    - Use an abstract class (with SOME implemented behavior/shared state
+      alongside pure virtual functions) when derived classes share
+      common DEFAULT BEHAVIOR or DATA that would otherwise be duplicated
+      across every derived class — e.g. a base `Shape` class that stores
+      a common `color` member and implements a shared `describe()`
+      method, while leaving `area()` as pure virtual for each shape type
+      to implement itself.
+    - Use a pure interface (ALL pure virtual, no data members, no
+      implemented logic at all) when you only want to specify a CONTRACT
+      — "any class implementing this must support these operations" —
+      with zero shared implementation or state, maximizing flexibility
+      (a class can implement multiple such pure interfaces via multiple
+      inheritance with much less risk of the diamond problem, since
+      there's no shared data to duplicate/collide).
+
+Q7. Can an abstract class have a constructor? If yes, when is it called?
+
+    - Yes — even though an abstract class can't be instantiated
+      DIRECTLY, it can (and often should) have a constructor to properly
+      initialize whatever data members/shared state it defines. This
+      constructor is called AUTOMATICALLY as part of constructing any
+      CONCRETE derived class's object — either implicitly (calling the
+      abstract class's default constructor) or explicitly via the
+      derived class's initializer list (`Derived(int x) : AbstractBase(x)
+      { ... }`), exactly like constructor chaining works for any other
+      base/derived relationship.
+
+Q8. What happens if a derived class does NOT override all pure virtual
+    functions?
+
+    - The derived class ITSELF also remains ABSTRACT (it inherits any
+      pure virtual functions it didn't override, still marked `= 0`) —
+      it therefore also CANNOT be instantiated, exactly like its base
+      class. You would need to derive yet ANOTHER class from it that
+      finally overrides all remaining pure virtual functions before any
+      concrete object of that lineage can be created.
+
+================================================================================
+SECTION 1B — ENCAPSULATION — THE FOUNDATION OF ABSTRACTION (ANSWERS)
+================================================================================
+
+Q1. What is encapsulation? Why is it important?
+
+    - Encapsulation bundles an object's data together with the functions
+      that operate on it, and restricts direct external access to that
+      data (via `private`/`protected` access specifiers), exposing only
+      a controlled public interface.
+    - Important because it: protects internal invariants (the object can
+      enforce its own validity rules rather than trusting external code);
+      reduces coupling (external code depends only on the public
+      interface, so internals can change freely without breaking
+      callers); and improves maintainability (all logic affecting a
+      piece of state lives in one place — the class itself).
+
+Q2. What is the difference between public, private, and protected access
+    specifiers?
+
+    - public: accessible from anywhere the object is accessible — the
+      class's own code, derived classes, and external code.
+    - private: accessible ONLY from within the class's own member
+      functions (and friends) — not derived classes, not external code.
+    - protected: accessible from the class's own code, friends, AND
+      derived classes — but not external/unrelated code. Sits between
+      public and private specifically to support inheritance.
+
+Q3. What is a friend function? When would you use it?
+
+    - A friend function is a NON-MEMBER function explicitly granted
+      access to a class's private/protected members, declared inside the
+      class with `friend` even though it's defined outside and isn't a
+      member.
+    - Used when: a function needs private access but doesn't naturally
+      belong as a member (e.g. `operator<<` for `std::cout`, where the
+      LEFT operand must be `ostream`, not your class type — impossible
+      as a member function since a member's implicit left operand is
+      always `*this`), or when two closely related classes need mutual
+      access to each other's internals without exposing that access more
+      broadly.
+
+Q4. What is the 'this' pointer? Give an example of when you would use it.
+
+    - `this` is an implicit pointer, automatically available inside
+      every non-static member function, pointing to the specific object
+      instance the method was called on.
+    - Example use: disambiguating a parameter name that shadows a member
+      variable of the same name —
+          void setName(string name) { this->name = name; }
+      (Without `this->`, `name = name;` would just assign the parameter
+      to itself, leaving the member unchanged.) Also commonly used to
+      return `*this` by reference for method chaining
+      (`obj.setX(1).setY(2);`).
+
+Q5. What is a static member variable? How is it different from a regular
+    member?
+
+    - A static member variable is SHARED across ALL instances of a
+      class — there's exactly ONE copy, no matter how many objects exist
+      (it even exists before any object is created).
+    - A regular (non-static) member gets its OWN separate copy in EVERY
+      object — changing it in one object doesn't affect any other
+      object's copy at all.
+
+Q6. What does the explicit keyword do in constructors?
+
+    - `explicit` prevents the compiler from using a constructor for
+      IMPLICIT conversions — the constructor can still be called
+      directly (`MyClass obj(42);`), but cannot be used to silently
+      convert a value of the constructor's parameter type into a
+      MyClass wherever a MyClass is expected (`void f(MyClass x); f(42);`
+      would fail to compile if the relevant constructor is `explicit`).
+      Best practice: mark single-argument (or effectively single-
+      argument) constructors `explicit` unless you specifically want the
+      implicit-conversion behavior.
+
+Q7. What is a mutable member? When would you use it?
+
+    - A member variable marked `mutable` CAN be modified even from
+      inside a `const` member function — the one designated exception to
+      const-correctness rules.
+    - Used for: CACHING/memoization inside a function that's logically
+      const from the caller's perspective (the object's OBSERVABLE state
+      never changes, even though internal bookkeeping does); a MUTEX
+      member that needs to be locked even inside a const method (to make
+      that const method thread-safe); or LOGGING/instrumentation counters
+      that track usage without representing "real" object state.
+
+Q8. What is the difference between struct and class in C++?
+
+    - Functionally nearly identical in modern C++ — both support member
+      functions, constructors, access specifiers, inheritance, virtual
+      functions, templates, etc. The ONLY differences: DEFAULT member
+      access (private for class, public for struct) and DEFAULT
+      inheritance mode (private for `class B : A`, public for `struct B :
+      A`). By convention (not a language rule), struct is often used for
+      simple, passive data-holding aggregates, while class is used for
+      types with significant behavior/invariants.
+
+Q9. What is data hiding? How is it different from encapsulation?
+
+    - Data hiding is specifically about RESTRICTING ACCESS to an
+      object's internal data — implemented via `private`/`protected`
+      access specifiers so external code cannot directly read or modify
+      internal state, only interact through approved public methods.
+    - Encapsulation is the BROADER concept: BUNDLING data and the
+      behavior that operates on it into a single unit (the class), of
+      which data hiding is one key MECHANISM/consequence, but
+      encapsulation also encompasses the very idea of grouping related
+      state and behavior together in the first place — data hiding is a
+      part of achieving encapsulation, not a fully separate, unrelated
+      concept.
+
+================================================================================
+SECTION 1C — OBJECT SLICING & RTTI (ANSWERS)
+================================================================================
+
+Q1. What is object slicing? When does it happen? How do you prevent it?
+
+    - Object slicing happens when a DERIVED class object is assigned (by
+      VALUE) into a BASE class object — only the base-class PORTION is
+      copied; any derived-specific data is lost ("sliced off"), and
+      virtual calls made through that base object afterward resolve to
+      the BASE class's version (since there's no actual derived object
+      involved anymore — it genuinely IS just a Base now).
+    - Happens when: a Derived object is assigned directly to a Base
+      variable, passed BY VALUE to a function expecting a Base parameter,
+      or stored BY VALUE in a container of Base objects.
+    - Prevented by using POINTERS or REFERENCES to the base class instead
+      of by-value base objects, whenever polymorphic behavior is needed
+      — neither copies the object, so the full derived object stays
+      intact and virtual dispatch works correctly through it.
+
+Q2. What is RTTI (Run Time Type Information)?
+
+    - RTTI is a C++ feature enabling QUERYING an object's ACTUAL type
+      information AT RUNTIME, primarily for polymorphic (virtual-
+      function-containing) class hierarchies — implemented via the
+      `dynamic_cast` and `typeid` operators.
+
+Q3. What is the difference between dynamic_cast and static_cast?
+
+    - `dynamic_cast<Derived*>(basePtr)` performs a RUNTIME CHECK (via
+      RTTI) verifying the object ACTUALLY IS (or derives from) the
+      target type before allowing the cast — returns `nullptr` (pointer
+      form) or throws `std::bad_cast` (reference form) if invalid. Only
+      works on polymorphic types (at least one virtual function).
+    - `static_cast<Derived*>(basePtr)` performs NO runtime check —
+      resolved entirely at COMPILE TIME; if the object isn't actually of
+      the target type, using the result is UNDEFINED BEHAVIOR. Faster,
+      but unsafe unless you're certain of the type through other means.
+
+================================================================================
+SECTION 1D — DESIGN PRINCIPLES AROUND ABSTRACTION (ANSWERS)
+================================================================================
+
+Q1. What is the Open/Closed Principle (OCP)? How do abstract classes and
+    polymorphism enable it?
+
+    - OCP states that classes/modules should be OPEN FOR EXTENSION (new
+      behavior can be added) but CLOSED FOR MODIFICATION (existing,
+      already-tested code shouldn't need to be edited to add that new
+      behavior).
+    - Abstract classes and polymorphism enable this directly: you define
+      an abstract base class (the stable, "closed" contract), and add
+      NEW BEHAVIOR by writing NEW DERIVED CLASSES that implement that
+      contract — existing client code that operates on the base
+      class's interface (via pointers/references, calling virtual
+      functions) doesn't need to change AT ALL when a new derived class
+      is added, since it was already written generically against the
+      abstraction rather than against specific concrete types. Example:
+      adding a new `Triangle` shape to a system that already processes
+      `vector<Shape*>` requires zero changes to the existing
+      area-calculating code — just a new derived class.
+
+Q2. Explain the SOLID principles. How does OOP abstraction support each
+    one?
+
+    - S — Single Responsibility: a class should have one reason to
+      change. Abstraction helps by letting you separate "what a thing
+      does" (the interface) from "how it's implemented," making it
+      natural to keep each implementation focused on a single concern.
+    - O — Open/Closed: (see Q1) — abstract base classes + polymorphism
+      are the primary MECHANISM for achieving this in OOP.
+    - L — Liskov Substitution: derived classes must be substitutable for
+      their base class without breaking correctness. Abstraction defines
+      the CONTRACT that substitutability depends on — if the abstraction
+      is well-designed (captures true behavioral requirements, not just
+      structural similarity), derived implementations can honor it
+      properly.
+    - I — Interface Segregation: prefer several small, focused
+      interfaces over one large one. This is directly an application of
+      abstraction — designing MINIMAL, purpose-specific abstract
+      interfaces (pure virtual classes) rather than one monolithic
+      interface that forces implementers to support methods they don't
+      need.
+    - D — Dependency Inversion: high-level code should depend on
+      ABSTRACTIONS, not concrete implementations (see Q3) — this is
+      abstraction's most direct application among the five, since it's
+      literally about depending on an abstract interface rather than a
+      specific concrete class.
+
+Q3. What is the Dependency Inversion Principle? How do abstract
+    classes/interfaces support it?
+
+    - Dependency Inversion states that HIGH-LEVEL modules (business
+      logic) should depend on ABSTRACTIONS (interfaces/abstract base
+      classes), not on LOW-LEVEL, CONCRETE implementation details — and
+      that abstractions shouldn't depend on details either; details
+      should depend on abstractions.
+    - Abstract classes/interfaces support this by giving high-level code
+      something stable to depend on (an interface like `ILogger` or
+      `IPaymentProcessor`) instead of a specific concrete class (like
+      `FileLogger` or `StripePaymentProcessor`) — the high-level code is
+      written against the ABSTRACTION, and the actual concrete
+      implementation can be swapped (for testing with a mock, for
+      switching vendors, for adding new functionality) WITHOUT changing
+      the high-level code at all, since it never referenced the concrete
+      type directly in the first place. This decoupling is exactly what
+      makes dependency injection and unit testing with mocks practical
+      in OOP designs.
+
+Q4. What is the difference between abstraction and encapsulation?
+
+    - Abstraction is about hiding COMPLEXITY — presenting a simplified
+      "what it does" interface while hiding "how it's implemented"
+      details; it's a DESIGN-level concept about what the interface
+      should even look like.
+    - Encapsulation is about hiding DATA/state and bundling it with the
+      behavior that operates on it, typically via access specifiers
+      (private/protected) — it's the LANGUAGE MECHANISM commonly used to
+      help achieve abstraction, by preventing callers from reaching past
+      the intended interface into implementation details. They're
+      closely related and often used together, but abstraction is the
+      "what" (interface design) while encapsulation is a "how"
+      (access-control mechanism supporting that design).
+
+================================================================================
+SECTION 2 — TRICKY / GOTCHA QUESTIONS
+     (Sound right but aren't, or vice versa — classic abstraction/
+      encapsulation interview traps, matching the style of your
+      "new + free" example.)
+================================================================================
+
+1. "An abstract class with all pure virtual functions and a body for
+   each one is no different from a fully concrete class, since every
+   function has an implementation." TRICKY: FALSE — a pure virtual
+   function REMAINS pure virtual (and the class remains abstract,
+   uninstantiable) even if it has a body defined — the `= 0` marker is
+   what forces derived classes to override it, completely independent of
+   whether a default implementation body also exists. Providing a body
+   is about offering optional shared logic derived classes CAN call into
+   (`Base::func();`), not about removing the "must override" requirement.
+
+2. "Since data hiding and encapsulation both use private/protected, they
+   are exactly the same concept with two different names." TRICKY:
+   Misleading — data hiding is specifically about RESTRICTING ACCESS to
+   internal data (a mechanism), while encapsulation is the BROADER idea
+   of bundling data and behavior together into one unit, of which data
+   hiding is one supporting technique — encapsulation could still exist
+   conceptually even if a language had no access-control keywords at all
+   (bundling data+behavior in one type is the core idea); data hiding is
+   what makes that bundling ENFORCED/protected in a real language like
+   C++.
+
+3. "You can't instantiate an abstract class, so it can't have a
+   constructor at all — there'd be nothing to call it." TRICKY: FALSE —
+   an abstract class absolutely CAN (and often should) have a
+   constructor; it's automatically invoked as part of constructing any
+   CONCRETE derived class (via the normal constructor-chaining
+   mechanism), even though you can never construct the abstract class
+   "on its own."
+
+4. "Object slicing throws a runtime exception or crashes the program, so
+   you'll always know immediately if it happens." TRICKY: FALSE — object
+   slicing compiles and runs completely SILENTLY, with no error, warning,
+   or crash by default — it just quietly discards derived-specific data
+   and virtual dispatch subsequently resolves to the base version. This
+   silence is exactly what makes it a dangerous, easy-to-miss bug rather
+   than a caught mistake.
+
+5. "dynamic_cast works on any class, since RTTI is a universal C++
+   feature available for every type." TRICKY: FALSE — `dynamic_cast`
+   (for pointer downcasts/cross-casts requiring a runtime check) only
+   works on POLYMORPHIC types — classes with at least one virtual
+   function. A non-polymorphic class has no vtable for RTTI information
+   to be associated with, so attempting a dynamic_cast that would
+   require runtime type checking on such a type is a compile error.
+
+6. "Marking a constructor explicit prevents ALL uses of that constructor
+   except direct construction with matching argument types — even
+   direct-list-initialization with braces is blocked." TRICKY: FALSE —
+   `explicit` specifically blocks IMPLICIT conversions (e.g. passing an
+   int where a MyClass is expected, relying on an implicit
+   single-argument-constructor conversion) — but DIRECT construction,
+   including direct-list-initialization (`MyClass obj{42};` or `MyClass
+   obj(42);`), still works completely normally with an explicit
+   constructor; only the IMPLICIT, "invisible" conversion pathway is
+   disabled, not construction itself.
+
+7. "The Dependency Inversion Principle means low-level modules should
+   never be used by high-level modules at all." TRICKY: FALSE — DIP
+   doesn't forbid low-level modules from being USED, it specifies HOW
+   the dependency should be structured: high-level code should depend on
+   an ABSTRACTION (interface), and the concrete low-level implementation
+   should depend on (implement) that same abstraction — the low-level
+   code still gets used (through the abstraction, often via dependency
+   injection), just not depended upon DIRECTLY/CONCRETELY by the
+   high-level code.
+
+8. "An interface in C++ (all pure virtual, no data) has zero overhead
+   compared to a regular abstract class with data members, since it 'has
+   nothing in it.'" TRICKY: FALSE — a pure-virtual-only interface still
+   requires a VTABLE and a per-object VPTR just like any other
+   polymorphic class with virtual functions — "no data members" doesn't
+   mean "no virtual dispatch overhead." The overhead comes from having
+   virtual functions at all, not from how much additional state the
+   class happens to store alongside them.
+
+9. "Since abstract classes can't be instantiated, you never need to
+   worry about their destructors at all." TRICKY: FALSE — an abstract
+   class's destructor still runs (as part of destroying any concrete
+   derived object) and, just like any other polymorphic base class, it
+   SHOULD be marked `virtual` if objects of derived types might ever be
+   deleted through a base (abstract class) pointer — forgetting this is
+   exactly the same undefined-behavior/resource-leak trap as with any
+   other non-abstract polymorphic base class; "can't instantiate it
+   directly" doesn't mean "destructor rules don't apply."
+
+10. "Open/Closed Principle means you should never modify any existing
+    class ever again once it's written." TRICKY: FALSE (overstated) —
+    OCP is about not needing to modify EXISTING, ALREADY-WORKING code
+    JUST TO ADD NEW VARIANT BEHAVIOR that fits an existing abstraction
+    (e.g., adding a new Shape subtype) — it doesn't mean classes are
+    frozen forever; genuine bug fixes, refactors, or fundamental design
+    changes to the existing code are still normal and necessary. OCP
+    specifically targets EXTENSION scenarios (new cases of an existing
+    pattern), not all software changes in general.
+
+================================================================================
+END OF FILE
+================================================================================

@@ -1,0 +1,682 @@
+# Process vs. Thread in C++
+
+A process is a running program with its own virtual address space and
+operating-system resources. A thread is an execution path inside a
+process. A process must have at least one thread, and a process can
+contain multiple threads.
+
+## 1. Quick comparison
+
+  -----------------------------------------------------------------------
+  Feature                 Process                 Thread
+  ----------------------- ----------------------- -----------------------
+  Address space           Usually has its own     Shares its process's
+                          virtual address space   address space
+
+  Heap and global         Private to that process Shared with other
+  variables               (unless explicitly      threads in the same
+                          shared)                 process
+
+  Stack                   Each process's threads  Each thread has its own
+                          have their own stacks   stack
+
+  CPU registers /         Each thread has its own Each thread has its own
+  instruction pointer     CPU execution state     CPU execution state
+
+  Resource ownership      Own process resources,  Shares many process
+                          such as handles/file    resources, such as open
+                          descriptors (subject to files and heap memory
+                          OS rules)               
+
+  Communication           Often needs IPC: pipes, Can communicate through
+                          sockets, shared memory, shared variables and
+                          etc.                    objects
+
+  Isolation               Stronger isolation      Weaker isolation; a bad
+                          between processes       memory write can affect
+                                                  the whole process
+
+  Creation and switching  Usually more overhead   Usually less overhead,
+                                                  but depends on the OS
+                                                  and workload
+
+  Failure                 A crash is often        A serious fault can
+                          isolated to that        terminate the entire
+                          process                 process
+  -----------------------------------------------------------------------
+
+**Important:** Threads share the process's code, global data, and heap,
+but each thread has its own stack, registers, instruction pointer, and
+thread-local storage.
+
+## 2. Address-space layout
+
+A simplified process address space looks like this:
+
+``` text
+One process's virtual address space
++------------------------------+
+| Stack (thread 1)              |
+| Stack (thread 2)              |  <- each thread has its own stack
+| ...                           |
++------------------------------+
+| Memory-mapped regions         |
+| Shared libraries              |
++------------------------------+
+| Heap                          |  <- shared by threads in this process
++------------------------------+
+| BSS: zero-initialized globals |
+| Data: initialized globals     |
+| Text/code: program instructions|
++------------------------------+
+```
+
+This is conceptual, not a guaranteed exact layout. Real layouts vary by
+operating system, architecture, security features, and runtime.
+
+Two separate processes generally have separate virtual address spaces:
+
+``` text
+Process A                         Process B
++----------------------+          +----------------------+
+| Stack(s)             |          | Stack(s)             |
+| Heap                 |          | Heap                 |
+| Globals / data       |          | Globals / data       |
+| Program code         |          | Program code         |
++----------------------+          +----------------------+
+       Separate virtual address spaces
+```
+
+The same numeric virtual address in two processes does not normally mean
+the same physical memory. Operating-system mechanisms such as shared
+memory can deliberately map the same physical pages into multiple
+processes.
+
+## 3. Context switching costs
+
+A **context switch** happens when the CPU stops executing one thread and
+starts executing another.
+
+The operating system may need to save and restore execution state,
+including registers, the instruction pointer, and stack pointer.
+Scheduling, cache effects, and memory-management effects can also
+contribute to the cost.
+
+### Thread switch within one process
+
+-   Saves the outgoing thread's CPU state and restores the incoming
+    thread's state.
+-   Both threads use the same process address space.
+-   It may avoid some address-space switching work.
+-   It is not free: cache misses, synchronization, scheduler work, and
+    other effects can still be expensive.
+
+### Switch between processes
+
+-   Saves/restores thread execution state as well.
+-   May also switch the active address-space context.
+-   Can affect address-translation caches such as the TLB, although
+    modern CPUs and operating systems use optimizations to reduce this
+    cost.
+-   Can have greater overhead than a switch between threads in the same
+    process, but the exact difference depends on the system and
+    workload.
+
+**Interview point:** Do not claim that every process switch is always
+slower by a fixed amount. The cost is platform- and workload-dependent.
+Also, creating a thread or process is a different operation from
+switching between them.
+
+## 4. Kernel-space vs. user-space threads
+
+First, distinguish **user mode** from **kernel mode**:
+
+-   **User mode:** normal application code runs with restricted
+    privileges.
+-   **Kernel mode:** operating-system kernel code runs with elevated
+    privileges.
+
+A thread is an execution entity; user/kernel mode describes the CPU's
+privilege level while code is running.
+
+### Kernel-supported threads
+
+The operating system kernel knows about and schedules the threads.
+
+-   A blocking system call by one thread generally does not block other
+    threads in the same process.
+-   Threads can usually run in parallel on multiple CPU cores.
+-   Thread management and scheduling involve kernel support and have
+    overhead.
+
+On mainstream systems such as Linux, Windows, and modern macOS, normal
+C++ `std::thread` threads are backed by operating-system threads.
+
+### User-level threads
+
+A user-space runtime or library manages execution units without
+requiring the kernel to schedule each one as a separate kernel thread.
+
+-   Switching between user-level tasks can be very fast because it may
+    happen without a kernel transition.
+-   The runtime controls scheduling.
+-   If many user-level tasks are mapped onto only one kernel thread, a
+    blocking system call can block that kernel thread and therefore stop
+    progress for the tasks on it.
+-   Modern runtimes often use multiple kernel threads underneath to
+    support parallelism and avoid that limitation.
+
+The exact behavior depends on the threading model. "User-level thread"
+is not the same as "a thread currently executing in user mode";
+kernel-supported threads execute application code in user mode most of
+the time too.
+
+## 5. C++ example: two threads share data
+
+This example demonstrates that threads in one process share a global
+variable. A mutex protects the shared update.
+
+``` cpp
+#include <iostream>
+#include <thread>
+#include <mutex>
+
+int counter = 0;              // Shared by both threads
+std::mutex counterMutex;
+
+void incrementCounter()
+{
+    for (int i = 0; i < 100000; ++i) {
+        std::lock_guard<std::mutex> lock(counterMutex);
+        ++counter;
+    }
+}
+
+int main()
+{
+    std::thread t1(incrementCounter);
+    std::thread t2(incrementCounter);
+
+    t1.join();
+    t2.join();
+
+    std::cout << "Counter = " << counter << '\n';
+    return 0;
+}
+```
+
+Expected output:
+
+``` text
+Counter = 200000
+```
+
+### Why use a mutex?
+
+Both threads access the same `counter`. An increment (`++counter`) is a
+read-modify-write operation, so simultaneous unsynchronized updates
+would cause a **data race**, which is undefined behavior in C++. The
+mutex makes each update mutually exclusive.
+
+Each thread also has its own call stack while executing
+`incrementCounter()`, but both access the same global `counter`.
+
+Compile on a typical Linux system with:
+
+``` bash
+g++ -std=c++17 -pthread process_vs_thread.cpp -o process_vs_thread
+./process_vs_thread
+```
+
+## 6. C++ example: separate processes
+
+Standard C++ does not provide a portable API to create an
+operating-system process. On POSIX systems such as Linux and macOS,
+`fork()` is one option:
+
+``` cpp
+#include <iostream>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main()
+{
+    int value = 10;
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        std::cerr << "fork failed\n";
+        return 1;
+    }
+
+    if (pid == 0) {
+        // Child process
+        value = 99;
+        std::cout << "Child value = " << value << '\n';
+        _exit(0);
+    }
+
+    // Parent process
+    waitpid(pid, nullptr, 0);
+    std::cout << "Parent value = " << value << '\n';
+    return 0;
+}
+```
+
+Typical output:
+
+``` text
+Child value = 99
+Parent value = 10
+```
+
+The child gets its own virtual address space. After `fork()`, memory is
+commonly implemented using **copy-on-write**: pages are initially shared
+physically where possible, and changes cause private copies as needed.
+The child's assignment does not change the parent's `value`.
+
+Compile on Linux or macOS:
+
+``` bash
+g++ -std=c++17 process_example.cpp -o process_example
+./process_example
+```
+
+This example is POSIX-specific, not portable standard C++. In
+multithreaded programs, using `fork()` has additional restrictions; the
+example is intentionally kept simple.
+
+## 7. When should you use each?
+
+Use **threads** when tasks need to share in-memory data efficiently,
+such as a GUI worker, media pipeline, or server handling concurrent
+work. Protect shared mutable data with mutexes, atomics, or other
+correct synchronization.
+
+Use **separate processes** when you need stronger isolation, independent
+lifecycles, or fault containment---for example, a browser separating
+tabs or a service separating components. Use IPC when processes need to
+exchange data.
+
+Threads can reduce communication overhead, but shared memory introduces
+synchronization risks. Processes provide stronger isolation, but IPC and
+process management may add complexity.
+
+## 8. Interview-ready summary
+
+-   **Process:** an executing program with its own virtual address space
+    and resources.
+-   **Thread:** an execution path within a process; threads share code,
+    globals, and heap but have separate stacks and CPU execution state.
+-   **Context switch:** saves/restores execution state; process switches
+    may involve an address-space switch, but exact costs vary.
+-   **Kernel-supported thread:** visible to and scheduled by the OS
+    kernel.
+-   **User-level thread:** managed by a user-space runtime, potentially
+    with cheaper task switches but with blocking and scheduling
+    trade-offs.
+-   **C++:** use `std::thread` for threads and synchronization
+    primitives such as `std::mutex`; process creation is OS-specific
+    (for example, POSIX `fork()`).
+
+
+
+=======================================================================================================================
+
+# Execution Paradigms in C++
+
+This note explains **single-threading vs. multithreading** and
+**concurrency vs. parallelism**, with practical C++ examples and
+interview points.
+
+## 1. Single-threading vs. multithreading
+
+### Single-threading
+
+A single-threaded program has one thread of execution. It performs one
+sequence of instructions at a time.
+
+``` cpp
+#include <iostream>
+
+void taskA()
+{
+    for (int i = 1; i <= 3; ++i)
+        std::cout << "A" << i << ' ';
+}
+
+void taskB()
+{
+    for (int i = 1; i <= 3; ++i)
+        std::cout << "B" << i << ' ';
+}
+
+int main()
+{
+    taskA();
+    taskB();
+}
+```
+
+Possible output:
+
+``` text
+A1 A2 A3 B1 B2 B3
+```
+
+`taskA()` finishes before `taskB()` starts because they are called
+sequentially on the same thread.
+
+**Advantages** - Simple control flow and debugging. - No thread
+synchronization is required for ordinary local data. - Lower
+thread-management overhead.
+
+**Disadvantages** - A long-running task can delay other work. - On a
+single thread, CPU-heavy tasks cannot execute at the same time. -
+Blocking I/O can leave the thread waiting instead of doing other useful
+work.
+
+### Multithreading
+
+A multithreaded program has two or more threads within a process.
+Threads can make progress independently and can share process memory.
+
+``` cpp
+#include <iostream>
+#include <thread>
+
+void taskA()
+{
+    for (int i = 1; i <= 3; ++i)
+        std::cout << "A" << i << ' ';
+}
+
+void taskB()
+{
+    for (int i = 1; i <= 3; ++i)
+        std::cout << "B" << i << ' ';
+}
+
+int main()
+{
+    std::thread t1(taskA);
+    std::thread t2(taskB);
+
+    t1.join();
+    t2.join();
+}
+```
+
+One possible output is:
+
+``` text
+A1 B1 A2 B2 A3 B3
+```
+
+But the order is **not guaranteed**. Depending on scheduling, output may
+be interleaved differently. Because both threads write to `std::cout`,
+characters from different writes can appear interleaved; use a mutex or
+`std::osyncstream` (C++20) if you need clean output.
+
+`join()` makes the main thread wait until each worker finishes. Without
+joining or detaching a joinable `std::thread`, destroying the thread
+object calls `std::terminate()`.
+
+**Advantages** - Can keep an application responsive while work runs in
+the background. - Can overlap waiting for I/O with other work. - Can
+execute CPU-bound work in parallel when multiple cores are available.
+
+**Disadvantages** - Shared mutable data needs synchronization. - Race
+conditions, deadlocks, and timing-dependent bugs are possible. -
+Creating and scheduling threads has overhead; more threads do not always
+mean better performance.
+
+Compile on Linux/macOS:
+
+``` bash
+g++ -std=c++17 -pthread execution_paradigms.cpp -o execution_paradigms
+./execution_paradigms
+```
+
+## 2. Concurrency vs. parallelism
+
+These concepts are related, but they are not the same.
+
+### Concurrency: dealing with multiple tasks in overlapping time periods
+
+A system is concurrent when multiple tasks can make progress during
+overlapping periods. A single CPU core can achieve concurrency by
+switching between tasks.
+
+``` text
+Single CPU core over time
+Time ───────────────────────────────>
+
+Task A: [run]       [run]       [run]
+Task B:       [run]       [run]
+```
+
+Only one task is running on that core at a given instant, but the
+operating system alternates between tasks. This is often called
+**time-slicing** or **interleaving**.
+
+### Parallelism: executing multiple tasks at the same instant
+
+Parallelism means two or more tasks are literally executing
+simultaneously, typically on different CPU cores.
+
+``` text
+Two CPU cores over time
+Time ───────────────────────────────>
+
+Core 1 / Task A: [running][running][running]
+Core 2 / Task B: [running][running][running]
+```
+
+Parallel execution can improve throughput for CPU-bound work, provided
+the tasks can be divided effectively and coordination overhead does not
+outweigh the benefit.
+
+### Key differences
+
+  -----------------------------------------------------------------------
+  Concept                 Concurrency             Parallelism
+  ----------------------- ----------------------- -----------------------
+  Main idea               Manage multiple tasks   Execute multiple tasks
+                          whose progress overlaps at the same instant
+
+  Hardware requirement    Can work on one core    Requires multiple
+                                                  execution resources for
+                                                  true simultaneous
+                                                  execution
+
+  Main benefit            Responsiveness and      Faster completion of
+                          effective task          suitable work
+                          coordination            
+
+  Example                 One core alternates     Several cores process
+                          between network         different image tiles
+                          requests                at once
+
+  Relationship            A design can be         Parallel work is a form
+                          concurrent without      of concurrent activity
+                          parallel execution      in the broad sense
+  -----------------------------------------------------------------------
+
+**Interview rule:** Concurrency is about *dealing with* multiple tasks;
+parallelism is about *doing* multiple tasks simultaneously.
+
+## 3. C++ example: concurrency with two tasks
+
+The next example launches two threads. The operating system may
+interleave them on one core or run them simultaneously on separate
+cores.
+
+``` cpp
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+void downloadTask()
+{
+    for (int i = 1; i <= 3; ++i) {
+        std::cout << "Download step " << i << '\n';
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+void processTask()
+{
+    for (int i = 1; i <= 3; ++i) {
+        std::cout << "Processing step " << i << '\n';
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+int main()
+{
+    std::thread downloader(downloadTask);
+    std::thread processor(processTask);
+
+    downloader.join();
+    processor.join();
+}
+```
+
+The order of the lines is not fixed. The sleep is only a teaching aid;
+real downloads typically wait on I/O and should normally use an
+appropriate asynchronous or networking API rather than sleeping.
+
+## 4. C++ example: splitting CPU work for parallel execution
+
+This example uses two threads to sum separate halves of a large array.
+Each thread writes to a different result variable, so no mutex is needed
+for those writes. The main thread reads the results after `join()`.
+
+``` cpp
+#include <iostream>
+#include <thread>
+#include <vector>
+#include <numeric>
+
+long long sumRange(const std::vector<int>& values,
+                   std::size_t begin,
+                   std::size_t end)
+{
+    long long sum = 0;
+    for (std::size_t i = begin; i < end; ++i)
+        sum += values[i];
+    return sum;
+}
+
+int main()
+{
+    std::vector<int> values(1'000'000, 1);
+    const std::size_t middle = values.size() / 2;
+
+    long long leftSum = 0;
+    long long rightSum = 0;
+
+    std::thread t1([&] {
+        leftSum = sumRange(values, 0, middle);
+    });
+
+    std::thread t2([&] {
+        rightSum = sumRange(values, middle, values.size());
+    });
+
+    t1.join();
+    t2.join();
+
+    std::cout << "Total = " << leftSum + rightSum << '\n';
+}
+```
+
+Expected output:
+
+``` text
+Total = 1000000
+```
+
+This makes parallel execution possible, but it is not guaranteed to be
+faster for every input. Thread startup, scheduling, memory bandwidth,
+and the workload size all matter. For small jobs, a single-threaded loop
+may be faster.
+
+## 5. Real-world examples
+
+-   **Single-threaded:** a simple command-line calculator that handles
+    one command at a time.
+-   **Multithreaded:** a desktop application runs its UI on one thread
+    and background work on worker threads.
+-   **Concurrent but not parallel:** a single-core CPU alternates
+    between multiple runnable tasks, or an event loop coordinates many
+    I/O operations.
+-   **Parallel:** video frames or independent image tiles are processed
+    across multiple CPU cores.
+
+## 6. Common interview questions
+
+### Q1. Can a single-threaded program be concurrent?
+
+It can coordinate multiple asynchronous tasks whose progress overlaps,
+for example through an event loop and non-blocking I/O. But one thread
+cannot execute two CPU instructions at exactly the same instant.
+
+### Q2. Does multithreading always improve performance?
+
+No. Thread creation, synchronization, scheduling, contention, and cache
+effects can make a multithreaded version slower. It helps when work can
+overlap or be divided effectively.
+
+### Q3. Can concurrency happen without parallelism?
+
+Yes. A single CPU core can switch between multiple tasks so each makes
+progress over time.
+
+### Q4. Can parallelism happen without multithreading?
+
+Yes. Parallelism can be provided by multiple processes, multiple CPU
+cores, SIMD/vector instructions, GPUs, or specialized hardware.
+Multithreading is one common way to express parallel work on a CPU.
+
+### Q5. What is a race condition?
+
+A race condition occurs when a program's result depends on the timing or
+ordering of concurrent operations. In C++, unsynchronized conflicting
+accesses to the same memory location---at least one of which is a
+write---can create a **data race**, which is undefined behavior. Use a
+mutex, atomics, or another suitable synchronization design.
+
+### Q6. What is the difference between a process and a thread?
+
+A process generally has its own virtual address space; threads within
+one process share the process's code, heap, and globals but have
+separate stacks and execution state. Processes offer stronger isolation,
+while threads usually make sharing data easier.
+
+## 7. Interview-ready summary
+
+-   **Single-threading:** one thread executes a sequence of tasks.
+-   **Multithreading:** multiple threads can make progress within a
+    process.
+-   **Concurrency:** multiple tasks make progress over overlapping time
+    periods.
+-   **Parallelism:** multiple tasks execute simultaneously.
+-   **Important:** multithreading can enable concurrency and
+    parallelism, but does not guarantee parallel execution or better
+    performance.
+-   **C++ tools:** `std::thread`, `join()`, `std::mutex`, atomics,
+    futures, and asynchronous I/O each solve different parts of
+    concurrent programming.
+
+=======================================================================================================================
+=======================================================================================================================
+=======================================================================================================================
+=======================================================================================================================
+=======================================================================================================================
+=======================================================================================================================
+=======================================================================================================================
+=======================================================================================================================
+

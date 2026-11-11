@@ -1,0 +1,396 @@
+================================================================================
+     INHERITANCE — THEORY ANSWERS + TRICKY QUESTIONS
+================================================================================
+
+================================================================================
+SECTION 1A — CORE INHERITANCE THEORY (ANSWERS)
+================================================================================
+
+Q1. What is inheritance? What are the benefits of using it?
+
+    - Inheritance lets a new class (DERIVED/child) reuse and extend the
+      data members and member functions of an existing class (BASE/
+      parent), modeling an "is-a" relationship (e.g. a Dog IS-A Animal).
+    - Benefits: CODE REUSE (common fields/behavior written once in the
+      base, shared by every derived class, instead of duplicated
+      everywhere); EXTENSIBILITY (new derived classes can add/override
+      behavior without touching the existing base class code — related
+      to the Open/Closed Principle); POLYMORPHISM support (writing code
+      against a base class pointer/reference that automatically works
+      correctly for any derived type, via virtual functions); and a more
+      natural, hierarchical MODEL of real-world "kind-of" relationships,
+      which can make a codebase's structure easier to reason about when
+      used appropriately.
+
+Q2. What are the types of inheritance in C++? Explain each with an
+    example.
+
+    - Single: one base, one derived. Example: `class Dog : public
+      Animal {};` — Dog inherits directly from Animal alone.
+    - Multiple: a derived class inherits from MORE THAN ONE base class
+      directly. Example: `class FlyingCar : public Car, public
+      Aircraft {};` — combines behavior from two unrelated bases.
+    - Multilevel: a CHAIN of inheritance, A -> B -> C, where C derives
+      from B, which itself derives from A. Example: `Person -> Employee
+      -> Manager` — Manager inherits (indirectly) from Person through
+      Employee.
+    - Hierarchical: MULTIPLE derived classes all inherit from the SAME
+      single base class. Example: `Dog`, `Cat`, and `Bird` all deriving
+      directly from a common `Animal` base.
+    - Hybrid: a COMBINATION of the above patterns in one hierarchy (e.g.
+      multiple + multilevel together) — this is exactly the shape where
+      the diamond problem (see 1B) can arise, if two paths in the hybrid
+      hierarchy converge back on a shared common ancestor.
+
+Q3. What is the difference between public, protected, and private
+    inheritance? How does each affect the access of base class members
+    in the derived class?
+
+    - Public inheritance (`class D : public B`): base's `public` members
+      remain `public` in D; base's `protected` members remain
+      `protected` in D. This is the most common mode and preserves the
+      natural "is-a" relationship — external code can treat a D as a B.
+    - Protected inheritance (`class D : protected B`): base's `public`
+      members become `protected` in D; `protected` stays `protected`.
+      External code can no longer access B's originally-public members
+      through a D object at all.
+    - Private inheritance (`class D : private B`, also the DEFAULT if no
+      specifier is given for `class`): base's `public` AND `protected`
+      members BOTH become `private` in D — completely hiding the "is-a"
+      relationship from anything outside D itself; often used to express
+      "implemented in terms of" rather than a genuine is-a relationship.
+    - In ALL three modes, the base's own truly `private` members are
+      NEVER directly accessible in the derived class (regardless of
+      inheritance mode) — they still exist as part of the object's
+      memory layout, but can only be accessed through the base class's
+      own public/protected member functions.
+
+Q4. What is the order of constructor and destructor calls in
+    inheritance?
+
+    - Construction order: the BASE class constructor runs FIRST (for
+      multiple bases, in the order they're listed in the derived class's
+      declaration, not the order they appear in the initializer list),
+      then any member subobjects are constructed (in declaration order),
+      and finally the DERIVED class's own constructor body executes.
+    - Destruction order is the exact REVERSE: the derived class's
+      destructor body runs first, then member subobjects are destroyed
+      (reverse declaration order), then the base class destructor(s) run
+      LAST (reverse order of construction, for multiple bases). This
+      mirrors the general principle that destruction always undoes
+      construction in the opposite sequence.
+
+Q5. What members are NOT inherited from a base class?
+
+    - Constructors: a derived class does NOT inherit the base's
+      constructors directly (it can only CALL them, explicitly or
+      implicitly, from its own constructor's initializer list) — the
+      derived class must define its own constructors (or rely on
+      compiler-generated ones), though C++11's "inheriting constructors"
+      feature (`using Base::Base;`) can bring base constructors into the
+      derived class's overload set as a special opt-in mechanism.
+    - The destructor: similarly, the derived class doesn't "inherit" the
+      base's destructor as its own destructor — it gets its OWN
+      destructor (compiler-generated if not user-defined), which
+      automatically invokes the base's destructor afterward as part of
+      normal destruction order.
+    - The copy assignment operator: not inherited either — a derived
+      class gets its own compiler-generated (or user-defined) copy
+      assignment operator, which internally calls the base's copy
+      assignment as part of copying the base subobject.
+    - Friend functions: friendship is NOT inherited at all (see Classes
+      & Objects 1E Q3) — if a base class grants friendship to some
+      function/class, that friendship does not automatically extend to
+      any derived class.
+
+Q6. Can a derived class call a base class constructor explicitly? How?
+
+    - Yes — via the derived class's constructor INITIALIZER LIST, listing
+      the base class name with the desired arguments:
+          class Derived : public Base {
+          public:
+              Derived(int x) : Base(x) { /* derived-specific init */ }
+          };
+      If the derived constructor does NOT explicitly call a base
+      constructor this way, the compiler automatically calls the base's
+      DEFAULT constructor instead (and this is a compile error if the
+      base has no accessible default constructor).
+
+Q7. What is constructor chaining in inheritance?
+
+    - Constructor chaining (in the inheritance sense) refers to the
+      automatic/explicit sequence of constructor calls that happens
+      across a class hierarchy when an object of a derived class is
+      created: the base class's constructor is invoked first (chained
+      via the initializer list mechanism described in Q6), then the next
+      level up the chain (for multilevel inheritance), and so on, before
+      the most-derived class's own constructor body finally executes —
+      ensuring every level of the hierarchy gets properly initialized in
+      the correct base-to-derived order automatically.
+
+================================================================================
+SECTION 1B — MULTIPLE INHERITANCE & DIAMOND PROBLEM (ANSWERS)
+================================================================================
+
+Q1. What is multiple inheritance? What are its pros and cons?
+
+    - Multiple inheritance is when a single derived class inherits
+      directly from MORE THAN ONE base class at once (e.g. `class D :
+      public B1, public B2 {};`).
+    - Pros: allows a class to combine/reuse behavior and interfaces from
+      several independent sources at once (e.g. implementing multiple
+      unrelated "interface-like" abstract classes), which can be a very
+      natural fit when a type genuinely needs to satisfy several
+      distinct roles simultaneously.
+    - Cons: significantly increases DESIGN COMPLEXITY — potential name
+      clashes between the bases' members (requiring explicit
+      disambiguation via `::`), the DIAMOND PROBLEM when bases share a
+      common ancestor (see Q2), increased memory layout complexity
+      (multiple vtables/subobjects), and generally harder-to-reason-about
+      hierarchies — many languages (Java, C#) deliberately disallow
+      multiple inheritance of CLASSES (though they allow multiple
+      interface implementation) specifically because of these
+      complications; C++ allows it but requires careful design.
+
+Q2. What is the diamond problem in multiple inheritance? How does C++
+    solve it?
+
+    - The diamond problem occurs when two classes B and C both inherit
+      from a common base A, and a further class D inherits from BOTH B
+      and C — visually forming a "diamond" shape (A at top, B and C in
+      the middle, D at the bottom). Without special handling, D ends up
+      containing TWO SEPARATE COPIES of A (one via the B path, one via
+      the C path), and any access to a member of A through D becomes
+      AMBIGUOUS — the compiler can't tell which copy you mean, producing
+      a compile error.
+    - C++ solves this with VIRTUAL INHERITANCE: declaring B's and C's
+      inheritance from A as `virtual` —
+          class B : virtual public A { };
+          class C : virtual public A { };
+          class D : public B, public C { };
+      This ensures D contains only ONE SHARED copy of A, no matter how
+      many paths lead to it, eliminating the ambiguity entirely.
+
+Q3. What is a virtual base class? When should you use it?
+
+    - A virtual base class is a base class that is inherited using the
+      `virtual` keyword in the inheritance list (`class B : virtual
+      public A {};`), ensuring that if MULTIPLE paths in a hierarchy
+      lead back to that same base, only ONE shared instance of it exists
+      in any further-derived class, rather than one copy per path.
+    - Use it specifically when designing a HYBRID/multiple-inheritance
+      hierarchy where you know (or anticipate) that two or more
+      intermediate base classes will share a common ancestor, and a
+      further class will inherit from more than one of those
+      intermediate classes — i.e., precisely to prevent (or pre-empt) the
+      diamond problem before it occurs. It's not needed for simple
+      single/hierarchical inheritance where no such convergence happens.
+
+================================================================================
+SECTION 1C — RELATIONSHIPS & DESIGN (ANSWERS)
+================================================================================
+
+Q1. What is the difference between aggregation and composition?
+
+    - Composition: STRONG ownership — the "contained"/owned object's
+      lifetime is tied directly to its owner; it typically CANNOT exist
+      meaningfully without the owner and is destroyed along with it.
+      Example: a Car "has an" Engine that is created and destroyed
+      together with the Car itself.
+    - Aggregation: WEAK ownership — the contained object CAN exist
+      independently of the "owner," and may outlive it or be shared
+      across multiple owners. Example: a Library "has" Books, but the
+      Books existed before being added to the library, and continue to
+      exist even if that particular Library object is destroyed.
+
+Q2. What is the difference between aggregation, composition, and
+    association?
+
+    - Composition and aggregation (see Q1) both describe "HAS-A"
+      relationships with different OWNERSHIP STRENGTH.
+    - Association is a broader, more general "USES" relationship between
+      two otherwise INDEPENDENT classes/objects, with NO ownership
+      implied in either direction at all — e.g. a Teacher "teaches"
+      Students: neither owns the other, they simply interact/reference
+      each other while each has an independent existence and lifecycle.
+      Composition and aggregation can both be thought of as specific,
+      stronger FORMS of association where one side specifically "owns"
+      (contains) the other, to varying degrees.
+
+Q3. What is the difference between IS-A and HAS-A relationships? Give
+    examples.
+
+    - IS-A: modeled via INHERITANCE — a Derived class "is a kind of"
+      Base class. Example: a Dog IS-A Animal (`class Dog : public
+      Animal {};`). Implies the derived type should be usable/
+      substitutable anywhere the base type is expected (see LSP, Q4).
+    - HAS-A: modeled via COMPOSITION or AGGREGATION — a class CONTAINS
+      another class as a member, without being "a kind of" it. Example:
+      a Car HAS-A Engine (`class Car { Engine engine; };`) — a Car is
+      not a "kind of" Engine, it merely owns/uses one.
+
+Q4. What is the Liskov Substitution Principle (LSP)? Why is it
+    important?
+
+    - LSP states that objects of a DERIVED class should be usable
+      ANYWHERE an object of the BASE class is expected, WITHOUT breaking
+      the correctness/expected behavior of the program — a derived class
+      must honor the base class's full BEHAVIORAL contract, not merely
+      match its interface/method signatures.
+    - Classic violation: making `Square` inherit from `Rectangle`, where
+      Rectangle exposes independent `setWidth()`/`setHeight()` methods.
+      Rectangle's contract implies width and height can be set
+      independently. A Square must always keep width == height, so
+      `Square::setWidth(w)` must ALSO silently change the height — this
+      breaks code written generically against the Rectangle contract
+      (e.g., code that sets width=5, height=10, and expects area=50, but
+      gets 25 if a Square was substituted in instead).
+    - Important because: it's the foundation of SAFE POLYMORPHISM — if
+      derived classes don't honor LSP, then writing generic code against
+      a base class pointer/reference (the whole point of inheritance +
+      virtual functions) becomes unreliable, since you can no longer
+      trust that ANY derived object will behave consistently with what
+      the base class's interface promised. Violating LSP is one of the
+      most common REAL-WORLD sources of subtle bugs in large
+      polymorphic/OOP codebases.
+
+Q5. What is the difference between shallow copy and deep copy in
+    inheritance? When can it cause problems?
+
+    - Shallow copy: the (often compiler-generated, default) copy
+      constructor/assignment copies member values AS-IS, including raw
+      pointers — meaning if EITHER the base OR derived part of the
+      object owns a raw resource via a pointer, the copy's pointer ends
+      up pointing at the SAME underlying memory as the original.
+    - Deep copy: explicitly allocates new, independent memory for the
+      copy at EVERY level of the hierarchy that owns a resource, so
+      original and copy are fully independent afterward.
+    - In an INHERITANCE context specifically, this gets trickier than in
+      a single class: a derived class's copy constructor/assignment
+      operator must correctly invoke the BASE class's copy
+      constructor/assignment (`Derived(const Derived& other) :
+      Base(other) { ... }`) to ensure the base portion is copied
+      correctly too — if you forget this and only copy the
+      derived-specific members yourself, the base portion may end up
+      DEFAULT-constructed instead of properly copied (a common,
+      easy-to-miss bug), or if the base itself performs only a shallow
+      copy by default while owning a raw resource, you get the SAME
+      double-free/shared-pointer danger as in the non-inheritance case
+      (see Classes & Objects theory), just now spread across two classes'
+      worth of copy logic that both need to get it right together.
+
+================================================================================
+SECTION 2 — TRICKY / GOTCHA QUESTIONS
+     (Sound right but aren't, or vice versa — classic inheritance
+      interview traps, matching the style of your "new + free" example.)
+================================================================================
+
+1. "The order bases are listed in a derived class's constructor
+   initializer list determines the order their constructors run in,
+   e.g. `Derived() : C(), B() {}` constructs C before B." TRICKY: FALSE
+   — base class constructor order is determined ENTIRELY by the order
+   bases are listed in the CLASS DECLARATION (`class Derived : public B,
+   public C`), completely ignoring the order they're written in the
+   initializer list. Writing `C(), B()` in the initializer list when the
+   class is declared as `: public B, public C` still constructs B first
+   — some compilers even warn about this exact mismatch (-Wreorder),
+   since it's easy to accidentally believe the initializer list controls
+   order.
+
+2. "Private inheritance means the derived class can't access any of the
+   base class's members at all." TRICKY: FALSE — private inheritance
+   still gives the DERIVED CLASS ITSELF full access to the base's public
+   and protected members (they just become PRIVATE members of the
+   derived class from that point on) — what's actually restricted is
+   EXTERNAL code's ability to access those inherited members through a
+   Derived object, and further classes deriving from Derived can no
+   longer see them either. The derived class's own internals are
+   unaffected.
+
+3. "Multiple inheritance always causes the diamond problem, so it should
+   be avoided entirely." TRICKY: FALSE (overstated) — the diamond problem
+   specifically requires two base classes that SHARE A COMMON ANCESTOR,
+   with a further class inheriting from both. Multiple inheritance from
+   completely UNRELATED base classes (no shared ancestor at all) causes
+   no ambiguity whatsoever and is a common, perfectly valid pattern
+   (e.g., implementing two independent abstract interfaces). The diamond
+   problem is a specific, avoidable scenario, not an indictment of
+   multiple inheritance as a whole.
+
+4. "A derived class automatically inherits the base class's constructors,
+   so you can construct a Derived object using any of Base's
+   constructors directly." TRICKY: FALSE by default — constructors are
+   NOT inherited; a derived class must define its own (or rely on the
+   compiler-generated default), and can only CALL a base constructor
+   explicitly via its own initializer list. (C++11's `using Base::Base;`
+   "inheriting constructors" feature is a special, explicit OPT-IN
+   mechanism that brings specific base constructors into the derived
+   class's overload set — but this doesn't happen automatically without
+   that explicit `using` declaration.)
+
+5. "Since virtual inheritance solves the diamond problem by sharing one
+   copy of the common base, it has no extra cost compared to normal
+   inheritance." TRICKY: FALSE — virtual inheritance introduces real
+   overhead: objects using virtual base classes typically carry extra
+   hidden pointers/offsets (to locate the single shared base subobject,
+   since its exact position within the object can vary depending on the
+   most-derived type), making object layout larger and member access
+   through a virtual base slightly slower (an extra indirection) compared
+   to normal, non-virtual inheritance. It solves the ambiguity problem,
+   but isn't "free."
+
+6. "A Square class that inherits from Rectangle is a perfectly correct
+   use of inheritance, since geometrically a square IS a special kind of
+   rectangle." TRICKY: Misleading — geometrically true, but
+   PROGRAMMATICALLY this is the textbook LSP violation (see 1C Q4):
+   Rectangle's behavioral contract (independent width/height setters)
+   isn't honored by Square (which must keep them equal), breaking code
+   written generically against Rectangle. "IS-A" in the real-world/
+   conceptual sense is not sufficient justification for inheritance in
+   OOP design — the derived class must honor the base's BEHAVIORAL
+   contract, not just its conceptual category.
+
+7. "If you forget to make a base class destructor virtual, deleting a
+   derived object through a base pointer will still call the derived
+   destructor, just less efficiently." TRICKY: FALSE — it's not merely
+   "less efficient," it's UNDEFINED BEHAVIOR, and in practice the
+   DERIVED destructor is typically NEVER called at all in that case
+   (only the base destructor runs) — meaning any resources the derived
+   part of the object owned are leaked (or worse), not just handled
+   slowly.
+
+8. "Composition is always better than inheritance, so you should never
+   use inheritance in real designs." TRICKY: FALSE (overstated) — the
+   common guideline "favor composition over inheritance" is a DEFAULT
+   preference for ambiguous cases, not an absolute rule. When a genuine,
+   LSP-honoring "is-a" relationship exists AND you need polymorphic
+   behavior (calling shared code through a base pointer/reference that
+   correctly dispatches to different derived behavior), inheritance
+   with virtual functions is the correct, idiomatic tool — composition
+   can't achieve runtime polymorphic dispatch through a common interface
+   in the same direct way inheritance + virtual functions can.
+
+9. "Protected inheritance and protected members are basically the same
+   concept, just applied in different places." TRICKY: Partially
+   misleading — `protected` as a MEMBER access specifier controls who
+   can access a specific member (the class itself, friends, and derived
+   classes). `protected` as an INHERITANCE MODE instead controls what
+   happens to the BASE class's already-public and already-protected
+   members once inherited — demoting the base's public members down to
+   protected in the derived class. They use the same keyword but apply
+   to conceptually different things (a member's own accessibility, vs.
+   how already-accessible base members get re-exposed through
+   inheritance) — conflating the two is a common source of confusion.
+
+10. "A friend function or friend class relationship declared in a base
+    class is automatically available to derived classes too, since
+    inheritance is about extending everything from the base." TRICKY:
+    FALSE — friendship is explicitly NOT inherited in C++. If Base
+    grants friendship to some function or class, that friendship does
+    NOT automatically extend to any class that derives from Base —
+    Derived would need its own, separate friend declaration if the same
+    access is needed for it.
+
+================================================================================
+END OF FILE
+================================================================================

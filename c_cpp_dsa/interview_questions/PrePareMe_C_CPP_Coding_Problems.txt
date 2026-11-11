@@ -1,0 +1,444 @@
+# C & C++ Coding Interview Questions Collection
+
+This document contains a comprehensive set of C and C++ coding interview questions structured by topic and difficulty (Easy, Medium, Hard). Standard topics like Trees and Graphs have been omitted per request.
+
+---
+
+## Table of Contents
+1. [Arrays & Matrix Operations](#1-arrays--matrix-operations)
+2. [Strings & Pattern Matching](#2-strings--pattern-matching)
+3. [Pointers, Memory Management & Dynamic Allocation](#3-pointers-memory-management--dynamic-allocation)
+4. [Bit Manipulation & Low-Level Programming](#4-bit-manipulation--low-level-programming)
+5. [Linked Lists](#5-linked-lists)
+6. [Stacks & Queues](#6-stacks--queues)
+7. [Recursion & Backtracking](#7-recursion--backtracking)
+8. [Sorting & Searching Algorithms](#8-sorting--searching-algorithms)
+9. [Object-Oriented Programming (C++)](#9-object-oriented-programming-c)
+10. [STL (Standard Template Library) & Data Structures](#10-stl-standard-template-library--data-structures)
+11. [Multithreading & Concurrency (C/C++)](#11-multithreading--concurrency-cc)
+12. [Dynamic Programming & Greedy Algorithms](#12-dynamic-programming--greedy-algorithms)
+
+---
+
+## 1. Arrays & Matrix Operations
+
+### Easy
+1. Write a C program to find the largest and smallest elements in an array.
+2. Implement an algorithm to reverse an array in-place.
+3. Write a program to find the second largest element in an unsorted array.
+4. Count the frequency of each element in an integer array.
+5. Check if an array is sorted in ascending order.
+6. Remove duplicate elements from a sorted array in $O(1)$ extra space.
+7. Find the missing number in an array containing numbers from $1$ to $N$.
+8. Move all zeros to the end of the array while maintaining the relative order of non-zero elements.
+9. Implement left rotation of an array by $K$ positions.
+10. Implement right rotation of an array by $K$ positions.
+11. Find the intersection of two integer arrays.
+12. Find the union of two sorted integer arrays.
+13. Compute the prefix sum array for a given input array.
+14. Check if an array contains a pair with a given sum $S$ (Two Sum problem).
+15. Count the number of even and odd elements in an array.
+16. Find the element that appears only once in an array where every other element appears twice.
+17. Merge two sorted arrays into a single sorted array.
+18. Find the maximum difference between two elements such that the larger element appears after the smaller element.
+19. Given an array of $N$ integers, check if there exists a subarray with a sum equal to 0.
+20. Transpose a square matrix in-place.
+21. Compute the sum of primary and secondary diagonals of an $N \times N$ matrix.
+22. Check if two matrices are identical.
+23. Find the maximum element in each row of a matrix.
+24. Count the number of negative numbers in a row-wise and column-wise sorted matrix.
+25. Find the Majority Element in an array (element appearing more than $N/2$ times).
+
+### Medium
+26. Implement Kadane's Algorithm to find the contiguous subarray with the maximum sum.
+27. Find all unique triplets in an array that sum up to zero (3Sum problem).
+28. Rotate an $N \times N$ matrix by 90 degrees clockwise in-place.
+29. Print a matrix in spiral order.
+30. Search for a value in an $M \times N$ matrix where rows and columns are sorted (Matrix Search).
+31. Rearrange an array such that positive and negative numbers alternate.
+32. Find the equilibrium index of an array (where sum of left elements equals sum of right elements).
+33. Find the longest contiguous subarray with an equal number of 0s and 1s.
+34. Find the contiguous subarray with the maximum product.
+35. Merge overlapping intervals given as an array of pairs.
+36. Given an array of non-negative integers representing heights, calculate how much rainwater can be trapped (Trapping Rainwater).
+37. Implement Next Permutation in C++ (find the lexicographically next greater permutation).
+38. Find the majority element that appears more than $\lfloor N/3 \rfloor$ times.
+39. Find the contiguous subarray with a sum equal to a target $K$.
+40. Calculate the maximum length of a subarray whose sum is divisible by $K$.
+41. Set entire matrix rows and columns to zero if an element is zero (Set Matrix Zeroes).
+42. Given an unsorted array, find the length of the longest consecutive elements sequence.
+43. Sort an array consisting of only 0s, 1s, and 2s without using any sorting algorithm (Dutch National Flag problem).
+44. Find the minimum size subarray sum that is greater than or equal to a target value.
+45. Implement Pascal's Triangle generation up to $N$ rows.
+46. Find the smallest missing positive integer in an unsorted array in $O(N)$ time and $O(1)$ auxiliary space.
+47. Count the number of subarrays having XOR sum equal to $K$.
+48. Find the maximum path sum starting from any cell in the top row to any cell in the bottom row of a grid.
+49. Implement matrix multiplication for two arbitrary-sized matrices.
+50. Rearrange array elements such that $A[i] \ge A[i-1]$ for even $i$ and $A[i] \le A[i-1]$ for odd $i$ (Wave Array).
+
+### Hard
+51. Compute the maximum sum of a rectangle in a 2D matrix (2D Kadane's Algorithm).
+52. Given an array of $N$ integers, find the maximum value of $|A[i] - A[j]| + |i - j|$.
+53. Count total number of inversions in an array using Merge Sort logic.
+54. Find the median of two sorted arrays of different sizes in $O(\log(\min(M, N)))$ time.
+55. Implement the Sliding Window Maximum problem using a Deque.
+56. Find the maximum area rectangle formed by 1s in a binary matrix.
+57. Solve the First Missing Positive integer problem in $O(N)$ time and $O(1)$ space.
+58. Given an array, find the maximum value of $A[i] - A[j] + A[k] - A[l]$ such that $i < j < k < l$.
+59. Count the number of subarrays with at most $K$ distinct integers.
+60. Find the maximum sum non-overlapping subarrays of specified lengths.
+
+---
+
+## 2. Strings & Pattern Matching
+
+### Easy
+61. Write a function to reverse a string in-place without using library functions.
+62. Check if a given string is a palindrome.
+63. Count the total number of vowels and consonants in a string.
+64. Convert a string to lowercase/uppercase manually without using standard C library functions.
+65. Determine if two strings are anagrams of each other.
+66. Find the first non-repeating character in a string.
+67. Implement `strlen()`, `strcpy()`, and `strcat()` manually in C.
+68. Count the number of words in a sentence.
+69. Check if a string contains only digits.
+70. Remove all spaces from a string in-place.
+71. Check if two strings are rotations of each other.
+72. Find the longest common prefix among an array of strings.
+73. Determine if a string has all unique characters without extra data structures.
+74. Print all duplicate characters in a string alongside their frequencies.
+75. Implement string-to-integer conversion (`atoi`) with handling for whitespace and sign.
+
+### Medium
+76. Implement the Knuth-Morris-Pratt (KMP) pattern matching algorithm in C/C++.
+77. Implement the Rabin-Karp algorithm for pattern searching.
+78. Find the longest palindromic substring in a given string.
+79. Reverse the words in a given sentence while maintaining spacing.
+80. Group an array of strings into anagrams (Group Anagrams).
+81. Find the longest substring without repeating characters using a sliding window.
+82. Count and Say sequence generator implementation.
+83. Compress a string using counts of repeated characters (e.g., "aabcccccaaa" -> "a2b1c4a3").
+84. Implement wildcard pattern matching supporting `?` and `*`.
+85. Validate if a given string is a valid Roman Numeral, and convert it to an integer.
+86. Convert an integer to a Roman Numeral string.
+87. Generate all permutations of a given string.
+88. Find the minimum window substring that contains all characters of another string.
+89. Check if one string is a scrambled version of another string.
+90. Implement basic String Matching using the Z-algorithm.
+
+### Hard
+91. Implement Regular Expression Matching supporting `.` and `*`.
+92. Construct a Suffix Array and LCP (Longest Common Prefix) array for a given string.
+93. Find the shortest palindrome that can be formed by adding characters in front of a string.
+94. Implement the Aho-Corasick automaton for multi-pattern searching.
+95. Find the maximum length of a concatenation of a sequence of strings with unique characters.
+96. Count all distinct substrings of a string using Suffix Automaton or Suffix Array.
+97. Given two strings $S_1$ and $S_2$, find the minimum number of step operations to convert $S_1$ to $S_2$ (Edit Distance).
+98. Determine the lexicographically smallest rank permutation of a string.
+
+---
+
+## 3. Pointers, Memory Management & Dynamic Allocation
+
+### Easy
+99. Explain and demonstrate the difference between `pass-by-value`, `pass-by-reference`, and `pass-by-pointer` in C++.
+100. Write a program to swap two pointers without changing their values.
+101. Implement a manual copy of a memory block (`memcpy` clone) in C using `char*` or `void*`.
+102. Write a function to check for memory leaks using custom allocations.
+103. Demonstrate the difference between `malloc`, `calloc`, `realloc`, and `free`.
+104. What is a dangling pointer? Write code that demonstrates and fixes a dangling pointer issue.
+105. Write a function that accepts a 2D dynamic array allocated with `malloc` and frees all memory correctly.
+106. Explain `const int *ptr`, `int * const ptr`, and `const int * const ptr` using program examples.
+107. Implement a generic function using `void*` pointers in C to swap two dynamic elements of any type.
+108. Demonstrate function pointers in C with an arithmetic callback system.
+
+### Medium
+109. Write a custom dynamic memory allocator (`custom_malloc` and `custom_free`) using a basic arena block.
+110. Implement a 2D dynamic array class/wrapper in C++ that manages dynamic memory using RAII.
+111. Write a custom smart pointer class (`scoped_ptr` / `unique_ptr` dynamic clone) in C++ without using standard library dynamic headers.
+112. Implement a custom Reference Counted Smart Pointer (`shared_ptr` clone) in C++.
+113. Implement dynamic matrix multiplication using a single 1D array block to ensure cache locality.
+114. Explain memory alignment and write code using `offsetof` to verify struct padding in C.
+115. Implement custom `aligned_alloc` and `aligned_free` functions in C.
+116. Write a program demonstrating strict aliasing rule violations and how to fix them using type casting/unions.
+117. Implement a ring buffer memory pool for constant-time dynamic allocations.
+118. Implement a generic C-style vector (dynamic array) using `void*` and function pointers for destructuring.
+
+### Hard
+119. Build a thread-safe Fixed-Size Block Memory Allocator (Slab Allocator) from scratch.
+120. Implement a custom Garbage Collector (Mark-and-Sweep strategy) in C for a simple heap structure.
+121. Write a memory leak detection tool using macro overrides for `malloc` and `free` that records file names and line numbers.
+122. Implement custom C++ runtime RTTI (Run-Time Type Information) mechanics using virtual tables manually.
+123. Write a high-performance Lock-Free Free-List memory pool using Atomic operations (`std::atomic`).
+
+---
+
+## 4. Bit Manipulation & Low-Level Programming
+
+### Easy
+124. Check if an integer is even or odd using bitwise operations.
+125. Check if the $K$-th bit of a given number is set.
+126. Set, clear, and toggle the $K$-th bit of an integer.
+127. Count the number of set bits (1s) in an integer (Brian Kernighan's Algorithm).
+128. Check if a number is a power of 2 using bitwise operators.
+129. Swap two numbers using XOR without a temporary variable.
+130. Find the non-repeating element in an array where every other element appears twice.
+131. Reverse the bits of a 32-bit unsigned integer.
+132. Find the position of the Rightmost Set Bit (RMSB).
+133. Check if two numbers have opposite signs without branching.
+134. Convert a binary number string to an integer, and an integer to a binary string.
+135. Compute the parity of an unsigned integer.
+
+### Medium
+136. Find two non-repeating elements in an array where all other elements appear twice.
+137. Find the single element in an array where every other element appears three times.
+138. Compute $X^Y$ (power operation) using bitwise binary exponentiation in $O(\log Y)$ time.
+139. Generate all possible subsets (Power Set) of a given set using bitmasking.
+140. Multiply two integers without using the `*` operator.
+141. Divide two integers without using multiplication, division, or modulo operators.
+142. Swap all odd and even bits of a 32-bit integer.
+143. Find the smallest power of 2 greater than or equal to a given number $N$.
+144. Swap two nibbles in a byte.
+145. Determine the minimum number of bit flips required to convert integer $A$ to integer $B$.
+146. Check if an integer's bit representation is a palindrome.
+147. Compute absolute value of a signed integer without branching.
+
+### Hard
+148. Calculate the sum of bit differences among all pairs of elements in an array.
+149. Given an array of integers, find the maximum XOR value of any two elements (using Trie or Bitwise logic).
+150. Count total set bits in all numbers from 1 to $N$ in $O(\log N)$ complexity.
+151. Solve the $N$-Queens problem efficiently using bitwise operations instead of boolean arrays.
+152. Implement arbitrary precision (BigInt) bitwise AND, OR, and XOR operations.
+
+---
+
+## 5. Linked Lists
+
+### Easy
+153. Implement a Singly Linked List with insertion at head, tail, and given position.
+154. Delete a node from a Singly Linked List given its value or position.
+155. Search for an element in a Singly Linked List (iteratively and recursively).
+156. Find the length of a Linked List.
+157. Reverse a Singly Linked List iteratively.
+158. Reverse a Singly Linked List recursively.
+159. Find the middle node of a Linked List (Floyd's Slow and Fast Pointers).
+160. Detect a loop/cycle in a Singly Linked List.
+161. Find the intersection point of two Linked Lists.
+162. Remove duplicates from a sorted Singly Linked List.
+163. Remove duplicates from an unsorted Singly Linked List.
+164. Delete a given node in a Singly Linked List given only a pointer to that node.
+165. Check if a Singly Linked List is a palindrome.
+
+### Medium
+166. Find the starting node of a loop in a Linked List.
+167. Remove the loop from a Singly Linked List without losing data.
+168. Reverse a Linked List in groups of size $K$ ($K$-group reversal).
+169. Merge two sorted Linked Lists into a single sorted list.
+170. Merge $K$ sorted Linked Lists using a Min-Heap/Priority Queue.
+171. Add two numbers represented as Linked Lists (digits stored in reverse order).
+172. Add two numbers represented as Linked Lists (digits stored in forward order).
+173. Segregate even and odd nodes in a Linked List.
+174. Reorder a list such that $L_0 \rightarrow L_n \rightarrow L_1 \rightarrow L_{n-1} \rightarrow \dots$
+175. Clone a Linked List containing random next and arbitrary pointers (Deep Copy).
+176. Flatten a multi-level Doubly Linked List containing child pointers.
+177. Remove the $N$-th node from the end of a Linked List in a single pass.
+178. Implement LRU (Least Recently Used) Cache using a Doubly Linked List and Hash Map.
+
+### Hard
+179. Sort a Linked List in $O(N \log N)$ time using Merge Sort.
+180. Implement LFU (Least Frequently Used) Cache using Linked Lists and Maps.
+181. Reverse alternate $K$ nodes in a Singly Linked List.
+182. Swap nodes in pairs without modifying node values (pointer swapping only).
+183. Implement QuickSort on a Doubly Linked List.
+
+---
+
+## 6. Stacks & Queues
+
+### Easy
+184. Implement a Stack using a fixed-size Array in C.
+185. Implement a Queue using a fixed-size Array in C.
+186. Implement a Stack using a Linked List.
+187. Implement a Queue using a Linked List.
+188. Validate if a string of parentheses `()`, `{}`, `[]` is balanced.
+189. Reverse a string using a Stack.
+190. Implement a Circular Queue using an array.
+191. Implement a Min Stack that supports `getMin()` in $O(1)$ time.
+
+### Medium
+192. Convert an Infix expression to Postfix notation using a Stack.
+193. Evaluate a Postfix expression using a Stack.
+194. Convert an Infix expression to Prefix notation.
+195. Implement a Queue using two Stacks.
+196. Implement a Stack using two Queues.
+197. Find the Next Greater Element for every element in an array using a Monotonic Stack.
+198. Find the Next Smaller Element for every element in an array.
+199. Sort a Stack using recursion (without loop constructs).
+200. Reverse a Stack using recursion.
+201. Implement a Deque (Double-Ended Queue) using a Circular Array.
+202. Design a Stack that supports push, pop, top, and retrieving the minimum element, all in $O(1)$ time.
+
+### Hard
+203. Calculate the Largest Rectangle Area in a Histogram using a Monotonic Stack.
+204. Solve the Celebrity Problem in $O(N)$ time using a Stack.
+205. Given an array of integers representing heights, calculate maximum sliding window minimums for all window sizes.
+206. Design a data structure that supports `insert`, `delete`, `getRandom`, and `getMin` in average $O(1)$ time.
+207. Trapping Rain Water problem solution using monotonic stacks.
+
+---
+
+## 7. Recursion & Backtracking
+
+### Easy
+208. Print numbers from 1 to $N$ without using loops.
+209. Compute the factorial of a number using recursion and tail-recursion.
+210. Find the $N$-th Fibonacci number using recursion and memoization.
+211. Calculate $A^B$ (power) using recursion.
+212. Sum of digits of a number using recursion.
+213. Check if an array is sorted using recursion.
+
+### Medium
+214. Generate all permutations of a given string or array of unique integers.
+215. Generate all subsets (Power Set) using recursion.
+216. Solve the Combination Sum problem (find combinations that sum to target).
+217. Generate all valid combinations of $N$ pairs of open and closed parentheses.
+218. Solve the Flood Fill algorithm on a 2D image array.
+219. Find all paths from top-left to bottom-right of a matrix moving only right and down.
+220. Solve the Subset Sum problem using backtracking.
+221. Find all possible partitions of a string into palindromic substrings.
+
+### Hard
+222. Solve the $N$-Queens problem on an $N \times N$ chessboard.
+223. Solve a Sudoku Puzzle using Backtracking.
+224. Solve the Knight's Tour problem on an $N \times N$ chessboard.
+225. Find a path in a Maze (Rat in a Maze) with movement allowed in all 4 directions.
+226. Word Search: Check if a word exists in a 2D grid of characters with 4-directional moves.
+227. Restore IP addresses: Find all possible valid IP address combinations from a digit string.
+
+---
+
+## 8. Sorting & Searching Algorithms
+
+### Easy
+228. Implement Linear Search (iterative and recursive).
+229. Implement Binary Search on a sorted array (iterative and recursive).
+230. Implement Bubble Sort and optimize it for already sorted inputs.
+231. Implement Selection Sort.
+232. Implement Insertion Sort.
+233. Find the first and last occurrences of an element in a sorted array.
+234. Count occurrences of a number in a sorted array using Binary Search.
+
+### Medium
+235. Implement Merge Sort.
+236. Implement Quick Sort (using dynamic pivot selection like median-of-three).
+237. Implement Heap Sort.
+238. Search in a Rotated Sorted Array.
+239. Find the Minimum element in a Rotated Sorted Array.
+240. Search in a 2D Matrix where rows and columns are sorted independently.
+241. Find the Peak Element in an unsorted array using modified Binary Search ($O(\log N)$).
+242. Implement Counting Sort for bounded integer inputs.
+243. Implement Radix Sort.
+244. Implement Shell Sort.
+245. Find the K-th Smallest / Largest element using QuickSelect.
+
+### Hard
+246. Allocate Minimum Number of Pages (Binary search on answers).
+247. Aggressive Cows problem (binary search on maximum distance).
+248. Split Array Largest Sum (Binary Search on Answer).
+249. Find the Median of Two Sorted Arrays of different lengths in $O(\log(\min(M, N)))$.
+250. Count inversions in an array using enhanced Merge Sort.
+
+---
+
+## 9. Object-Oriented Programming (C++)
+
+### Easy
+251. Design a C++ `Class` representing a Complex Number supporting addition and multiplication.
+252. Demonstrate constructor overloading, copy constructors, and dynamic destructors.
+253. Explain access specifiers (`public`, `private`, `protected`) using code examples.
+254. Implement operator overloading for standard binary operators (`+`, `-`, `==`, `<<`).
+255. Create a Base class `Shape` and derived classes `Circle` and `Rectangle` demonstrating runtime polymorphism.
+
+### Medium
+256. Implement the Copy-and-Swap Idiom in C++ for safe resource management.
+257. Write a C++ class that prevents instantiation on the Stack (Heap-only objects).
+258. Write a C++ class that prevents instantiation on the Heap (Stack-only objects).
+259. Implement custom `String` class with dynamic dynamic allocations, copy constructor, move constructor, copy assignment, and move assignment operators (Rule of 5).
+260. Demonstrate the diamond inheritance problem and resolve it using Virtual Inheritance.
+261. Implement a Singleton Design Pattern in a thread-safe manner in C++.
+262. Design a dynamic Factory Design Pattern in C++ using smart pointers.
+
+### Hard
+263. Implement a custom dynamic Virtual Method Table (VTable) system manually using C structs and function pointers.
+264. Design an Object Pool Design Pattern for fast dynamic allocation and recycling of C++ objects.
+265. Implement a dynamic Observer Pattern supporting generic listeners via modern C++ templates.
+
+---
+
+## 10. STL (Standard Template Library) & Data Structures
+
+### Easy
+266. Demonstrate usage of `std::vector`, `std::list`, and `std::deque` with insertion, deletion, and iteration.
+267. Write a custom comparator function for sorting a vector of pairs using `std::sort`.
+268. Explain and demonstrate differences between `std::map` and `std::unordered_map`.
+269. Use `std::priority_queue` to create both Min-Heap and Max-Heap structures.
+270. Demonstrate usage of `std::set`, `std::unordered_set`, and `std::multiset`.
+
+### Medium
+271. Implement custom hashing function for `std::unordered_map` with user-defined class keys.
+272. Implement custom comparator for `std::priority_queue` using custom structures.
+273. Demonstrate usage of dynamic algorithms: `std::lower_bound`, `std::upper_bound`, and `std::binary_search`.
+274. Implement a dynamic custom iterator class for a custom dynamic container.
+275. Demonstrate move semantics, Rvalue references (`&&`), and `std::move` performance optimization.
+
+### Hard
+276. Implement a dynamic Hash Map from scratch using chaining (Linked Lists) with custom dynamic array resizing.
+277. Implement a dynamic Hash Map from scratch using Open Addressing (Linear Probing/Double Hashing).
+278. Build an LRU Cache structure using `std::unordered_map` and `std::list`.
+
+---
+
+## 11. Multithreading & Concurrency (C/C++)
+
+### Easy
+279. Create a basic POSIX thread (`pthread`) in C to perform concurrent execution.
+280. Create threads in C++11 using `std::thread` and join them safely.
+281. Demonstrate race conditions and fix them using `std::mutex` or `pthread_mutex`.
+
+### Medium
+282. Implement a Producer-Consumer problem solution using POSIX mutexes and condition variables.
+283. Implement a Producer-Consumer problem using `std::condition_variable` and `std::unique_lock` in C++11.
+284. Write a thread-safe Queue implementation in C++.
+285. Demonstrate Readers-Writers Problem resolution using shared mutexes (`std::shared_mutex`).
+286. Use atomic operations (`std::atomic`) to increment counters concurrently without explicit locking.
+
+### Hard
+287. Design and implement a dynamic Thread Pool in C++11/14 supporting asynchronous task submission and futures.
+288. Implement a Lock-Free Single-Producer Single-Consumer (SPSC) Queue using atomic operations.
+289. Solve the Dining Philosophers Problem avoiding deadlock using mutexes and hierarchy strategies.
+
+---
+
+## 12. Dynamic Programming & Greedy Algorithms
+
+### Easy
+290. Find the $N$-th Fibonacci number using Bottom-Up Dynamic Programming.
+291. Compute Minimum Cost Climbing Stairs.
+292. Solve the Coin Change Problem for minimum coins using 1D Dynamic Programming.
+293. Solve the House Robber Problem (maximum non-adjacent sum).
+294. Compute the Fractional Knapsack Problem using a Greedy strategy.
+
+### Medium
+295. Solve the 0/1 Knapsack Problem using Dynamic Programming.
+296. Find the Longest Common Subsequence (LCS) of two strings.
+297. Find the Longest Increasing Subsequence (LIS) in $O(N \log N)$ time.
+298. Solve the Coin Change II Problem (total unique ways to make change).
+299. Solve the Edit Distance Problem between two strings.
+300. Solve the Partition Equal Subset Sum problem.
+301. Solve the Activity Selection Problem using a Greedy approach.
+302. Solve the Job Sequencing Problem with Deadlines.
+
+### Hard
+303. Solve the Matrix Chain Multiplication (MCM) problem.
+304. Solve the Palindrome Partitioning II problem with minimum cuts.
+305. Solve the Wildcard Matching / Regular Expression Matching via DP.

@@ -1,0 +1,1675 @@
+================================================================================
+     COMPLETE INTERVIEW Q&A — INTERVIEWER'S PERSPECTIVE
+     Topics: Variables | Control Flow | Functions & Recursion | Arrays
+     Total: 51 + 23 + 27 + 11 = 112 Theory Questions Answered
+================================================================================
+
+================================================================================
+PART 1 — VARIABLES, DATA TYPES & OPERATORS
+================================================================================
+     SECTION 1A — C++ BASICS & SYNTAX (20 Questions)
+     SECTION 1B — TYPE SYSTEM & CONVERSIONS (21 Questions)
+     SECTION 1C — ADDITIONAL THEORY (10 Questions)
+================================================================================
+
+------------------------------------------------------------------------
+SECTION 1A — C++ BASICS & SYNTAX
+------------------------------------------------------------------------
+
+Q1.  What is the difference between compiler and interpreter?
+     Asked at: TCS, Wipro, Infosys
+A:   A compiler translates the ENTIRE source code to machine code before
+     execution (e.g., C++). An interpreter translates and executes LINE BY
+     LINE at runtime (e.g., Python).
+     Key differences:
+     - Compiler: faster execution, errors shown after full scan
+     - Interpreter: slower, errors shown line by line, easier to debug
+     - C++ is compiled; Java compiles to bytecode, then JVM interprets it
+
+Q2.  What happens during compilation of a C++ program step by step?
+     Asked at: Amazon, Microsoft, Google
+A:   4 stages:
+     1. Preprocessing  — processes #include, #define, macros → expanded .cpp
+     2. Compilation    — converts .cpp to assembly (.s file)
+     3. Assembly       — converts assembly to object code (.o / .obj)
+     4. Linking        — combines .o files + libraries → final executable
+     Run manually: g++ -E (preprocess), -S (compile), -c (assemble), then link
+
+Q3.  What is the difference between #include <file> and #include "file"?
+     Asked at: TCS, Wipro, L&T Infotech
+A:   <file>   → searches system/standard library include directories only
+     "file"   → searches current directory FIRST, then system directories
+     Rule: use <> for standard headers (#include <iostream>),
+           use "" for your own project headers (#include "myheader.h")
+
+Q4.  What is a header guard? Why is it needed?
+     Asked at: L&T Infotech, Persistent
+A:   A header guard prevents a header file from being included more than once
+     in the same translation unit, which would cause redefinition errors.
+     Syntax:
+         #ifndef MY_HEADER_H
+         #define MY_HEADER_H
+         // header content
+         #endif
+     Modern alternative: #pragma once (non-standard but universally supported)
+     Without it: if two files both include the same header, redefinition occurs.
+
+Q5.  What is the difference between declaration and definition?
+     Asked at: TCS, Wipro, Infosys
+A:   Declaration: tells the compiler a name and its type EXIST — no memory
+     allocated yet. Example: extern int x;  or  void foo(int);
+     Definition: allocates memory / provides the actual body.
+     Example: int x = 5;  or  void foo(int a) { return a; }
+     Rule: you can declare many times, but define ONLY ONCE (One Definition Rule)
+
+Q6.  What does return 0 mean in main()?
+     Asked at: TCS, Wipro, Infosys
+A:   return 0 signals SUCCESSFUL termination to the operating system.
+     Non-zero values indicate error codes (e.g., return 1 → general error).
+     In C++, if you omit the return statement in main(), the compiler implicitly
+     inserts return 0. This is unique to main() — other functions don't get this.
+
+Q7.  What is undefined behavior in C++? Give an example.
+     Asked at: Amazon, Microsoft, Google
+A:   Undefined behavior (UB) is code whose outcome is NOT specified by the C++
+     standard. The program may crash, give wrong output, or appear to work —
+     and this can vary by compiler, optimization level, and platform.
+     Common examples:
+     - Signed integer overflow:      int x = INT_MAX; x++;
+     - Out-of-bounds array access:   int a[5]; a[10] = 1;
+     - Null/dangling pointer deref:  int* p = nullptr; *p = 5;
+     - Using uninitialized variable: int x; cout << x;
+     - Modifying a string literal:   char* s = "hi"; s[0] = 'H';
+     UB is dangerous because it can silently corrupt data or work in debug
+     builds but crash in release builds.
+
+Q8.  What is the difference between i++ and ++i? Which is preferred and why?
+     Asked at: TCS, Wipro, Zoho, Amazon
+A:   i++ (post-increment): returns the ORIGINAL value, THEN increments.
+     ++i (pre-increment):  increments FIRST, THEN returns the new value.
+     Example:
+         int i = 5;
+         cout << i++;  // prints 5, then i becomes 6
+         cout << ++i;  // i becomes 7, prints 7
+     In simple loops (for(int i=0; i<n; i++)), both produce identical results
+     because the returned value is discarded.
+     PREFERENCE: ++i is preferred for iterators and objects because i++ creates
+     a temporary copy of the old value, which is unnecessary overhead.
+     For primitives, modern compilers optimize them identically.
+
+Q9.  What is short-circuit evaluation in logical operators?
+     Asked at: Amazon, Microsoft
+A:   Short-circuit means the second operand is NOT evaluated if the result is
+     already determined from the first.
+     && (AND): if left is FALSE → skip right (result is already false)
+     || (OR):  if left is TRUE  → skip right (result is already true)
+     Practical use — safe null check:
+         if (ptr != nullptr && ptr->value > 0)  // ptr->value never runs if ptr is null
+     Trap — side effects may not execute:
+         if (++x > 0 || ++y > 0)  // y may NOT be incremented!
+
+Q10. What is the difference between = and ==?
+     Asked at: TCS, Wipro, Infosys
+A:   = is the ASSIGNMENT operator — stores a value into a variable.
+     == is the EQUALITY COMPARISON — checks if two values are equal, returns bool.
+     Classic bug: if (x = 5) — this ASSIGNS 5 to x (always true since 5 != 0)
+     Correct:     if (x == 5) — this COMPARES x with 5
+     Tip: write constants on the left (Yoda condition) to catch this:
+         if (5 == x) — compiler errors if you accidentally write if (5 = x)
+
+Q11. Explain operator precedence with an example.
+     Asked at: TCS, Wipro, Zoho
+A:   Operator precedence determines which operator is evaluated first in an
+     expression with multiple operators.
+     Example: 2 + 3 * 4 = 14  (not 20) because * > + in precedence.
+     Key order (high → low):
+     () > ! ~ ++ -- > * / % > + - > << >> > < <= >= > == != >
+     & > ^ > | > && > || > ?: > =
+     Always use parentheses to make intent explicit and avoid bugs:
+         int x = (a > b) ? a : b;   // clear and safe
+
+Q12. What is the difference between / and % operators?
+     Asked at: TCS, Wipro, Infosys
+A:   / is division:
+         int: 7 / 2 = 3   (truncates toward zero, integer division)
+         float: 7.0 / 2.0 = 3.5
+     % is modulo (remainder):
+         7 % 2 = 1,   10 % 3 = 1,   -7 % 2 = -1 (sign follows dividend in C++)
+     % only works with INTEGER types — using it on float is a compile error.
+     Common use: even/odd check (n % 2 == 0), cycling through indices (i % n)
+
+Q13. What is integer overflow? How do you prevent it?
+     Asked at: Amazon, Microsoft, Google
+A:   Integer overflow occurs when arithmetic result exceeds the type's range.
+     int range: roughly -2.1 billion to +2.1 billion.
+     INT_MAX + 1 wraps to INT_MIN (undefined behavior for signed integers).
+     Prevention strategies:
+     - Use long long for large values in DSA/competitive programming
+     - Check before operation: if (a > INT_MAX - b) { /* overflow */ }
+     - Use __int128 for very large intermediate values
+     - Use std::numeric_limits<int>::max() to get the max value portably
+     Note: unsigned overflow is DEFINED (wraps modulo 2^N), signed is UB.
+
+Q14. What is the difference between int, long, long long?
+     Asked at: TCS, Wipro, Amazon
+A:   int      → 4 bytes, range: ~-2.1B to +2.1B (guaranteed ≥ 16 bits)
+     long     → at least 4 bytes (4 on Windows 64-bit, 8 on Linux 64-bit)
+     long long → exactly 8 bytes, range: ~-9.2 quintillion to +9.2 quintillion
+     For competitive programming and DSA: ALWAYS use long long when values
+     can exceed 10^9. Many problems give TLE or WA due to int overflow.
+     Quick check: if N > ~2*10^9, use long long.
+
+Q15. When would you use unsigned int over int?
+     Asked at: Dolat Capital, Samsung, Sasken
+A:   Use unsigned int when:
+     - Values are inherently non-negative (array sizes, counts, bit masks)
+     - You need to double the positive range (0 to ~4.2 billion)
+     - Working with bit manipulation (logical right shift behavior is defined)
+     - Interfacing with hardware registers or network protocols
+     WARNING: Mixing signed and unsigned in comparisons is dangerous.
+     Example: int x = -1; unsigned int y = 1; if (x < y) — this is FALSE
+     because -1 is implicitly converted to a very large unsigned number!
+
+Q16. What is the size of int on a 32-bit vs 64-bit system?
+     Asked at: TCS, Wipro, Samsung, Sasken
+A:   int is 4 bytes (32 bits) on BOTH 32-bit and 64-bit systems in C++.
+     The C++ standard guarantees int is AT LEAST 16 bits, but in practice
+     all modern compilers use 4 bytes for int regardless of platform.
+     What changes on 64-bit: long (4 bytes on Windows, 8 bytes on Linux/Mac),
+     pointer size (4 bytes on 32-bit, 8 bytes on 64-bit).
+     Use sizeof(int) to check at runtime.
+
+Q17. What is the auto keyword in C++? When should you use it?
+     Asked at: Amazon, Microsoft, Google
+A:   auto tells the compiler to DEDUCE the type from the initializer expression.
+         auto x = 10;              // x is int
+         auto d = 3.14;            // d is double
+         auto it = vec.begin();    // saves writing std::vector<int>::iterator
+         auto f = [](int x){ return x*2; };  // lambda type
+     WHEN TO USE:
+     - Iterator types (long and verbose)
+     - Lambda variables (type is unnamed)
+     - When the type is obvious from the right-hand side
+     WHEN TO AVOID:
+     - When type is not obvious: auto x = foo(); — reader can't tell what x is
+     - When you need a specific type: auto x = 5; gives int, not long long
+
+Q18. What is the difference between const int x and int const x?
+     Asked at: Amazon, Microsoft, Persistent
+A:   For SIMPLE variables: they are IDENTICAL — both make x a constant integer.
+         const int x = 5;   // x cannot be changed
+         int const x = 5;   // same thing
+     The difference matters with POINTERS:
+         const int* p  — pointer to const int  (value can't change, address can)
+         int* const p  — const pointer to int  (address can't change, value can)
+         const int* const p — both are const
+     Rule: read right-to-left from the variable name:
+     "p is a const pointer to int" vs "p is a pointer to const int"
+
+Q19. What is constexpr? How is it different from const?
+     Asked at: Amazon, Microsoft, Google, Atlassian
+A:   const: the value cannot change after initialization, but it CAN be set
+     at runtime.
+         const int n = getInput();  // OK: runtime constant
+     constexpr: value MUST be known and evaluated at COMPILE TIME.
+         constexpr int SIZE = 10;   // OK: compile-time constant
+         constexpr int bad = getInput(); // ERROR: not compile-time
+     constexpr enables use in:
+     - Array sizes: int arr[SIZE];
+     - Template parameters: template<int N>
+     - switch case labels
+     constexpr functions are evaluated at compile time if inputs are constexpr.
+     In modern C++, prefer constexpr over const for true compile-time constants.
+
+Q20. What is a magic number? Why should you avoid it?
+     Asked at: TCS, Wipro
+A:   A magic number is a raw numeric literal in code with no explanation of
+     what it represents.
+     Bad:   if (status == 3) { ... }   // what does 3 mean?
+            int arr[86400];             // why 86400?
+     Good:  const int LOGGED_IN = 3;
+            constexpr int SECONDS_PER_DAY = 86400;
+     Why avoid:
+     - Reader has no idea what the number means
+     - If the value changes, you must find and update every occurrence
+     - Leads to bugs when one instance is updated but another is missed
+     Solution: always name constants with descriptive names.
+
+------------------------------------------------------------------------
+SECTION 1B — TYPE SYSTEM & CONVERSIONS
+------------------------------------------------------------------------
+
+Q21. What are the storage classes in C/C++? Explain each.
+     Asked at: TCS, Wipro, Infosys, L&T Infotech, Mphasis
+A:   auto     — default for local variables; allocated on stack; destroyed
+                when scope ends. (In C++11+, auto has a new meaning for type
+                deduction — the storage class meaning is deprecated.)
+     register — hint to compiler to store variable in CPU register for speed.
+                Mostly ignored by modern compilers.
+     static   — local: retains value between function calls, lives in data
+                segment. Global: limits visibility to the translation unit.
+     extern   — declares a variable that is defined in ANOTHER translation
+                unit. Used to share globals across files.
+     mutable  — allows a data member of a const object to be modified.
+                Used in caching/lazy evaluation inside const methods.
+
+Q22. What does static mean for a local variable?
+     Asked at: TCS, Wipro, L&T Infotech, Persistent
+A:   A static local variable:
+     - Is initialized ONLY ONCE (first time the function is called)
+     - RETAINS its value between function calls
+     - Lives in the DATA SEGMENT (not the stack)
+     - Is destroyed only when the program ends
+     Example:
+         void counter() {
+             static int count = 0;   // initialized once
+             count++;
+             cout << count;
+         }
+         counter(); // prints 1
+         counter(); // prints 2
+         counter(); // prints 3
+     Use cases: counting calls, singleton pattern, caching expensive results.
+
+Q23. What does static mean for a global variable?
+     Asked at: L&T Infotech, Sasken
+A:   A static global variable has INTERNAL LINKAGE — it is only visible within
+     the translation unit (source file) where it is defined. Other .cpp files
+     cannot access it via extern.
+     Without static: the global is visible to all translation units (external
+     linkage), which can cause name collisions across files.
+     Example:
+         // file1.cpp
+         static int counter = 0;  // only file1.cpp can see this
+     Modern C++ prefers anonymous namespaces for this purpose:
+         namespace { int counter = 0; }  // same effect, more idiomatic
+
+Q24. What is variable shadowing? Give an example.
+     Asked at: Zoho, Persistent
+A:   Variable shadowing occurs when a variable in an inner scope has the same
+     name as a variable in an outer scope. The inner one "hides" the outer one
+     within that scope.
+         int x = 10;
+         {
+             int x = 20;  // shadows outer x
+             cout << x;   // prints 20
+         }
+         cout << x;       // prints 10 (outer x restored)
+     Risks: accidental modification of the wrong variable, confusion.
+     Many compilers warn about this with -Wshadow flag.
+     Best practice: use distinct names, especially for member variables
+     vs local variables.
+
+Q25. What is a namespace? How does it help avoid name collisions?
+     Asked at: L&T Infotech, Persistent, Nagarro
+A:   A namespace groups related identifiers under a named scope to prevent
+     naming conflicts across large codebases or multiple libraries.
+         namespace MathLib {
+             int add(int a, int b) { return a + b; }
+         }
+         namespace StringLib {
+             int add(string a, string b) { ... }
+         }
+         MathLib::add(3, 4);    // unambiguous
+         StringLib::add("x","y");
+     std:: is the standard library namespace.
+     using namespace std; — brings all std names into scope (convenient but
+     risky in large codebases — can cause collisions).
+
+Q26. What is an anonymous namespace? How is it different from static?
+     Asked at: Advanced C++ roles, Sasken
+A:   An anonymous namespace restricts identifiers to the current translation
+     unit, giving them internal linkage — exactly like static for globals.
+         namespace {
+             int helper = 0;   // only visible in this file
+             void helperFn() { }
+         }
+     Differences from static:
+     - Applies to ALL declarations in the block (functions, classes, types)
+     - static only works on variables and functions, NOT type declarations
+     - Anonymous namespace is the PREFERRED modern C++ approach
+     Both prevent external linkage; anonymous namespace is more versatile.
+
+Q27. What are the 4 types of casts in C++?
+     Asked at: L&T Infotech, Persistent, Nagarro, Zoho
+A:   1. static_cast — safe compile-time cast between compatible types
+           double d = static_cast<double>(5);  // int → double
+           No runtime check. Most common and safest.
+     2. dynamic_cast — runtime polymorphic cast (needs virtual functions)
+           Derived* d = dynamic_cast<Derived*>(basePtr);
+           Returns nullptr if cast fails (for pointers). Costs RTTI lookup.
+     3. const_cast — adds or removes const/volatile qualifiers
+           const_cast<int*>(constPtr)  // remove const (use carefully!)
+     4. reinterpret_cast — low-level bit reinterpretation, unsafe
+           int* p = reinterpret_cast<int*>(somePtr);  // unsafe!
+     Prefer static_cast over C-style (Type)x casts for clarity and safety.
+
+Q28. When would you use static_cast vs reinterpret_cast?
+     Asked at: Persistent, Nagarro, Samsung
+A:   static_cast: use for logically meaningful, type-safe conversions
+     - int ↔ double, int ↔ float, base* ↔ derived* (no runtime check),
+       explicit constructor conversions
+     - Compiler checks that the conversion makes sense
+     reinterpret_cast: use for low-level bit reinterpretation with NO
+     type checking
+     - Converting between pointer types (void* ↔ int*)
+     - Hardware register access in embedded systems
+     - Serialization tricks
+     Rule: if static_cast compiles, prefer it. Use reinterpret_cast only when
+     you KNOW what you're doing at the bit level.
+
+Q29. What is dynamic_cast? What is RTTI? What is its cost?
+     Asked at: Persistent, Nagarro, Advanced C++ roles
+A:   dynamic_cast performs SAFE RUNTIME downcasting in polymorphic class
+     hierarchies. It checks at runtime whether the cast is valid.
+         Base* b = new Derived();
+         Derived* d = dynamic_cast<Derived*>(b);  // succeeds, returns valid ptr
+         Other* o = dynamic_cast<Other*>(b);       // fails, returns nullptr
+     RTTI (Run-Time Type Information): metadata the compiler attaches to
+     every polymorphic object (class with at least one virtual function).
+     dynamic_cast uses RTTI to verify the actual runtime type.
+     Cost: small runtime overhead (vtable lookup + type comparison).
+     Can be disabled with -fno-rtti for performance-critical code.
+
+Q30. What is const_cast? When is it safe to use?
+     Asked at: Persistent, Nagarro
+A:   const_cast removes or adds const/volatile qualifiers from a variable.
+         void print(char* str);  // legacy function, doesn't modify str
+         const char* msg = "hello";
+         print(const_cast<char*>(msg));  // safe: we know print won't modify it
+     SAFE to use: when the original object was NOT declared const and you
+     need to pass it to a legacy API that takes a non-const pointer.
+     UNSAFE / UNDEFINED BEHAVIOR: if you use const_cast to actually MODIFY
+     an object that was originally declared const:
+         const int x = 5;
+         *const_cast<int*>(&x) = 10;  // UB: modifying a truly const object
+     Use with extreme care — it's mostly a workaround for legacy code.
+
+Q31. What is implicit type conversion? What is explicit?
+     Asked at: TCS, Wipro, L&T Infotech
+A:   Implicit conversion: compiler automatically converts one type to another
+     without programmer instruction.
+         int x = 5;
+         double d = x;  // int implicitly promoted to double
+         bool b = x;    // non-zero → true
+     Explicit conversion: programmer manually specifies the conversion.
+         double d = 3.14;
+         int x = static_cast<int>(d);  // explicit cast, truncates to 3
+     Dangers of implicit: narrowing (data loss), sign issues.
+     In class design, mark constructors explicit to prevent unintended implicit
+     conversions:
+         explicit MyClass(int x) { }  // prevents MyClass obj = 5;
+
+Q32. What is integer promotion in C?
+     Asked at: Sasken, Embedded roles
+A:   Integer promotion is the automatic conversion of small integer types
+     (char, short, bool) to int (or unsigned int) before arithmetic operations.
+     This happens because CPUs work most efficiently with int-sized operands.
+     Example:
+         char a = 100, b = 200;
+         int result = a + b;  // a and b are promoted to int before adding
+     Without promotion, char arithmetic could overflow unpredictably.
+     This means: sizeof('A') is 4 (int), not 1 (char) in C++.
+
+Q33. What is the difference between signed and unsigned arithmetic?
+     Asked at: Dolat Capital, Samsung, Sasken
+A:   Signed arithmetic: numbers can be positive or negative. Overflow is
+     UNDEFINED BEHAVIOR (compilers assume it never happens for optimization).
+     Unsigned arithmetic: numbers are always non-negative. Overflow WRAPS
+     AROUND modulo 2^N — this is DEFINED behavior.
+         unsigned char x = 255;
+         x++;  // wraps to 0 (defined)
+         signed char y = 127;
+         y++;  // undefined behavior (in practice wraps to -128 on most systems)
+     In bit manipulation, always prefer unsigned to avoid UB.
+
+Q34. What happens when you compare signed and unsigned integers?
+     Asked at: Dolat Capital, Sasken, HFT firms
+A:   This is a DANGEROUS implicit conversion! The signed integer is converted
+     to unsigned before comparison.
+     Example:
+         int x = -1;
+         unsigned int y = 1;
+         if (x < y) cout << "x is smaller";  // DOES NOT PRINT!
+     Because -1 as unsigned int becomes 4294967295 (2^32 - 1), which is > 1.
+     This is a notorious source of bugs in C/C++.
+     Fix: always cast explicitly or use same signedness:
+         if ((unsigned int)x < y)  // or redesign to avoid mixing
+
+Q35. What is narrowing conversion? How does C++11 handle it?
+     Asked at: Persistent, Nagarro, Google, Atlassian
+A:   Narrowing conversion is when a value is converted to a type that cannot
+     represent all values of the original type, potentially losing data.
+     Examples: double → int (decimal truncation), int → char (range loss),
+               long long → int (large values truncated)
+     C++11 {} uniform initialization FORBIDS narrowing:
+         int x = 3.14;   // OK (C-style): x = 3, silently truncates
+         int x{3.14};    // ERROR: narrowing conversion not allowed
+     This catches data loss bugs at COMPILE TIME rather than silently at runtime.
+
+Q36. What is std::numeric_limits? When would you use it?
+     Asked at: Dolat Capital, Goldman Sachs, Quant roles
+A:   std::numeric_limits<T> (from <limits>) provides compile-time constants
+     for the properties of arithmetic types.
+     Common uses:
+         numeric_limits<int>::max()      // 2147483647
+         numeric_limits<int>::min()      // -2147483648
+         numeric_limits<double>::infinity()
+         numeric_limits<float>::epsilon()  // smallest difference from 1.0
+     Use cases:
+     - Initialize min/max trackers: int maxSoFar = numeric_limits<int>::min();
+     - Overflow checks
+     - Comparing floats with precision awareness
+     Preferred over magic numbers like INT_MAX or FLT_EPSILON.
+
+Q37. What is NaN and Inf in floating point? How do you check for them?
+     Asked at: Dolat Capital, ICICI Securities, Quant roles
+A:   NaN (Not a Number): result of invalid operations like 0.0/0.0 or sqrt(-1).
+     NaN is UNORDERED — it is not equal to anything, including ITSELF.
+         double x = 0.0 / 0.0;
+         cout << (x == x);  // prints 0 (false)! — NaN property
+     Inf (Infinity): result of overflow like 1.0/0.0.
+         double y = 1.0 / 0.0;  // positive infinity
+     Checking (from <cmath>):
+         std::isnan(x)   // true if x is NaN
+         std::isinf(y)   // true if y is +Inf or -Inf
+         std::isfinite(z) // true if z is neither NaN nor Inf
+     NEVER check with ==: if (x == NaN) will always be false!
+
+Q38. What is the difference between float and double precision?
+     Asked at: Dolat Capital, Edelweiss, Quant roles
+A:   float  — 32-bit IEEE 754, ~7 significant decimal digits, range ±3.4×10^38
+     double — 64-bit IEEE 754, ~15-16 significant decimal digits, range ±1.8×10^308
+     Example of precision difference:
+         float  f = 1.0f / 3.0f;  // ~0.3333333 (7 digits)
+         double d = 1.0 / 3.0;    // ~0.333333333333333 (15 digits)
+     Use double by default for scientific computing. Use float only when memory
+     or GPU performance (SIMD vectorization) matters.
+
+Q39. What is epsilon comparison for floats? Why not use == for floats?
+     Asked at: Dolat Capital, Goldman Sachs, Quant roles
+A:   Floating-point numbers have limited binary precision. Operations like
+     0.1 + 0.2 give 0.30000000000000004, NOT exactly 0.3.
+     So: if (0.1 + 0.2 == 0.3) is FALSE in C++!
+     Fix — use epsilon comparison:
+         bool equal = fabs(a - b) < 1e-9;  // for double
+         bool equal = fabs(a - b) < 1e-6f; // for float
+     For values of varying magnitude, use RELATIVE epsilon:
+         bool equal = fabs(a - b) < 1e-9 * max(fabs(a), fabs(b));
+     Epsilon (std::numeric_limits<double>::epsilon()) is the smallest double
+     such that 1.0 + epsilon != 1.0.
+
+Q40. What is endianness? What is little-endian vs big-endian?
+     Asked at: Sasken, Samsung, Networking roles
+A:   Endianness refers to the ORDER in which bytes of a multi-byte value are
+     stored in memory.
+     Little-endian: LEAST significant byte stored FIRST (lowest address)
+         0x12345678 stored as: 78 56 34 12
+         Used by: x86, x86-64 (Intel, AMD — most modern CPUs)
+     Big-endian: MOST significant byte stored FIRST
+         0x12345678 stored as: 12 34 56 78
+         Used by: network protocols (TCP/IP), some RISC architectures
+     Why it matters: network byte order is big-endian; use htons()/htonl()
+     to convert when writing portable network code.
+
+Q41. How do you check endianness of a machine in C?
+     Asked at: Sasken, Samsung
+A:   Classic trick using a union or pointer cast:
+     Method 1 (union):
+         union { int i; char c; } u;
+         u.i = 1;
+         if (u.c == 1) cout << "little-endian";
+         else cout << "big-endian";
+     Method 2 (pointer cast):
+         int x = 1;
+         char* p = (char*)&x;
+         if (*p == 1) cout << "little-endian"; // LSB is at lowest address
+     Explanation: if the first byte (lowest address) holds the value 1 (LSB),
+     it's little-endian. If it holds 0, it's big-endian.
+
+------------------------------------------------------------------------
+SECTION 1C — ADDITIONAL THEORY
+------------------------------------------------------------------------
+
+Q42. What is the difference between signed and unsigned right shift?
+     Asked at: Samsung, Dolat Capital, Sasken
+A:   Unsigned right shift (>> on unsigned type): always fills vacated bits
+     from the left with 0. Called LOGICAL shift.
+         unsigned int x = 0x80000000;
+         x >> 1;  // becomes 0x40000000 (fills with 0)
+     Signed right shift (>> on signed int): IMPLEMENTATION-DEFINED in C++
+     standard. On most compilers (GCC, Clang, MSVC), it performs ARITHMETIC
+     shift — fills with the SIGN BIT (preserving sign).
+         int x = -8;
+         x >> 1;  // -4 on most systems (arithmetic shift)
+     Recommendation: for bit manipulation, always use UNSIGNED types to
+     get predictable logical shift behavior.
+
+Q43. What is type promotion in C++? What happens when you add char + int?
+     Asked at: TCS, L&T Infotech, Wipro
+A:   Type promotion is the automatic conversion of smaller types to larger types
+     before arithmetic operations to avoid overflow and match CPU word size.
+     Rule — "Usual Arithmetic Conversions":
+     char + int   → both promoted to int → result is int
+     int + float  → int promoted to float → result is float
+     float + double → float promoted to double → result is double
+     Example:
+         char c = 'A';  // ASCII 65
+         int x = c + 1;  // c promoted to int (65), result is 66 ('B')
+     This is why sizeof('A') is 4 (int after promotion) in C, but 1 in C++.
+
+Q44. What is the difference between NaN and Infinity in floating point?
+     How do you check for them in C++?
+     Asked at: Dolat Capital, HFT firms
+A:   NaN (Not a Number):
+     - Produced by: 0.0/0.0, sqrt(-1.0), log(-1.0), 0.0 * Inf
+     - UNORDERED: NaN != NaN is TRUE (the only value not equal to itself)
+     - Any arithmetic involving NaN produces NaN (propagates)
+     Infinity:
+     - Produced by: 1.0/0.0 (positive), -1.0/0.0 (negative), overflow
+     - Ordered: Inf > any finite value, -Inf < any finite value
+     - Inf + Inf = Inf, Inf - Inf = NaN, 1.0 / Inf = 0.0
+     Checks (#include <cmath>):
+         std::isnan(x)    — true if NaN
+         std::isinf(x)    — true if +Inf or -Inf
+         std::isfinite(x) — true if neither NaN nor Inf
+
+Q45. What does the comma operator do in C++? Give a tricky example.
+     Asked at: Google, Zoho
+A:   The comma operator evaluates both operands LEFT TO RIGHT and returns
+     the value of the RIGHTMOST operand. Has the lowest precedence.
+     Example:
+         int x = (3, 5);      // x = 5 (3 is evaluated but discarded)
+         int a = 1, b = 2;
+         int c = (a++, b++);  // evaluates a++, then b++, c = 2 (old b)
+     Tricky: int arr[5]; int i = (arr[1]=10, arr[2]=20, 3); // i = 3
+     Common use: in for loop initializers to initialize multiple variables:
+         for (int i=0, j=10; i < j; i++, j--) { }  // the i++, j-- uses comma
+     The comma in function arguments is NOT the comma operator.
+
+Q46. What is integral promotion? What is the "usual arithmetic conversion"?
+     Asked at: Sasken, Samsung
+A:   Integral Promotion: char, short, bool are promoted to int (or unsigned int)
+     before any arithmetic. This happens automatically by the compiler.
+     "Usual Arithmetic Conversion" (UAC): when an operation involves two
+     different arithmetic types, both are converted to a COMMON TYPE:
+     1. If either is long double → both become long double
+     2. Else if either is double → both become double
+     3. Else if either is float → both become float
+     4. Else: apply integral promotion, then:
+        - If same type → done
+        - If same signedness → smaller type converted to larger
+        - Otherwise → complex signed/unsigned rules apply
+     Key takeaway: arithmetic in C++ always happens at int size or larger.
+
+Q47. What is the difference between char, signed char, and unsigned char?
+     Are they all distinct types?
+     Asked at: Samsung, Sasken, Embedded roles
+A:   YES — they are THREE DISTINCT types in C++, even though they all use 1 byte.
+     char          — signedness is IMPLEMENTATION-DEFINED (signed on most
+                     x86 systems, unsigned on some ARM systems)
+     signed char   — explicitly signed, range: -128 to +127
+     unsigned char — explicitly unsigned, range: 0 to 255
+     This matters for:
+     - Portable character processing: don't assume char is signed
+     - Bit manipulation: use unsigned char to avoid sign extension
+     - Function overloading: char, signed char, unsigned char can have
+       different overloads
+     Rule: for raw byte manipulation, always use unsigned char or std::byte.
+
+Q48. Can you have a reference to a reference in C++? What about pointer to reference?
+     Asked at: Advanced C++ roles, Google
+A:   Reference to reference: NOT DIRECTLY POSSIBLE in C++.
+         int& & rr = x;  // ILLEGAL — compiler error
+     However, REFERENCE COLLAPSING rules in templates allow T& where T is
+     already a reference — used internally for perfect forwarding.
+     Pointer to reference: also NOT ALLOWED.
+         int& x = y;
+         int& * p = &x;  // ILLEGAL — cannot have a pointer to a reference
+     Reasoning: a reference is not an object — it has no address.
+     You CAN have a reference to a pointer:
+         int* p = &x;
+         int*& rp = p;  // reference to pointer — valid
+
+Q49. What is std::numeric_limits<int>::max() and when would you use it?
+     Asked at: Amazon, Microsoft, Competitive programming roles
+A:   std::numeric_limits<int>::max() returns the maximum value an int can hold:
+     2147483647 (2^31 - 1).
+     Use cases:
+     - Initialize "minimum so far" trackers:
+         int minSoFar = numeric_limits<int>::max();
+     - Check if adding two numbers would overflow:
+         if (a > numeric_limits<int>::max() - b) { /* overflow */ }
+     - As sentinel/infinity values in graph algorithms (Dijkstra, BFS)
+     Better than using INT_MAX (#include <climits>) because it works
+     generically with templates: numeric_limits<T>::max() for any type T.
+
+Q50. What is the difference between {}-initialization and ()-initialization?
+     What is narrowing conversion?
+     Asked at: Google, Atlassian, Modern C++ roles
+A:   ()-initialization: allows narrowing (data loss without error).
+         int x(3.14);   // OK: x = 3, decimal silently truncated
+         int x(300);    // OK even if assigning to char later
+     {}-initialization (uniform init, C++11): FORBIDS narrowing — compile error.
+         int x{3.14};   // ERROR: narrowing from double to int
+         int x{300};    // OK (300 fits in int)
+         char c{300};   // ERROR: 300 doesn't fit in char (-128..127)
+     Narrowing conversion: any conversion where the target type cannot represent
+     all values of the source type.
+     Recommendation: prefer {} for initialization — catches data loss at compile
+     time. Use () only when calling constructors with deliberate type coercion.
+
+Q51. What is a magic number? (Covered in Q20 — same question, different bank)
+     Additional point: In embedded/systems programming, magic numbers
+     also refer to file format identifiers (e.g., ELF files start with 0x7F454C46).
+     These are acceptable magic numbers with documented purposes.
+
+
+================================================================================
+PART 2 — CONTROL FLOW (CONDITIONALS & LOOPS)
+================================================================================
+     SECTION 2A — CONDITIONALS (9 Questions)
+     SECTION 2B — LOOPS BASIC (10 Questions)
+     SECTION 2C — LOOPS ADVANCED PERFORMANCE (3 Questions)
+================================================================================
+
+------------------------------------------------------------------------
+SECTION 2A — CONDITIONALS
+------------------------------------------------------------------------
+
+Q52. What is the difference between if-else and switch?
+     When would you prefer switch over if-else?
+     Asked at: TCS, Wipro, Zoho, Infosys
+A:   if-else: works with ANY condition — ranges, floats, complex booleans,
+              string comparisons (via ==), runtime-computed values.
+     switch:  works ONLY with integral types (int, char, enum) and requires
+              COMPILE-TIME CONSTANT case labels. Cannot use float or string.
+     Prefer switch when:
+     - Many discrete integer/enum cases (cleaner, more readable)
+     - Compiler may optimize as a jump table (O(1) lookup vs O(N) if-else chain)
+     Prefer if-else when:
+     - Condition involves ranges: if (x > 0 && x < 100)
+     - Conditions involve floats, strings, or complex logic
+     - Cases are not known at compile time
+
+Q53. What is fall-through in switch? How do you prevent it?
+     Asked at: TCS, Wipro, Infosys
+A:   Fall-through means execution "falls" into the NEXT case without stopping,
+     because break was omitted.
+         switch(x) {
+             case 1: cout << "one";  // no break — falls through!
+             case 2: cout << "two"; break;
+         }
+     If x == 1: prints "onetwo" (both cases execute).
+     Prevention: always add break; at the end of each case.
+     Intentional fall-through: useful when multiple cases share the same action:
+         case 'a': case 'e': case 'i': case 'o': case 'u':
+             cout << "vowel"; break;
+     C++17: use [[fallthrough]] attribute to document intent and silence warnings.
+
+Q54. Can switch work with strings in C++? Why or why not?
+     Asked at: TCS, Wipro, Zoho
+A:   NO. switch requires COMPILE-TIME INTEGER CONSTANTS for case labels.
+     std::string is a class object, not an integral type — it has no integer
+     value at compile time that can be used as a case label.
+     Alternative: use if-else with string ==, or use an unordered_map to map
+     strings to integers and switch on the integer:
+         unordered_map<string, int> mp = {{"add",1}, {"sub",2}};
+         switch(mp[input]) {
+             case 1: ... case 2: ...
+         }
+
+Q55. What is a ternary operator? How is it different from if-else?
+     Asked at: TCS, Wipro, Capgemini
+A:   Ternary (conditional) operator: condition ? value_if_true : value_if_false
+         int max = (a > b) ? a : b;
+     Differences from if-else:
+     - Ternary is an EXPRESSION (returns a value), if-else is a STATEMENT
+     - Ternary can be used inline: cout << (x > 0 ? "pos" : "neg");
+     - Ternary cannot execute multiple statements in each branch
+     - Both branches of ternary must have compatible types
+     Nested ternary is possible but hard to read — avoid beyond one level.
+
+Q56. What is short-circuit evaluation? How does it affect conditionals?
+     Asked at: Amazon, Microsoft, Zoho
+A:   && (AND): if left is FALSE → right side is NOT evaluated (result is false)
+     || (OR):  if left is TRUE  → right side is NOT evaluated (result is true)
+     Safety use:
+         if (ptr != nullptr && ptr->data > 0)  // ptr never dereferenced if null
+         if (index >= 0 && index < n && arr[index] == x)  // safe bounds check
+     Side-effect trap:
+         if (++i > 0 || ++j > 0)  // j may NOT be incremented!
+         if (a() && b())          // b() may not be called if a() returns false
+     Always be aware of short-circuiting when function calls with side effects
+     appear in conditions.
+
+Q57. What is the difference between = and == in a conditional? Why is if(x=5) a bug?
+     Asked at: TCS, Wipro, Infosys
+A:   = is ASSIGNMENT: if (x = 5) assigns 5 to x, then evaluates x as the
+     condition. Since 5 is non-zero, this is ALWAYS TRUE — a logical bug.
+     == is EQUALITY CHECK: if (x == 5) tests whether x equals 5.
+     Defense techniques:
+     1. Enable compiler warning: -Wall catches this
+     2. Yoda condition: if (5 == x) — if you write if (5 = x) → compile error
+     3. Use === in languages that support strict equality
+     This is one of the most common beginner bugs in C/C++.
+
+Q58. Can you use a float or double in a switch statement? Why?
+     Asked at: TCS, Wipro
+A:   NO. switch requires an INTEGRAL type (int, char, short, long, enum, bool).
+     Floats and doubles are NOT integral — they cannot be used as switch
+     expression or case labels.
+     Reason: case values must be compile-time integer constants for the compiler
+     to generate a jump table or comparison chain. Floating-point equality is
+     unreliable due to precision issues, so the language forbids this.
+     Alternative: convert to int (losing precision) or use if-else with
+     epsilon comparisons for float ranges.
+
+Q59. What happens if you forget break in a switch case?
+     What is intentional fall-through and when is it useful?
+     Asked at: TCS, Zoho, Amazon
+A:   Without break: execution continues into the NEXT case block, regardless of
+     whether its value matches.
+         case 1: doOne();  // falls through to case 2!
+         case 2: doTwo(); break;
+     If x == 1: both doOne() and doTwo() are called — usually a bug.
+     Intentional fall-through uses:
+     1. Multiple values, same action:
+            case 'A': case 'B': case 'C': handleABC(); break;
+     2. Staggered actions (rare):
+            case 3: doExtraForThree();  // intentionally falls through
+            case 2: doForTwoAndThree(); break;
+     In C++17, add [[fallthrough]]; to document intent and suppress warnings.
+
+Q60. What is a dangling else problem? How does C++ resolve it?
+     Asked at: Amazon, Microsoft, Adobe
+A:   When nested ifs appear without braces, it's ambiguous which if the else
+     pairs with:
+         if (a)
+             if (b) cout << "both";
+         else cout << "?";  // which if does this belong to?
+     C++ Rule: else binds to the NEAREST preceding unmatched if.
+     So the else pairs with if(b), NOT if(a).
+     If a=false, nothing prints. If a=true and b=false, "?" prints.
+     Fix: ALWAYS use braces {} to make intent explicit:
+         if (a) {
+             if (b) cout << "both";
+         } else cout << "not a";
+
+------------------------------------------------------------------------
+SECTION 2B — LOOPS (BASIC)
+------------------------------------------------------------------------
+
+Q61. What is the difference between for, while, and do-while loops?
+     Asked at: TCS, Wipro, Infosys, Zoho
+A:   for loop: best when iterations are KNOWN upfront; compact init/check/update
+         for (int i = 0; i < n; i++) { }
+     while loop: best when iterations depend on a CONDITION checked before entry.
+         while (condition) { }  // might execute 0 times
+     do-while loop: condition checked AFTER body — executes AT LEAST ONCE.
+         do { } while (condition);
+     When to use do-while:
+     - Input validation: keep asking until valid input received
+         do { cin >> x; } while (x < 0);  // execute first, validate after
+     Rule of thumb: for = known count, while = unknown count (check first),
+     do-while = must run at least once.
+
+Q62. What is the difference between break and continue?
+     Asked at: TCS, Wipro, Infosys, Capgemini
+A:   break:    exits the INNERMOST loop or switch entirely and continues
+               after the loop/switch.
+     continue: skips the REST of the CURRENT ITERATION and jumps to the
+               next iteration (for: goes to update step; while/do-while:
+               re-evaluates condition).
+     Example:
+         for (int i = 0; i < 6; i++) {
+             if (i == 2) continue;  // skip i=2
+             if (i == 5) break;     // stop at i=5
+             cout << i << " ";
+         }
+     Output: 0 1 3 4    (2 skipped, stops before 5)
+
+Q63. What is an infinite loop? How do you create one intentionally? How to exit?
+     Asked at: TCS, Wipro, Amazon
+A:   An infinite loop has no natural termination — it runs until externally
+     interrupted.
+     Creation:
+         while (true) { }    // most readable
+         for (;;) { }        // common C idiom
+         while (1) { }       // C-style
+     Exit methods:
+     - break inside the loop (condition-based exit)
+     - return (exits the entire function)
+     - throw an exception
+     - std::exit(0) or std::terminate()
+     Use cases: event loops, server listener loops, embedded system main loops,
+     game loops, REPL environments.
+
+Q64. Why does do-while execute at least once?
+     Give a real use-case where do-while is the right choice.
+     Asked at: TCS, Wipro, Infosys
+A:   In a do-while loop, the BODY executes FIRST, and the condition is checked
+     AFTER each iteration. So the first execution is unconditional.
+         do {
+             cout << "Enter password: ";
+             cin >> password;
+         } while (password != correct);
+     Real use cases:
+     - Input validation (must read input at least once before checking)
+     - Menu systems (must display menu at least once)
+     - Retry-on-failure logic (attempt the action, then check success)
+     Compare: while(condition) might never execute if condition is false initially;
+     do-while always runs the body at least once.
+
+Q65. What is the range-based for loop? How does it work internally?
+     Asked at: Amazon, Microsoft, Google
+A:   Introduced in C++11 for clean container iteration:
+         for (int x : vec) { cout << x; }
+         for (auto& x : vec) { x *= 2; }  // modify via reference
+     Internal expansion by compiler:
+         auto __begin = vec.begin();
+         auto __end = vec.end();
+         for (; __begin != __end; ++__begin) {
+             int x = *__begin;
+             // loop body
+         }
+     Requirements: the object must provide begin() and end() methods (or
+     free functions std::begin()/std::end()). Works with arrays, STL containers,
+     strings, and custom types implementing the iterator interface.
+
+Q66. What is the time complexity of a single loop? A nested loop?
+     Asked at: TCS, Wipro, Amazon
+A:   Single loop over N elements: O(N)
+         for (int i = 0; i < n; i++) { O(1) work }  → O(N)
+     Nested loop (two levels over N): O(N^2)
+         for (int i = 0; i < n; i++)
+             for (int j = 0; j < n; j++) { O(1) work }  → O(N^2)
+     Nested with different bounds:
+         for (int i = 0; i < n; i++)
+             for (int j = i; j < n; j++) { }  → O(N^2 / 2) = O(N^2)
+     Logarithmic inner: O(N log N):
+         for (int i = 0; i < n; i++)
+             for (int j = 1; j < n; j *= 2) { }  → O(N log N)
+     Rule: multiply complexities of nested independent loops.
+
+Q67. What is loop invariant? How does it help prove loop correctness?
+     Asked at: Amazon, Microsoft, Google
+A:   A loop invariant is a property/condition that holds TRUE before the loop,
+     at the start of EVERY iteration, and after the loop terminates.
+     Proof structure (3 steps):
+     1. Initialization: show the invariant is true BEFORE the first iteration
+     2. Maintenance: show that if it's true at iteration start, it's true after
+     3. Termination: at loop end, invariant + termination condition → correctness
+     Example — finding max in array:
+         Invariant: "max contains the maximum of arr[0..i-1]"
+         Before loop (i=0): trivially true (empty range)
+         Maintenance: if max holds for arr[0..i-1], after checking arr[i],
+         max holds for arr[0..i]
+         Termination: at i=n, max is maximum of arr[0..n-1] ✓
+     Loop invariants form the basis of formal algorithm correctness proofs.
+
+Q68. What is the difference between pre-increment (++i) and post-increment (i++)
+     in a loop condition? Does it matter for performance?
+     Asked at: TCS, Wipro, Amazon, Adobe
+A:   In simple loop counters:
+         for (int i = 0; i < n; ++i)  vs  for (int i = 0; i < n; i++)
+     For PRIMITIVES (int, char, etc.): NO performance difference — modern
+     compilers optimize both identically at -O1 or higher.
+     For ITERATORS and OBJECTS: ++i is PREFERRED because:
+     - i++ creates a TEMPORARY COPY of the old value (needs extra object)
+     - ++i increments in-place and returns a reference — no copy needed
+     - For complex iterators (like std::list::iterator), this copy is non-trivial
+     As a best practice, always write ++i in loops — communicates intent and
+     is never slower.
+
+Q69. Can you modify the loop variable inside a for loop body? What are the risks?
+     Asked at: TCS, Wipro
+A:   YES, you CAN — C++ allows it. But it's risky and usually a bad practice.
+     Example (dangerous):
+         for (int i = 0; i < n; i++) {
+             if (condition) i += 2;  // skips iterations!
+         }
+     Risks:
+     - Off-by-one errors: hard to reason about which iterations execute
+     - Skipping or double-processing elements
+     - Infinite loops if you accidentally reset i to 0
+     - Confusing to readers (loop update step + body modification)
+     Better alternatives: use while loop (makes variable control explicit),
+     or use flags/counters as separate variables inside the loop.
+
+Q70. What is an off-by-one error? Give an example in a loop.
+     Asked at: Amazon, Microsoft, Adobe
+A:   Off-by-one (OOB) errors occur when a loop runs one time too many or too
+     few — usually from wrong boundary condition (< vs <=).
+     Example 1 — out-of-bounds:
+         int arr[5] = {1,2,3,4,5};
+         for (int i = 0; i <= 5; i++)  // WRONG: i=5 is out of bounds
+         for (int i = 0; i < 5; i++)   // CORRECT
+     Example 2 — missing first element:
+         for (int i = 1; i < n; i++)   // misses arr[0]
+     Example 3 — string null terminator:
+         char s[10] = "hello";
+         for (int i = 0; i <= 10; i++) s[i] = 0;  // WRONG: i=10 is UB
+     Test strategy: always check loop behavior with n=0 and n=1 as edge cases.
+
+------------------------------------------------------------------------
+SECTION 2C — ADVANCED LOOPS (PERFORMANCE)
+------------------------------------------------------------------------
+
+Q71. What is branch prediction? How can unpredictable branches hurt performance?
+     Asked at: Dolat Capital, HFT firms, Samsung, Sasken
+A:   Modern CPUs use BRANCH PREDICTION to guess which path (if or else) will
+     execute and pre-load instructions speculatively. If the prediction is WRONG:
+     1. The speculatively executed instructions are discarded
+     2. The pipeline is flushed (~15-20 cycles wasted)
+     For PREDICTABLE branches (e.g., always-false bounds checks), the predictor
+     achieves near-100% accuracy — minimal cost.
+     For RANDOM/UNPREDICTABLE branches (e.g., checking unsorted random data),
+     misprediction rate can be ~50% — massive performance hit in tight loops.
+     Fix: sort data to make branches predictable; use branchless techniques:
+         // Branchless max (no branch):
+         int max = a - ((a - b) & ((a - b) >> 31));
+
+Q72. What is the likely/unlikely hint in GCC? (__builtin_expect)
+     Asked at: Dolat Capital, HFT firms
+A:   __builtin_expect tells the compiler which branch is the "hot" (likely)
+     path, so it places that path inline and puts the cold path in a jump.
+         if (__builtin_expect(ptr == nullptr, 0)) {  // 0 = unlikely (false)
+             handleError();
+         }
+         if (__builtin_expect(x > 0, 1)) {  // 1 = likely (true)
+             doNormalPath();
+         }
+     C++20 introduced standard attributes: [[likely]] and [[unlikely]]:
+         if (x > 0) [[likely]] { doNormalPath(); }
+     Benefits: better instruction cache usage, CPU pipeline optimization.
+     Use when you KNOW from profiling that one branch dominates (>95% of cases).
+
+Q73. What is loop unrolling? When does the compiler do it automatically?
+     Asked at: Dolat Capital, Sasken, Samsung
+A:   Loop unrolling reduces loop overhead by expanding multiple iterations
+     into sequential code, reducing branch checks and enabling better
+     instruction-level parallelism.
+     Manual unroll:
+         // Original:  for (int i=0; i<4; i++) a[i] *= 2;
+         // Unrolled:  a[0]*=2; a[1]*=2; a[2]*=2; a[3]*=2;
+     Benefits:
+     - Fewer loop condition checks and branches
+     - CPU can execute multiple operations in parallel (superscalar)
+     - Enables auto-vectorization (SIMD instructions)
+     Automatic: compilers unroll with -O2 or -O3 when:
+     - Loop count is small and known at compile time
+     - Loop body is simple
+     - No dependencies between iterations
+     Downside: increases code size (icache pressure) — don't always unroll.
+
+
+================================================================================
+PART 3 — FUNCTIONS & RECURSION
+================================================================================
+     SECTION 3A — CORE FUNCTIONS (10 Questions)
+     SECTION 3B — ADVANCED FUNCTIONS (12 Questions)
+     SECTION 3C — FRESH RECURSION (5 Questions)
+================================================================================
+
+------------------------------------------------------------------------
+SECTION 3A — CORE FUNCTIONS
+------------------------------------------------------------------------
+
+Q74. What is the difference between pass by value and pass by reference?
+     Asked at: TCS, Wipro, Infosys, Amazon
+A:   Pass by value: a COPY of the argument is made. Changes inside the function
+     do NOT affect the original.
+         void f(int x) { x = 10; }  // original unchanged
+     Pass by reference: function operates on the ORIGINAL variable directly.
+         void f(int& x) { x = 10; }  // original IS modified
+     Pass by const reference: read-only access to original — avoids expensive
+     copy without allowing modification.
+         void f(const string& s) { }  // efficient, safe
+     Rule of thumb:
+     - Primitives (int, double): pass by value
+     - Large objects (string, vector): pass by const reference
+     - Need to modify: pass by reference
+
+Q75. What is function overloading? Can you overload based on return type alone?
+     Asked at: TCS, Wipro, Zoho, Amazon
+A:   Function overloading: multiple functions with the same name but DIFFERENT
+     parameter signatures (different types, number, or order of parameters).
+         int add(int a, int b);
+         double add(double a, double b);
+         int add(int a, int b, int c);  // all valid overloads
+     NO — you CANNOT overload based on return type alone.
+     Why: at the call site, the compiler selects an overload using argument types.
+     The return type is not part of the call expression:
+         add(3, 4);  // compiler uses argument types (both int) to decide
+     If two functions differ only in return type, the call is ambiguous — hence
+     the compiler forbids it.
+
+Q76. What is a default argument? Where must it appear in the parameter list?
+     Asked at: TCS, Wipro, Infosys
+A:   A default argument is a fallback value used when the caller doesn't
+     supply that argument.
+         void log(string msg, int level = 1, bool timestamp = true) { }
+         log("error");              // level=1, timestamp=true (defaults)
+         log("warning", 2);        // level=2, timestamp=true
+         log("info", 3, false);    // all explicit
+     Rule: defaults must be RIGHTMOST — once a parameter has a default,
+     all parameters to its RIGHT must also have defaults.
+         void f(int a, int b=5, int c=10);  // VALID
+         void f(int a=5, int b, int c);     // INVALID: b and c lack defaults
+     Note: default arguments should be specified in the DECLARATION (header),
+     not repeated in the definition.
+
+Q77. What is an inline function? When does the compiler ignore the inline hint?
+     Asked at: L&T Infotech, Persistent, Samsung
+A:   inline suggests the compiler SUBSTITUTE the function body at the call site
+     instead of generating a function call (eliminates call overhead, enables
+     optimization across call boundaries).
+         inline int square(int x) { return x * x; }
+     The compiler may IGNORE inline when:
+     - Function body is too large or complex
+     - Function is RECURSIVE (can't fully inline)
+     - Function's ADDRESS is taken (must exist as a real function)
+     - Compiler's heuristics decide it's not beneficial
+     Modern reality: with -O2/-O3, compilers inline aggressively using their own
+     heuristics regardless of the inline keyword. Use [[noinline]] attribute to
+     PREVENT inlining when needed (e.g., profiling).
+
+Q78. What is recursion? Advantages and disadvantages vs iteration?
+     Asked at: TCS, Wipro, Amazon, Infosys
+A:   Recursion: a function that calls ITSELF to solve a smaller subproblem.
+     Every recursive function needs:
+     1. Base case — terminates the recursion
+     2. Recursive case — reduces problem toward the base case
+     Advantages over iteration:
+     - Cleaner, more natural for problems defined recursively (trees, divide & conquer)
+     - Less code for complex problems (merge sort, Tower of Hanoi, tree traversal)
+     Disadvantages vs iteration:
+     - Uses call stack memory — risk of stack overflow for deep recursion
+     - Function call overhead (stack frame allocation, return, etc.)
+     - Naive recursion can be exponential (Fibonacci: O(2^N) without memoization)
+     - Harder to debug (multiple frames to trace)
+
+Q79. What is tail recursion? Why is it better? Does C++ optimize it?
+     Asked at: Amazon, Microsoft, Google
+A:   Tail recursion: the recursive call is the VERY LAST operation — no
+     computation happens after it returns.
+         // NOT tail recursive (multiplication after return):
+         int fact(int n) { return n * fact(n-1); }
+         // Tail recursive (accumulator carries result):
+         int fact(int n, int acc=1) {
+             if (n==0) return acc;
+             return fact(n-1, n*acc);  // last op is the call
+         }
+     Why better: tail recursive functions CAN be optimized to REUSE the current
+     stack frame (Tail Call Optimization — TCO), making them as memory-efficient
+     as loops. No risk of stack overflow even for n = 1,000,000.
+     C++ standard does NOT guarantee TCO, but GCC/Clang apply it with -O2 in
+     many cases. Use -foptimize-sibling-calls to encourage it explicitly.
+
+Q80. What is stack overflow in the context of recursion?
+     Asked at: TCS, Wipro, Infosys, Amazon
+A:   Each recursive call pushes a new STACK FRAME onto the call stack (holds
+     local variables, parameters, return address). The call stack has a fixed
+     size — typically 1-8 MB on most systems.
+     If recursion is too deep (e.g., factorial(100000) without TCO), the stack
+     is exhausted → STACK OVERFLOW → program crashes (segfault on Linux,
+     stack overflow exception on Windows).
+     Causes:
+     - Missing or incorrect base case (infinite recursion)
+     - Input too large for the recursion depth
+     Prevention:
+     - Add correct base cases
+     - Use iteration/DP for deep recursion
+     - Use tail recursion (if compiler supports TCO)
+     - Increase stack size (ulimit -s on Linux) — platform-specific
+
+Q81. What is the difference between local and global variables?
+     Asked at: TCS, Wipro, Infosys
+A:   Local variable:
+     - Declared inside a function or block
+     - Created when the block is entered, destroyed when it exits (stack)
+     - Only accessible within its scope
+     - No default initialization (contains garbage unless initialized)
+     Global variable:
+     - Declared outside all functions
+     - Lives for the ENTIRE program duration (data/BSS segment)
+     - Accessible from any function in the same translation unit (external
+       linkage unless static)
+     - Default initialized to 0/nullptr
+     Best practice: minimize globals — they create hidden dependencies, make
+     testing harder, and are not thread-safe without synchronization.
+
+Q82. What is a static local variable? How long does it live?
+     Asked at: TCS, Wipro, L&T Infotech, Persistent
+A:   A static local variable:
+     - Initialized ONLY ONCE on first function call
+     - Retains its value between calls (NOT re-created on each call)
+     - Lives in the DATA segment (not stack) — lasts until program ends
+     - Still only VISIBLE within its scope (local name, global lifetime)
+     Example:
+         int getId() {
+             static int id = 0;
+             return ++id;  // returns 1, 2, 3, ... across calls
+         }
+     Use cases: call counters, singletons, memoization caches, lazy initialization.
+     Thread safety note: in C++11, static local init is guaranteed thread-safe
+     (the compiler adds mutex-like guards for initialization).
+
+Q83. Can a function return multiple values in C++? How?
+     Asked at: TCS, Wipro, Amazon, Zoho
+A:   Yes, multiple approaches:
+     1. std::pair: return {x, y};
+            auto [a, b] = getMinMax(arr);  // C++17 structured binding
+     2. std::tuple: return {x, y, z};
+            auto [a, b, c] = getStats(arr);
+     3. Out-parameters by reference:
+            void getMinMax(int arr[], int n, int& mn, int& mx);
+     4. Struct: return a struct with named fields (clearest for 3+ values)
+            struct Stats { int min, max; double avg; };
+     5. std::vector for homogeneous multiple values
+     Recommended: use structured bindings with pair/tuple (C++17) for 2-3 values,
+     use a named struct for clarity when there are more or the meaning is important.
+
+------------------------------------------------------------------------
+SECTION 3B — ADVANCED FUNCTIONS
+------------------------------------------------------------------------
+
+Q84. What is a function pointer? Show the syntax.
+     Asked at: L&T Infotech, Persistent, Sasken
+A:   A function pointer stores the ADDRESS of a function and allows calling it
+     indirectly.
+     Syntax:
+         return_type (*pointer_name)(param_types);
+         int (*fp)(int, int);      // pointer to function (int, int) → int
+         fp = &add;                // assign (& is optional)
+         int result = fp(3, 4);    // call via pointer
+         int result = (*fp)(3, 4); // also valid
+     Use cases: callbacks, dispatch tables, strategy pattern.
+     Cleaner alternative: use typedef or using:
+         using BinaryOp = int(*)(int, int);
+         BinaryOp op = add;
+
+Q85. What is a callback function? Give a real-world example.
+     Asked at: L&T Infotech, Persistent, Nagarro
+A:   A callback is a function PASSED AS AN ARGUMENT to another function,
+     to be called at a later time or when a certain event occurs.
+     Example — qsort with comparator:
+         int compare(const void* a, const void* b) {
+             return *(int*)a - *(int*)b;
+         }
+         qsort(arr, n, sizeof(int), compare);  // compare is the callback
+     STL example:
+         sort(v.begin(), v.end(), [](int a, int b){ return a > b; });
+     Real-world: button click handlers in GUIs, file I/O completion in async
+     systems, HTTP response handlers, event listeners.
+     Modern C++: use std::function or templates instead of raw function pointers
+     for type-safe, flexible callbacks.
+
+Q86. What is std::function? How is it different from a raw function pointer?
+     Asked at: Persistent, Nagarro, Adobe
+A:   std::function<ReturnType(ParamTypes...)> is a general-purpose callable
+     wrapper that can hold functions, lambdas, functors, and bound expressions.
+         std::function<int(int,int)> op;
+         op = add;                          // regular function
+         op = [](int a, int b){ return a+b; }; // lambda
+         op = std::bind(multiply, _1, _2);  // bound function
+     Differences from raw function pointer:
+     - Function pointer: only holds plain functions and C-compatible function ptrs
+     - std::function: holds ANY callable — functions, lambdas, functors, bind
+     - std::function has slight overhead (type erasure, heap allocation for large
+       callables)
+     - std::function is safer, more flexible, and idiomatic modern C++
+     Use raw function pointer only in performance-critical or C-interop code.
+
+Q87. What is std::bind? Give an example.
+     Asked at: Persistent, Nagarro
+A:   std::bind creates a new callable by binding some (or all) arguments of
+     an existing function, producing a partial application.
+         #include <functional>
+         int add(int a, int b) { return a + b; }
+         auto add5 = std::bind(add, std::placeholders::_1, 5);
+         cout << add5(3);  // calls add(3, 5) → 8
+     Use cases: creating callbacks with pre-filled arguments, adapting function
+     signatures for algorithms, member function binding:
+         auto f = std::bind(&MyClass::method, &obj, _1);
+     Modern C++: prefer LAMBDAS over std::bind — clearer, faster (no overhead):
+         auto add5 = [](int a) { return add(a, 5); };
+
+Q88. What is a functor (function object)? Why use it over a regular function?
+     Asked at: L&T Infotech, Persistent, Sasken
+A:   A functor is a class/struct that overloads operator(), making instances
+     CALLABLE like functions.
+         struct Multiplier {
+             int factor;
+             Multiplier(int f) : factor(f) {}
+             int operator()(int x) const { return x * factor; }
+         };
+         Multiplier triple(3);
+         cout << triple(5);  // 15
+         transform(v.begin(), v.end(), v.begin(), Multiplier(2));
+     Advantages over plain functions:
+     - Can maintain STATE between calls (unlike stateless functions)
+     - Can be INLINED by compiler more easily than function pointers
+     - Can be templated for generic algorithms
+     - More composable and testable than global functions
+     Modern C++: lambdas are essentially anonymous functors — prefer them for
+     inline use; use named functors when state or reuse across files is needed.
+
+Q89. What is a lambda? How does the capture clause work?
+     Asked at: Persistent, Nagarro, Adobe, Amazon
+A:   A lambda is an ANONYMOUS inline function object (C++11).
+     Syntax: [capture](params) -> return_type { body }
+     Capture clause — controls which outer variables the lambda can access:
+         []        — captures NOTHING (can only use params and globals)
+         [=]       — captures all locals by VALUE (copy)
+         [&]       — captures all locals by REFERENCE
+         [x]       — captures x by value
+         [&x]      — captures x by reference
+         [=, &y]   — all by value, but y by reference
+         [this]    — captures the current object pointer
+     Example:
+         int mul = 3;
+         auto triple = [mul](int x) { return x * mul; };
+         cout << triple(5);  // 15
+     Lambdas are syntactic sugar for compiler-generated functors.
+     Return type is deduced if omitted. Mutable lambdas allow modifying by-value captures.
+
+Q90. What is the difference between [=] and [&] in lambda capture?
+     Asked at: Persistent, Nagarro
+A:   [=] — captures ALL used outer variables BY VALUE (copy at time of lambda
+            creation). Lambda has its own private copy.
+         int x = 5;
+         auto f = [=]() { return x; };
+         x = 100;
+         cout << f();  // prints 5 (captured the old value)
+     [&] — captures ALL used outer variables BY REFERENCE (accesses the
+            original variable directly).
+         int x = 5;
+         auto g = [&]() { return x; };
+         x = 100;
+         cout << g();  // prints 100 (uses current value of x)
+     DANGER with [&]: if the lambda outlives the captured variable (e.g., stored
+     in a callback that runs after the variable is destroyed), this is DANGLING
+     REFERENCE — undefined behavior.
+     Rule: prefer [=] for safety when lambda escapes the current scope;
+     use [&] only for lambdas that execute within the same scope.
+
+Q91. Can a lambda be recursive? How do you achieve it?
+     Asked at: Advanced C++ roles
+A:   A lambda cannot directly call itself by name because it has no name.
+     Solutions:
+     1. Use std::function (slight overhead):
+            std::function<int(int)> fib = [&](int n) -> int {
+                if (n <= 1) return n;
+                return fib(n-1) + fib(n-2);  // captures fib by reference
+            };
+     2. Pass lambda to itself as parameter (template trick):
+            auto fib = [](auto& self, int n) -> int {
+                if (n <= 1) return n;
+                return self(self, n-1) + self(self, n-2);
+            };
+            cout << fib(fib, 10);
+     3. C++23: deducing this (cleanest approach, not yet widely available)
+     Option 1 is most commonly seen in interviews.
+
+Q92. What is memoization using C++ lambdas?
+     Asked at: Dolat Capital, Goldman Sachs
+A:   Memoization caches the results of function calls so repeated calls with
+     the same arguments return the cached result instead of recomputing.
+     Lambda + map approach:
+         unordered_map<int, long long> memo;
+         std::function<long long(int)> fib = [&](int n) -> long long {
+             if (n <= 1) return n;
+             auto it = memo.find(n);
+             if (it != memo.end()) return it->second;
+             return memo[n] = fib(n-1) + fib(n-2);
+         };
+     This turns naive O(2^N) Fibonacci into O(N) time, O(N) space.
+     Used for: DP problems, expensive repeated computations, caching API calls.
+
+Q93. What is the return type deduction for functions in C++14?
+     Asked at: Persistent, Nagarro
+A:   C++14 allows functions to use auto as return type, and the compiler
+     DEDUCES the actual return type from the return statement.
+         auto add(int a, int b) { return a + b; }  // deduced as int
+         auto makeList() { return std::vector<int>{1,2,3}; } // deduced as vector<int>
+     Rules:
+     - All return statements must return the same type
+     - For recursive functions, at least one return statement must be deducible
+       before the recursive call
+     Decltype-trailing return type (C++11):
+         auto add(int a, int b) -> decltype(a + b) { return a + b; }
+     Use when: the return type is complex/verbose to write explicitly, or for
+     generic functions where the return type depends on template parameters.
+
+Q94. What is the difference between a macro and an inline function?
+     Asked at: L&T Infotech, Persistent, Nagarro
+A:   Macro (#define): textual substitution at PREPROCESSING stage, before compilation.
+         #define SQUARE(x) ((x)*(x))
+         SQUARE(1+2)  → ((1+2)*(1+2)) = 9  // needs extra parens!
+     Problems with macros:
+     - No type checking — any type accepted, errors only at expansion
+     - Scope-unaware — bypasses C++ scoping rules
+     - Tricky side effects: SQUARE(i++) → ((i++)*(i++)) — UB!
+     - No debugger support (macros don't appear in symbol tables)
+     Inline function:
+     - Full C++ type safety and scope rules
+     - Compiler decides whether to actually inline
+     - No side-effect issues — argument evaluated ONCE
+     Rule: ALWAYS prefer inline functions (or constexpr) over macros in C++.
+     Only use macros for things that truly require preprocessor features
+     (#include guards, conditional compilation).
+
+Q95. What is the difference between deep copy and shallow copy?
+     Asked at: Zoho, TCS, Wipro, Persistent
+A:   Shallow copy: copies the values of member variables, including pointers
+     — both original and copy point to the SAME heap memory.
+         Object a; Object b = a;  // default copy constructor = shallow
+     Problem: if both objects try to delete the same pointer → double-free UB.
+     Deep copy: allocates NEW memory and copies the CONTENTS pointed to, so
+     original and copy own INDEPENDENT copies of the data.
+     When it matters: when passing objects with raw pointers to functions —
+     the function receives a copy of the object, and what "copy" means depends
+     on whether deep/shallow copy is used.
+     In modern C++: use RAII (smart pointers, std::vector, std::string) to
+     avoid manual memory management — the correct deep copy is automatic.
+
+------------------------------------------------------------------------
+SECTION 3C — FRESH RECURSION & FUNCTION THEORY
+------------------------------------------------------------------------
+
+Q96. Can you call a virtual function from a constructor? What happens?
+     Asked at: Amazon, Microsoft, Adobe
+A:   YES, you CAN call it, but it behaves UNEXPECTEDLY.
+     During construction, the vtable pointer points to the BASE CLASS's vtable
+     because the derived class hasn't been fully constructed yet.
+     So calling a virtual function from a constructor calls the BASE CLASS
+     version — NOT the overridden derived class version.
+         class Base {
+             Base() { virtualFn(); }  // calls Base::virtualFn, NOT Derived::
+             virtual void virtualFn() { cout << "Base"; }
+         };
+         class Derived : public Base {
+             void virtualFn() override { cout << "Derived"; }
+         };
+         Derived d;  // prints "Base", not "Derived"!
+     Same issue applies to destructors (vtable reverts to base during destruction).
+     Rule: avoid calling virtual functions from constructors/destructors.
+
+Q97. What is the difference between deep recursion and tail recursion?
+     Does GCC/Clang optimize tail calls in C++?
+     Asked at: Zoho, Persistent, Google
+A:   Deep recursion: large depth of recursive calls, each adding a stack frame.
+     Risk of stack overflow for input like factorial(100000).
+     Tail recursion: recursive call is the LAST operation, no pending computation
+     after it. Can be converted to a loop by reusing the current stack frame (TCO).
+     GCC/Clang: DO apply Tail Call Optimization in many cases with -O2, but
+     C++ standard does NOT GUARANTEE it (unlike Scheme/Haskell where it's
+     mandatory). Factors that prevent TCO even with tail-recursive code:
+     - Destructors in scope (need to run on stack unwind)
+     - Exception handling frames
+     - Arguments passed by reference
+     When stack depth matters, implement as explicit iteration or use DP.
+
+Q98. What is memoization vs tabulation? When do you prefer each?
+     Asked at: Amazon, Flipkart, Swiggy
+A:   Both avoid recomputation in dynamic programming.
+     Memoization (top-down, lazy):
+     - Recursive function + cache (usually map or array)
+     - Computes ONLY the subproblems that are actually needed
+     - Natural for problems with recursive structure
+     - Overhead: recursion + hash map lookups
+     Tabulation (bottom-up, eager):
+     - Iterative, fills table from base cases up to answer
+     - Computes ALL subproblems (even unused ones)
+     - No recursion overhead → no stack overflow risk
+     - Better cache performance (sequential array access)
+     - Easier to optimize to O(1) space (sliding window over table)
+     Prefer memoization: sparse subproblem space, natural recursive structure
+     Prefer tabulation: all subproblems needed, deep recursion would overflow,
+     space optimization required.
+
+Q99. What is a pure function? What is a side effect? Why does it matter?
+     Asked at: Google, Atlassian, Functional-style interview rounds
+A:   Pure function: always returns the SAME output for the same inputs and has
+     NO observable side effects.
+         int add(int a, int b) { return a + b; }  // pure
+     Side effects: any observable change outside the function scope:
+     - Modifying global/static variables
+     - Writing to files, console, databases
+     - Sending network requests
+     - Modifying input arguments
+     - Throwing exceptions (debatable)
+     Impure: int add(int a, int b) { cout << a+b; return a+b; }  // side effect
+     Why it matters:
+     - Pure functions are EASIER TO TEST (no setup/teardown needed)
+     - REFERENTIALLY TRANSPARENT (can cache results)
+     - THREAD-SAFE (no shared state to race on)
+     - COMPOSABLE (can combine without worrying about order of evaluation)
+
+Q100. Explain the difference between call stack and call heap.
+      Asked at: L&T Infotech, TCS, Persistent
+A:    Call Stack:
+      - Stores function call frames (local variables, parameters, return address)
+      - LIFO structure — frames pushed on call, popped on return
+      - Fixed size (~1-8 MB typical), fast allocation (just move stack pointer)
+      - Automatically managed — no manual cleanup needed
+      - Stack overflow if too deep
+      Heap:
+      - Dynamic memory (allocated with new/malloc, freed with delete/free)
+      - Large (limited by available RAM/virtual memory)
+      - Slower (allocator must find/manage free blocks)
+      - Must be manually managed or use smart pointers
+      - Used for objects that must outlive the function that created them
+      - Fragmentation can occur over time
+      Summary: stack = automatic, fast, limited, scoped; heap = manual, slower,
+      large, lifetime controlled by programmer.
+
+
+================================================================================
+PART 4 — ARRAYS
+================================================================================
+     SECTION 4A — CORE ARRAY THEORY (11 Questions)
+================================================================================
+
+Q101. What is the time complexity of accessing, inserting, and deleting in array?
+      Asked at: TCS, Wipro, Infosys, Amazon
+A:    Access by index:              O(1)  — address = base + i * element_size
+      Search (unsorted):            O(N)  — linear scan
+      Search (sorted, binary):      O(log N)
+      Insertion at end (vector):    O(1) amortized
+      Insertion at beginning/mid:   O(N)  — all elements after must shift right
+      Deletion at end:              O(1)
+      Deletion at beginning/mid:    O(N)  — elements must shift left
+      Arrays excel at RANDOM ACCESS; they are poor for frequent middle insert/delete.
+      For frequent insertions/deletions in middle → use linked list or deque.
+
+Q102. What is the difference between static and dynamic arrays?
+      Asked at: TCS, Wipro, Amazon, Flipkart
+A:    Static array: size fixed at COMPILE TIME, allocated on STACK.
+          int arr[100];      // must be compile-time constant
+          int arr[n];        // Variable-Length Array — not standard C++, compiler extension
+      Limitations: cannot resize, limited stack memory.
+      Dynamic array: size at RUNTIME, allocated on HEAP.
+          int* arr = new int[n];   // n is a runtime variable
+          delete[] arr;            // must free manually
+      std::vector: the preferred C++ dynamic array — handles memory automatically,
+      grows as needed, provides bounds checking (.at()), iterators, and algorithms.
+      Always prefer vector<int> over raw dynamic arrays in modern C++.
+
+Q103. How does vector<int> work internally? What happens when it resizes?
+      Asked at: Amazon, Microsoft, Google, Flipkart
+A:    A vector internally manages: begin pointer, size (used elements), capacity.
+      When push_back is called and size == capacity:
+      1. Allocate new array of size capacity * 2 (typically)
+      2. Move/copy all elements to new array
+      3. Destroy old array
+      4. Update pointers
+      This resize is O(N) but happens RARELY (exponential growth intervals).
+      The AMORTIZED cost per push_back is O(1) (total copies = 2N for N pushes).
+      Key operations: reserve(n) — pre-allocates capacity without changing size
+      (avoids repeated resizing when N is known). shrink_to_fit() releases excess.
+      Important: resize/push_back CAN INVALIDATE iterators, pointers, references
+      to elements (because the underlying array may move to a new address).
+
+Q104. What is cache locality? Why are arrays cache-friendly?
+      Asked at: Dolat Capital, HFT firms, Samsung, Google
+A:    CPUs cache recently accessed memory in L1/L2/L3 cache. A cache LINE
+      (typically 64 bytes) is loaded at once. If the next access is nearby in
+      memory, it's a CACHE HIT (fast, ~1-4 cycles).
+      Arrays: elements stored CONTIGUOUSLY. Iterating sequentially loads each
+      cache line once and uses all elements in it → near-100% cache hit rate
+      (spatial locality).
+      Linked lists: nodes scattered at random heap addresses. Each dereference
+      of a->next likely causes a CACHE MISS (~100-300 cycles for RAM access).
+      Real impact: iterating a 10M element array can be 5-10x faster than a
+      linked list with same elements due to cache behavior alone.
+      In tight loops: struct of arrays (SoA) layout is often more cache-friendly
+      than array of structs (AoS) for processing one field at a time.
+
+Q105. What is the difference between array and pointer in C++?
+      Asked at: TCS, Wipro, L&T Infotech, Sasken
+A:    Key differences:
+      - sizeof(arr) on array gives TOTAL size in bytes (e.g., 5*4 = 20 for int[5])
+      - sizeof(ptr) on pointer gives pointer size (4 or 8 bytes — address size)
+      - Array name decays to pointer to first element in most contexts
+          int arr[5]; int* p = arr;  // arr decays to &arr[0]
+      - Arrays CANNOT be reassigned (arr = somethingElse is illegal)
+      - Pointers are variables and can be reassigned (p = anotherArray)
+      - Arrays have compile-time known size; pointers don't carry size info
+      Passing array to function: the array DECAYS to a pointer — size is lost!
+          void f(int arr[], int n)  // arr is just int*, n needed separately
+
+Q106. What is a 2D array? How is it stored in memory (row-major order)?
+      Asked at: Samsung, Sasken, TCS, Wipro
+A:    A 2D array is logically a grid (rows × columns) but physically stored
+      as a single contiguous block in memory.
+      C++ uses ROW-MAJOR ORDER: all elements of row 0 first, then row 1, etc.
+          int arr[3][4];
+          Memory: arr[0][0], arr[0][1], arr[0][2], arr[0][3],  // row 0
+                  arr[1][0], arr[1][1], arr[1][2], arr[1][3],  // row 1
+                  arr[2][0], ...                                // row 2
+      Address formula: base + (i * cols + j) * sizeof(element)
+      Performance implication: iterate ROW by ROW for cache efficiency.
+          for(i) for(j) arr[i][j]++;   // CACHE FRIENDLY — sequential access
+          for(j) for(i) arr[i][j]++;   // CACHE UNFRIENDLY — column-wise skips
+
+Q107. What is amortized O(1) for vector push_back? Explain the resizing strategy.
+      Asked at: Amazon, Microsoft, Flipkart, Swiggy
+A:    Individual push_back: O(1) normally, but O(N) when resizing occurs.
+      Amortized analysis considers the AVERAGE cost over a sequence of N operations.
+      With DOUBLING strategy (capacity doubles on each resize):
+      - Resizes occur at sizes: 1, 2, 4, 8, ..., N (total: log N resizes)
+      - Elements copied at each resize: 1, 2, 4, ..., N/2
+      - Total copies: 1+2+4+...+N/2 = N-1 (geometric series)
+      - Average copy per push_back: (N-1)/N ≈ 1 = O(1)
+      So N push_backs cost O(N) total → O(1) each on average = amortized O(1).
+      Contrast: if we grew by 1 each time, N push_backs would cost O(N^2) total.
+      The doubling factor (typically 2x or 1.5x) balances time vs wasted space.
+
+Q108. Why is cache performance better for arrays than linked lists?
+      Explain spatial locality.
+      Asked at: Dolat Capital, HFT firms, Samsung
+A:    Spatial locality: if address X is accessed, nearby addresses (X+1, X+2, ...)
+      are LIKELY to be accessed soon. CPUs exploit this by loading entire cache
+      lines (64 bytes) on each miss.
+      Array: elements are at consecutive addresses (index 0, 1, 2, ...). When
+      arr[0] is accessed, the CPU loads arr[0] through arr[15] (for int[]) into
+      cache. Subsequent accesses to arr[1]-arr[15] are cache HITS (~1 cycle).
+      Linked list: each node's next pointer points to a RANDOM heap address.
+      Following next requires loading a new cache line for EACH node.
+      For a 1M element traversal:
+      - Array: ~1M/16 = ~62,500 cache misses
+      - Linked list: ~1M cache misses (each node is likely a miss)
+      This is why arrays are preferred over linked lists for sequential access,
+      even when big-O complexity is the same.
+
+Q109. What is the difference between row-major and column-major order?
+      Which does C++ use?
+      Asked at: Samsung, Sasken, Numerical computing roles
+A:    Row-major order: elements of each ROW are stored consecutively.
+      C, C++, Python (NumPy default) use row-major.
+      Column-major order: elements of each COLUMN are stored consecutively.
+      Fortran, MATLAB, Julia use column-major.
+      For matrix arr[R][C]:
+      Row-major address of arr[i][j]:    base + (i*C + j) * size
+      Column-major address of arr[i][j]: base + (i + j*R) * size
+      Performance implication:
+      C++ programmers should iterate row-by-row (arr[i][j]) for cache efficiency.
+      If interfacing with Fortran/MATLAB (e.g., in numerical computing), be aware
+      of the mismatch — matrix transposes may be needed at the boundary.
+
+Q110. What is the complexity of inserting at the beginning of a vector?
+      How would you make this faster?
+      Asked at: Amazon, Flipkart
+A:    O(N): every existing element must shift one position to the right to make
+      room at index 0. For a vector of 1M elements, this means 1M moves.
+      Ways to make it faster:
+      1. std::deque: provides O(1) amortized insertion at BOTH front AND back.
+         Trade-off: slightly slower random access than vector (deque uses
+         segmented storage, not single contiguous array).
+      2. Reverse the problem: if you frequently insert at "beginning" and then
+         iterate, insert at END and reverse the iteration or reverse the whole
+         container at the end.
+      3. Maintain an offset index: treat arr[offset] as the logical first element.
+         "Insertion at beginning" increments offset — no shifting needed.
+      4. Linked list: O(1) prepend, but poor cache performance for iteration.
+
+Q111. What is a sparse array and how would you implement it efficiently?
+      Asked at: Google, Atlassian, Adobe
+A:    A sparse array has MOST elements equal to a default value (zero or null).
+      Storing all elements in a regular array wastes memory.
+      Efficient implementations:
+      1. Hash map (unordered_map<int, T>): store only non-default elements.
+             unordered_map<int, int> sparse;
+             sparse[1000000] = 42;  // only stores this one entry
+         O(1) average access, O(K) space where K = number of non-default elements
+      2. Sorted vector of (index, value) pairs: good for sparse + ordered access
+      3. Compressed Sparse Row (CSR): used in scientific/graph computing
+         Stores row_ptr[], col_ind[], values[] arrays compactly
+      4. std::map<int, T>: ordered access, O(log K) lookup
+      Use case: adjacency matrix for sparse graphs (millions of nodes, few edges),
+      spreadsheet cells, image compression, NLP feature vectors.
+
+
+================================================================================
+QUICK REVISION CHEAT SHEET
+================================================================================
+
+VARIABLES — KEY RULES:
+  - i++ vs ++i: same for primitives; ++i preferred for iterators (no temp copy)
+  - const vs constexpr: const = runtime constant; constexpr = compile time only
+  - Signed overflow: UNDEFINED behavior | Unsigned overflow: DEFINED (wraps)
+  - Mixing signed/unsigned: signed is implicitly converted to unsigned — DANGER
+  - float == : NEVER use; always use fabs(a-b) < epsilon
+  - {}-init: forbids narrowing (catches data loss at compile time)
+  - NaN: not equal to itself (use std::isnan()); Inf: use std::isinf()
+
+CONTROL FLOW — KEY RULES:
+  - switch: only int/char/enum; add break; use [[fallthrough]] C++17
+  - else: binds to NEAREST unmatched if (dangling else)
+  - do-while: always runs body at least once; use for input validation
+  - off-by-one: test with n=0 and n=1; careful with < vs <=
+  - &&/||: short-circuits — be careful with side effects in conditions
+  - ++i in loops: never slower, communicates intent, safer for iterators
+
+FUNCTIONS — KEY RULES:
+  - Overloading: cannot differ by return type alone
+  - Default args: right-to-left only; declare in header
+  - inline: hint only; modern compilers decide with -O2
+  - Tail recursion: last op = recursive call; C++ doesn't guarantee TCO
+  - [=] lambda capture: copies at creation time (safe); [&]: dangling risk
+  - std::function vs raw ptr: std::function holds any callable; raw ptr = C-compat
+
+ARRAYS — KEY RULES:
+  - Access: O(1) | Insert/delete at middle: O(N) | Insert at end: O(1) amortized
+  - vector resize: doubles capacity; amortized O(1) push_back; invalidates iterators
+  - Cache: arrays > linked lists due to spatial locality (sequential memory)
+  - Row-major: C++ stores row-by-row; iterate row-by-row for cache efficiency
+  - Array decay: when passed to function, array becomes pointer (size info lost)
+  - sparse array: use unordered_map instead of allocating full array
+
+================================================================================
+END OF COMPLETE INTERVIEW Q&A GUIDE (111 Theory Questions)
+================================================================================

@@ -1,0 +1,399 @@
+================================================================================
+     CONTROL FLOW — CONDITIONALS & LOOPS — THEORY ANSWERS + TRICKY QUESTIONS
+================================================================================
+
+================================================================================
+SECTION 2A — CONDITIONALS THEORY (ANSWERS)
+================================================================================
+
+Q1. What is the difference between if-else and switch statement? When would
+    you prefer switch over if-else?
+
+    - if-else evaluates boolean expressions/ranges/multiple conditions;
+      switch evaluates a single variable against constant values (int/char/enum).
+    - if-else can handle ranges (x > 10), multiple variables, complex logic.
+      switch can only test equality against constants.
+    - switch is often more readable and can be optimized by the compiler into
+      a jump table (O(1) dispatch) when cases are dense, whereas if-else is
+      a sequential chain (O(n) worst case).
+    - Prefer switch when checking one variable against many discrete constant
+      values (menu choices, state machines, opcodes). Prefer if-else for
+      range checks, multiple variables, or complex boolean logic.
+
+Q2. What is fall-through in switch? How do you prevent it?
+
+    - Fall-through: once a matching case is found, execution continues into
+      the NEXT case's code even if its label doesn't match, because switch
+      is really just a labeled jump — it doesn't automatically exit after a
+      case block.
+    - Prevented by adding `break;` at the end of each case (or `return`,
+      `continue`, `throw`). Fall-through can be intentional (documented with
+      `[[fallthrough]];` in modern C++) when multiple cases should share code.
+
+Q3. Can switch work with strings in C++? Why or why not?
+
+    - No, not directly. switch requires the controlling expression to be an
+      integral or enumeration type (int, char, enum, and types implicitly
+      convertible to integral, like an enum class after a cast).
+    - std::string is a class type with no such conversion, and case labels
+      must be compile-time constant expressions — a string comparison isn't
+      a single machine-level equality check, so it can't be compiled to a
+      jump table the way switch is designed for.
+    - Workaround: use if-else chains with ==, or map strings to enums/ints
+      first (e.g., a hash or lookup table) and switch on that.
+
+Q4. What is a ternary operator? How is it different from if-else?
+
+    - Syntax: `condition ? expr_if_true : expr_if_false`. It is an EXPRESSION
+      that evaluates to a value, whereas if-else is a STATEMENT that controls
+      flow but produces no value itself.
+    - Because it's an expression, it can be used inline (e.g., inside a
+      function call, assignment, or initializer list), which if-else cannot.
+    - Example: `int max = (a > b) ? a : b;` cannot be cleanly written as a
+      single if-else without a temporary/extra lines.
+
+Q5. What is short-circuit evaluation? How does it affect conditionals?
+
+    - In `a && b`, if `a` is false, `b` is never evaluated (result is already
+      false). In `a || b`, if `a` is true, `b` is never evaluated (result is
+      already true).
+    - Effect: lets you safely chain a "guard" check before a risky operation,
+      e.g. `if (ptr != nullptr && ptr->value > 0)` — the dereference only
+      happens if ptr is non-null. It also means side effects in `b` may
+      silently not run — a common source of subtle bugs.
+
+Q6. What is the difference between = and == in a conditional? Why is
+    if (x = 5) a bug?
+
+    - `=` is assignment (sets x to 5 and the expression evaluates to 5,
+      which is truthy). `==` is comparison (checks if x equals 5, returns
+      bool).
+    - `if (x = 5)` compiles (it's legal C++) but always assigns 5 to x and
+      then evaluates the condition as true (since 5 is nonzero) — it doesn't
+      test x's original value at all. This silently overwrites x and always
+      takes the true branch, which is rarely the intent.
+    - Guarded against by compiler warnings (-Wparentheses) or the "Yoda
+      condition" style `if (5 == x)` which causes a compile error if you
+      mistype `=` since you can't assign to a literal.
+
+Q7. Can you use a float or double in a switch statement? Why?
+
+    - No. The switch condition and case labels must be of integral or
+      enumeration type. Floating-point types are excluded because floating
+      point equality is imprecise (rounding errors) — comparing floats for
+      exact equality is unreliable, so the language disallows it entirely
+      rather than allow a footgun.
+
+Q8. What happens if you forget break in a switch case? What is intentional
+    fall-through and when is it useful?
+
+    - Without break, execution "falls through" into the next case's
+      statements regardless of whether its label matches, continuing until
+      a break, return, or the end of the switch is reached.
+    - Intentional fall-through: multiple case labels that should execute the
+      same code, e.g.
+          case 'a': case 'e': case 'i': case 'o': case 'u':
+              isVowel = true;
+              break;
+      Modern C++ lets you mark this explicitly with `[[fallthrough]];` to
+      tell the compiler/reader it's deliberate (silences warnings).
+
+Q9. What is a dangling else problem? How does C++ resolve it?
+
+    - When you have nested `if` statements without braces, e.g.:
+          if (a) if (b) stmt1; else stmt2;
+      it's ambiguous (to a reader) which `if` the `else` belongs to.
+    - C++ resolves this by binding `else` to the NEAREST unmatched `if`
+      (so here, else binds to `if(b)`, not `if(a)`). This is a fixed rule
+      in the grammar, not a runtime ambiguity — but it can still surprise
+      programmers, so braces `{}` are recommended to make intent explicit.
+
+================================================================================
+SECTION 2B — LOOPS THEORY (ANSWERS)
+================================================================================
+
+Q1. Difference between for, while, and do-while. When would you use each?
+
+    - for: best when the number of iterations (or an init/condition/update
+      triple) is known up front — e.g., iterating a fixed range or array
+      index. Init, condition, and update are all visible together.
+    - while: best when the number of iterations is NOT known in advance and
+      depends on a condition checked BEFORE each iteration — e.g., reading
+      input until EOF.
+    - do-while: like while, but checks the condition AFTER the body runs, so
+      the body always executes at least once — useful for menu loops or
+      input validation where you must run the body once before you can even
+      evaluate the condition (e.g., "did the user enter valid input?").
+
+Q2. Difference between break and continue?
+
+    - break: immediately exits the entire loop (or switch), skipping any
+      remaining iterations.
+    - continue: skips the REST of the current iteration's body and jumps to
+      the next iteration (re-checking the loop condition / running the
+      update expression in a for loop), without exiting the loop.
+
+Q3. What is an infinite loop? How do you create one intentionally? How do
+    you exit it?
+
+    - A loop whose condition never becomes false, so it runs forever unless
+      broken out of some other way.
+    - Created intentionally with `while (true) { ... }`, `for (;;) { ... }`,
+      or `do { ... } while (true);` — common in servers, game loops, event
+      loops, daemons.
+    - Exited via `break`, a `return` from the enclosing function, `exit()`,
+      an exception/`throw`, or an external signal — since the loop condition
+      itself is designed to never trigger the exit.
+
+Q4. Why does do-while execute at least once? Give a real use-case.
+
+    - Because the condition check happens AFTER the loop body runs, not
+      before — structurally the body is unconditional the first time.
+    - Real use-case: a menu-driven CLI program — you must show the menu and
+      get user input at least once before you have anything to check
+      ("does the user want to quit?"). Also common in retry logic — attempt
+      an operation once, then keep retrying while it fails.
+
+Q5. What is the range-based for loop? How does it work internally?
+
+    - Syntax: `for (auto& x : container) { ... }` iterates over every element
+      of a container/array without manual indexing.
+    - Internally, the compiler desugars it (roughly) into:
+          auto&& range = container;
+          auto it = begin(range);
+          auto end_it = end(range);
+          for (; it != end_it; ++it) {
+              auto& x = *it;
+              ...
+          }
+      It requires the container to expose `begin()`/`end()` (member
+      functions or free functions found via ADL) returning iterators that
+      support `!=`, `++`, and `*`.
+
+Q6. What is the time complexity of a single loop? A nested loop?
+
+    - A single loop that runs n times doing O(1) work per iteration is O(n).
+    - A nested loop (loop inside a loop), each running n times, gives O(n^2)
+      — because for each of the n outer iterations, the inner loop runs n
+      times. In general, k nested loops each of size n give O(n^k), though
+      this only holds if the loops are independent/uncoupled; dependent
+      bounds (e.g. `for j = i to n`) give different complexities (like
+      O(n^2)/2, still O(n^2)).
+
+Q7. What is loop invariant? How does it help prove loop correctness?
+
+    - A loop invariant is a condition/property that is true before the loop
+      starts, remains true after every iteration, and — combined with the
+      loop's termination condition — implies the desired result when the
+      loop ends.
+    - It's used similarly to mathematical induction: (1) show it holds
+      before the first iteration (initialization), (2) show that if it holds
+      before an iteration it still holds after (maintenance), (3) show that
+      when the loop terminates, the invariant plus the exit condition gives
+      you correctness (termination). This is the standard technique to
+      formally prove algorithms like insertion sort are correct.
+
+Q8. Difference between pre-increment (++i) and post-increment (i++) in a
+    loop condition? Does it matter for performance?
+
+    - `++i` increments i first, then the expression evaluates to the NEW
+      value. `i++` evaluates to the OLD value first, then increments.
+    - For built-in types (int, etc.), there is no performance difference —
+      the compiler optimizes both identically in a loop's update clause,
+      since the "old value" that post-increment would return is unused and
+      trivially discarded.
+    - For non-trivial iterator/object types (e.g., a custom iterator class,
+      or STL iterators like std::vector<T>::iterator in unoptimized/debug
+      builds), `i++` must construct and return a COPY of the old object,
+      whereas `++i` can return a reference to itself — so `++i` can be
+      cheaper. This is why idiomatic C++ prefers `++it` for iterators.
+
+Q9. Can you modify the loop variable inside a for loop body? What are the
+    risks?
+
+    - Yes, syntactically legal — the loop variable is just a normal variable
+      in scope.
+    - Risks: it breaks the mental model of "N iterations" that the for
+      header implies, making the loop's behavior hard to predict/reason
+      about; it can cause skipped iterations, infinite loops (if you reset
+      it backward past the start), or off-by-one bugs. Generally considered
+      bad practice/a code smell unless very deliberately documented.
+
+Q10. What is an off-by-one error? Give an example in a loop.
+
+    - An off-by-one error is when a loop runs one iteration too many or too
+      few, typically from confusing `<` vs `<=`, or 0-based vs 1-based
+      indexing.
+    - Example: iterating an array of size n with
+          for (int i = 0; i <= n; i++) arr[i] = 0;
+      This runs from i=0 to i=n inclusive — n+1 iterations — and accesses
+      arr[n], which is out of bounds (valid indices are 0..n-1). The fix is
+      `i < n`.
+
+================================================================================
+SECTION 2C — ADVANCED LOOPS THEORY (ANSWERS)
+================================================================================
+
+Q1. What is branch prediction? How can unpredictable branches (if/else)
+    hurt performance in tight loops?
+
+    - Modern CPUs use deep pipelines and speculatively execute instructions
+      AHEAD of a branch's outcome being known, guessing which way it will go
+      (branch prediction), so the pipeline stays full instead of stalling.
+    - If the branch is predictable (e.g., almost always taken, or a
+      repeating pattern), the predictor is usually right and there's no
+      penalty. If the branch is DATA-DEPENDENT and effectively random (e.g.,
+      `if (arr[i] > threshold)` on unsorted random data), the predictor
+      mispredicts often. Each misprediction forces a pipeline flush —
+      discarding speculatively executed instructions and re-fetching the
+      correct path — costing potentially 10-20+ cycles per mispredict, which
+      in a tight hot loop can dominate runtime. This is the classic
+      "sorting the array makes the loop faster" phenomenon.
+
+Q2. What is the likely/unlikely hint in GCC? (__builtin_expect) When would
+    you use it?
+
+    - `__builtin_expect(expr, expected_value)` tells the compiler which
+      outcome of a branch is expected to be common, so it can lay out
+      machine code and hint the branch predictor toward the likely path
+      (keeping the "hot" path straight-line/fall-through and the "cold"
+      path out of line).
+    - Typically wrapped in macros: `#define likely(x) __builtin_expect(!!(x), 1)`
+      and `#define unlikely(x) __builtin_expect(!!(x), 0)`.
+    - Used in performance-critical code where profiling shows a branch is
+      overwhelmingly one-sided — e.g., error-checking code
+      (`if (unlikely(ptr == nullptr)) { handle_error(); }`) where the error
+      path is rare, or hot loops in kernels/HFT systems. Note: since C++20,
+      the standard `[[likely]]`/`[[unlikely]]` attributes are preferred over
+      the GCC builtin for portability.
+
+Q3. What is loop unrolling? When does the compiler do it automatically?
+
+    - Loop unrolling replicates the loop body multiple times per iteration
+      (reducing the number of loop-control checks/jumps relative to actual
+      work done), trading code size for fewer branches and better
+      instruction-level parallelism/pipelining.
+    - Example: instead of looping 1 element at a time, process 4 elements
+      per iteration, then handle any remainder.
+    - Compilers (GCC/Clang) auto-unroll at higher optimization levels
+      (-O2/-O3, or explicitly -funroll-loops) when: the trip count is known
+      or bounded at compile time, the loop body is small/simple with no
+      complex control flow, and there are no data dependencies between
+      iterations that would prevent parallel execution. It's also common as
+      part of auto-vectorization (SIMD), where unrolling pairs with packing
+      multiple iterations into a single vector instruction.
+
+================================================================================
+SECTION 3 — TRICKY / GOTCHA QUESTIONS
+     (Things that SOUND correct but aren't, or vice versa — designed to
+      make you second-guess yourself. Good for interview traps.)
+================================================================================
+
+1. "malloc allocates memory, and you can safely free() it with delete."
+   TRICKY: FALSE. malloc/free and new/delete are two separate memory
+   management systems. new calls the constructor, delete calls the
+   destructor, then deallocates. malloc just allocates raw bytes, free just
+   deallocates raw bytes — neither calls constructors/destructors. Mixing
+   them (new + free, or malloc + delete) is UNDEFINED BEHAVIOR — the
+   destructor/constructor won't run correctly and the allocator bookkeeping
+   may not match, potentially corrupting the heap.
+
+2. "switch(x) where x is a char always works exactly like switch on an int."
+   TRICKY: Mostly true but with a catch — char's signedness is
+   implementation-defined (signed or unsigned depending on platform/compiler),
+   so if you switch on a char holding a negative-looking byte value (e.g.
+   0x80–0xFF range on a signed-char platform), the case value you expect to
+   match may not, because the char gets sign-extended differently than you
+   assume when promoted to int for the comparison.
+
+3. "if (x = 5) will fail to compile because you can't assign in a
+   condition." TRICKY: FALSE — it compiles fine in C++ (assignment is an
+   expression that yields a value), and the condition always evaluates to
+   true because 5 is nonzero. It's a classic silent bug, not a compile
+   error, unless you have warnings-as-errors enabled.
+
+4. "A do-while loop and a while loop with the same condition always produce
+   identical output." TRICKY: FALSE — if the condition is false on the very
+   first check, do-while still executes the body ONCE before checking,
+   while while-loop never executes the body at all. They diverge exactly at
+   the "0 iterations" case.
+
+5. "++i and i++ always behave identically inside a for-loop's update
+   clause, for every type." TRICKY: FALSE for non-trivial types. For plain
+   ints the compiler optimizes them identically, but for class-type
+   iterators (e.g. std::list<T>::iterator or any custom iterator), i++ must
+   create and return a temporary copy of the old iterator state before
+   incrementing, which is measurably more expensive than ++i, which can just
+   mutate and return *this by reference.
+
+6. "break inside a nested inner loop exits both the inner and outer loop."
+   TRICKY: FALSE. break only exits the SINGLE innermost enclosing loop (or
+   switch). To exit multiple nested loops you need a flag variable, a goto,
+   wrapping the loops in a function and using return, or (in some languages,
+   not C++) labeled break.
+
+7. "continue in a for-loop skips the update (i++) step too, so you could
+   get an infinite loop if you're not careful." TRICKY: FALSE for a for
+   loop specifically — continue in a for loop jumps to the UPDATE
+   expression, then re-checks the condition, so i++ still runs. (This IS a
+   real risk in a while loop, though — if the increment is inside the loop
+   body AFTER a continue, continue skips it, and you can get an infinite
+   loop. So the trap is: this statement is false for `for`, but the
+   underlying danger it describes is real for `while`.)
+
+8. "You can always use switch instead of if-else if you're just comparing
+   an int variable to several constants — it's a purely stylistic choice
+   with no behavior difference." TRICKY: Mostly true, but not always
+   equivalent — if-else short-circuits and stops at the first true
+   condition in written order, while overlapping ranges checked via
+   if-else-if give you "first match wins" semantics that a switch (which
+   requires distinct constant case labels, no ranges) literally cannot
+   express at all. So they're not always interchangeable, only when each
+   condition is a simple equality check.
+
+9. "A range-based for loop `for (auto x : container)` modifies the
+   original container elements if you change x inside the loop." TRICKY:
+   FALSE — `auto x` (without `&`) copies each element into x, so
+   modifications to x do NOT affect the container. You need `auto& x` to
+   modify the original elements, or `const auto& x` to avoid copying while
+   reading.
+
+10. "Since switch on strings isn't allowed in C++, there's no way to get
+    switch-like behavior for strings." TRICKY: FALSE — you can hash the
+    string (e.g. via a compile-time or runtime hash function) and switch on
+    the resulting integer hash, or use a std::unordered_map<string,
+    function> as a dispatch table. Not truly a "switch" but achieves the
+    same dispatch behavior.
+
+11. "An infinite loop like `for(;;)` never gets optimized by the compiler,
+    since it never ends." TRICKY: FALSE — the compiler can still fully
+    optimize/reorder code inside the loop body (e.g., hoist invariant
+    computations out, vectorize, etc.); infinite doesn't mean "unoptimizable."
+    Separately: a loop with NO side effects and no observable behavior that
+    never terminates is technically undefined behavior for compiler
+    optimization purposes in C++ (compilers are permitted to assume
+    forward progress in loops without side effects), a subtle rule that
+    trips up even experienced engineers.
+
+12. "delete on a nullptr is undefined behavior/crashes." TRICKY: FALSE —
+    delete on a nullptr is explicitly well-defined in C++ and is guaranteed
+    to be a safe no-op. Same for free(NULL) in C. What IS undefined behavior
+    is calling delete TWICE on the same non-null pointer (double free), or
+    calling free() on memory obtained from new.
+
+13. "Loop unrolling always makes code faster." TRICKY: FALSE — beyond a
+    point, unrolling increases code size, which can hurt instruction-cache
+    (I-cache) locality and actually slow things down; it also only helps
+    when there aren't data dependencies forcing serialized execution between
+    unrolled iterations. It's a trade-off, not a free win, which is why
+    compilers make heuristic decisions rather than unrolling everything.
+
+14. "__builtin_expect / [[likely]] changes which branch actually executes."
+    TRICKY: FALSE — it's purely a hint for code layout and branch
+    prediction; it never changes program behavior/correctness, only
+    (potentially) performance. Misusing it (marking the wrong branch as
+    likely) can make performance WORSE, not incorrect.
+
+================================================================================
+END OF FILE
+================================================================================

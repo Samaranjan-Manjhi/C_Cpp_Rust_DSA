@@ -1,0 +1,53 @@
+C++ programming questions to practice
+1. Arrays & Strings
+Find the second largest element in an array without sorting.
+Remove duplicates from a sorted array.
+Find the missing number from 1 to N.
+Find the first non-repeating character in a string.
+Check whether two strings are anagrams.
+Reverse a string without using reverse().
+Find the longest substring without repeating characters.
+Move all zeroes to the end of an array.
+Find the maximum subarray sum (Kadane's algorithm).
+Rotate an array by K positions.
+2. Parentheses / Stack
+Check whether parentheses are balanced.
+Remove the outermost parentheses.
+Find the next greater element.
+Implement a stack using queues.
+Implement a queue using stacks.
+Evaluate a postfix expression.
+Find the minimum element in a stack in O(1).
+3. Linked Lists
+Reverse a linked list.
+Find the middle of a linked list.
+Detect a cycle in a linked list.
+Find the starting point of a cycle.
+Merge two sorted linked lists.
+Remove the Nth node from the end.
+Check whether a linked list is a palindrome.
+Find the intersection point of two linked lists.
+4. Searching & Sorting
+Implement binary search.
+Find the first and last occurrence of an element.
+Find the square root of a number using binary search.
+Implement merge sort.
+Implement quicksort.
+Find the Kth largest/smallest element.
+Search for an element in a rotated sorted array.
+5. Recursion & Backtracking
+Factorial and Fibonacci.
+Generate all subsets of a string/array.
+Generate all permutations of a string.
+Solve the N-Queens problem.
+Generate valid parentheses.
+Solve a maze using backtracking.
+6. Trees
+Inorder, preorder and postorder traversal.
+Level-order traversal.
+Find the height of a binary tree.
+Check whether two trees are identical.
+Check whether a binary tree is balanced.
+Find the lowest common ancestor.
+Validate whether a tree is a BST.
+Find the diameter of a binary tree.

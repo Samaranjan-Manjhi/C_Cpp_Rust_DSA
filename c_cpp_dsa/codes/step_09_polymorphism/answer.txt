@@ -1,0 +1,497 @@
+================================================================================
+     POLYMORPHISM — THEORY ANSWERS + TRICKY QUESTIONS
+================================================================================
+
+================================================================================
+SECTION 1A — COMPILE-TIME (STATIC) POLYMORPHISM (ANSWERS)
+================================================================================
+
+Q1. What is polymorphism? What are its two types in C++?
+
+    - Polymorphism ("many forms") means the SAME interface/call can
+      behave DIFFERENTLY depending on context — either which specific
+      function gets picked based on arguments, or which actual
+      implementation runs based on an object's real type.
+    - Two types in C++:
+        - Compile-time (static) polymorphism: resolved by the COMPILER
+          at compile time — function overloading, operator overloading,
+          and templates/CRTP. No runtime dispatch cost.
+        - Runtime (dynamic) polymorphism: resolved at RUNTIME, based on
+          the actual type of the object — achieved via VIRTUAL functions
+          called through a base class pointer or reference, using the
+          vtable/vptr mechanism.
+
+Q2. What is function overloading? Can you overload based on return type
+    alone?
+
+    - Function overloading: defining multiple functions with the SAME
+      name but DIFFERENT parameter lists (number/type of parameters),
+      resolved by the compiler at compile time based on the arguments
+      used at the call site.
+    - No — you cannot overload based on return type alone. Overload
+      resolution is based purely on the argument list at the call site;
+      return type isn't part of that (e.g. `int f(); double f();` is a
+      redefinition error, not a valid overload).
+
+Q3. What is the difference between function overloading and function
+    overriding?
+
+    - Overloading: SAME class/scope, multiple functions sharing a name
+      but differing in PARAMETER LIST, resolved at COMPILE TIME.
+    - Overriding: happens ACROSS a base/derived class relationship — the
+      derived class redefines a base class's VIRTUAL function with the
+      IDENTICAL signature, resolved at RUNTIME (via the vtable) when
+      called through a base pointer/reference.
+
+Q4. What is the difference between overloading, overriding, and hiding?
+    Give an example of function hiding (name hiding).
+
+    - Overloading: same name, different params, same class, resolved at
+      compile time.
+    - Overriding: same name AND same signature, base class function must
+      be VIRTUAL, resolved at runtime via the vtable when the derived
+      class properly overrides it.
+    - Hiding (name hiding): a derived class defines a function with the
+      SAME NAME as a base function that is either NOT virtual, or has a
+      DIFFERENT signature — this HIDES ALL overloads of that name from
+      the base within the derived class's scope (even ones with
+      different parameter lists that would otherwise still be
+      accessible), unless explicitly re-exposed with `using
+      Base::funcName;`. Example:
+          class Base {
+          public:
+              void print(int x) { cout << "Base::print(int)\n"; }
+          };
+          class Derived : public Base {
+          public:
+              void print(string s) { cout << "Derived::print(string)\n"; }
+          };
+          Derived d;
+          d.print(5);   // COMPILE ERROR! Base::print(int) is HIDDEN,
+                        // not overloaded-into-visibility, by
+                        // Derived::print(string) — even though the
+                        // signatures differ completely.
+
+Q5. What is early binding vs late binding (static vs dynamic dispatch)?
+
+    - Early (static) binding: the function to call is determined at
+      COMPILE TIME, based on the STATIC/declared type of the
+      pointer/reference/object — this is what happens for all NON-VIRTUAL
+      calls. Faster (a direct, potentially inlinable call).
+    - Late (dynamic) binding: the function to call is determined at
+      RUNTIME, based on the ACTUAL/dynamic type of the object — this is
+      what happens for VIRTUAL calls made through a base pointer or
+      reference, resolved via the vtable at the moment of the call, at a
+      small extra runtime cost compared to early binding.
+
+Q6. What is operator overloading? Which operators cannot be overloaded?
+
+    - Operator overloading lets you define custom behavior for existing
+      operators (`+`, `==`, `<<`, `[]`, `()`, etc.) when applied to your
+      own class types, so user-defined types can use natural,
+      built-in-like syntax.
+    - Cannot be overloaded: `::` (scope resolution), `.` (member access),
+      `.*` (pointer-to-member access), `?:` (ternary), and `sizeof`,
+      `typeid` (also `alignof`) — these are fixed by the language and not
+      user-redefinable.
+
+Q7. What is the difference between static polymorphism and dynamic
+    polymorphism from a memory and performance perspective?
+
+    - Static polymorphism (overloading, templates, CRTP): resolved
+      ENTIRELY at compile time — there's no runtime dispatch mechanism
+      involved at all, so calls can be as fast as a direct function call
+      and are fully eligible for INLINING. No extra per-object memory
+      overhead (no vptr needed).
+    - Dynamic polymorphism (virtual functions): requires a hidden VPTR in
+      every object of a polymorphic class (memory overhead — typically
+      one pointer-sized field per object), and every virtual call
+      involves an extra INDIRECTION (dereference vptr -> vtable, look up
+      the function pointer, then call) — a small but real runtime cost,
+      and it generally PREVENTS the compiler from inlining the call
+      (since the exact override to run often isn't knowable until
+      runtime). This is exactly why performance-critical/HFT/embedded
+      code often prefers CRTP or templates (static polymorphism) over
+      virtual functions when the concrete types are known at compile
+      time, trading some flexibility for zero dispatch overhead.
+
+================================================================================
+SECTION 1B — RUNTIME (DYNAMIC) POLYMORPHISM — VIRTUAL FUNCTIONS (ANSWERS)
+================================================================================
+
+Q1. What is a virtual function? Why do we need it?
+
+    - A virtual function is a base class member function declared
+      `virtual`, allowing derived classes to OVERRIDE it such that,
+      when called through a BASE class pointer or reference, the ACTUAL
+      (most-derived) override is invoked at RUNTIME, based on the real
+      object's type.
+    - Needed for RUNTIME POLYMORPHISM — writing generic code against a
+      Base* (or Base&) that automatically gets the correct, type-specific
+      behavior for any derived object, without the calling code needing
+      to know or check the concrete type itself.
+
+Q2. What is a vtable (virtual function table)? How does it work?
+
+    - A vtable is a table, generated ONCE PER CLASS (not per object) that
+      has virtual functions, holding POINTERS TO the actual (most-
+      derived) implementations of each virtual function for that class.
+    - It works by: every object of such a class carries a hidden
+      pointer (vptr) to its class's vtable; calling a virtual function
+      through a base pointer follows the object's vptr to the correct
+      vtable (which vtable depends on the OBJECT's actual type, not the
+      pointer's static type), then looks up the right function pointer
+      in that table by a fixed index (or "slot"), and jumps to it —
+      this indirection is what makes dynamic dispatch work.
+
+Q3. Explain the vtable and vptr mechanism in detail.
+
+    - Each CLASS that declares or inherits virtual functions gets exactly
+      ONE vtable, built by the compiler, containing one entry per virtual
+      function — populated with either that class's own override, or (if
+      not overridden) the nearest ancestor's implementation.
+    - Each OBJECT of such a class gets a hidden VPTR member (typically
+      placed at the start of the object's memory layout), set by the
+      constructor to point at ITS CLASS's vtable — importantly, this
+      happens PROGRESSIVELY during construction: the base class
+      constructor sets the vptr to the BASE's vtable first, then as each
+      derived class's constructor runs, it re-points the vptr to ITS OWN
+      vtable, so that by the time construction fully completes, the vptr
+      correctly points at the MOST-DERIVED class's vtable.
+    - A virtual call `basePtr->virtualFunc()` compiles to: dereference
+      basePtr's vptr to find the vtable, index into the vtable at
+      virtualFunc's fixed slot number to get a function pointer, then
+      call through that pointer — this ALWAYS resolves to whichever
+      class's vtable the ACTUAL object's vptr currently points to,
+      achieving correct dynamic dispatch regardless of the pointer's
+      static (declared) type.
+
+Q4. What is the overhead of a virtual function call vs a direct call?
+
+    - An extra memory INDIRECTION: dereferencing the vptr to find the
+      vtable, then indexing into the vtable to find the function
+      pointer, then calling through it — one or two extra memory
+      accesses compared to a direct call to a known address.
+    - It also typically PREVENTS INLINING, since the compiler usually
+      can't know at compile time which override will run — this loss of
+      inlining is often the bigger real-world cost, especially for small,
+      extremely hot functions (relevant in HFT/embedded/systems code).
+
+Q5. What is devirtualization? When can the compiler perform it?
+
+    - Devirtualization is an optimization where the compiler converts a
+      virtual call into a DIRECT (and potentially inlinable) call, when
+      it can PROVE at compile time exactly which override will run —
+      eliminating the vtable indirection for that call site.
+    - Possible when: the object's EXACT static type is known at the call
+      site (e.g. a local, non-polymorphically-used object, not accessed
+      through a base pointer); the class or function is marked `final`
+      (guaranteeing no further override exists); or through more
+      aggressive whole-program/link-time optimization (LTO) that can
+      sometimes prove a pointer's actual runtime type beyond what a
+      single translation unit could determine alone.
+
+Q6. What is a virtual destructor? Why is it important?
+
+    - A virtual destructor is a base class destructor marked `virtual`,
+      ensuring `delete basePtr;` (where basePtr actually points to a
+      Derived object) correctly calls the Derived destructor FIRST, then
+      the Base destructor, instead of only calling the Base destructor.
+    - WITHOUT it, deleting a derived object through a base pointer is
+      UNDEFINED BEHAVIOR — in practice, typically only the base
+      destructor runs, and any resources the derived part of the object
+      owned are LEAKED (or worse). Rule of thumb: if a class has ANY
+      virtual function (or is meant to be used polymorphically via base
+      pointers at all), its destructor should be virtual.
+
+Q7. Can constructors be virtual? Can destructors be virtual?
+
+    - Constructors: NO — a virtual call dispatches through an object's
+      vtable, but the vtable is only being SET UP during construction
+      itself (there's no fully-formed object with a valid vptr yet before
+      construction even starts) — "virtual constructor" is conceptually
+      meaningless and disallowed by the language.
+    - Destructors: YES — and they SHOULD be virtual in any base class
+      intended to be deleted through a base class pointer (see Q6).
+
+Q8. Can you call a virtual function from a constructor or destructor?
+    What happens?
+
+    - Yes, it compiles and runs, but does NOT dispatch polymorphically as
+      might be expected — it calls the CURRENTLY-CONSTRUCTING (or
+      currently-destructing) class's OWN version, not any more-derived
+      override. During a BASE constructor's execution, the vptr is still
+      set up for the base class (the derived part doesn't exist yet), so
+      the call resolves to the base version. Symmetrically, during a
+      BASE destructor's execution (which runs AFTER the derived
+      destructor has already run and torn down the derived part), the
+      vptr has already been reset back to the base class's vtable, so
+      calls there also resolve to the base version, never the (already-
+      destroyed) derived override. This is a classic C++ gotcha, and
+      relying on virtual dispatch inside constructors/destructors is
+      considered an anti-pattern.
+
+Q9. Can you call a non-virtual function polymorphically? Explain.
+
+    - No — a non-virtual function call uses EARLY (static) binding,
+      resolved at compile time based purely on the STATIC/declared type
+      of the pointer or reference used to make the call — NOT the
+      object's actual runtime type. Calling a non-virtual function
+      through a `Base*` that actually points to a Derived object ALWAYS
+      invokes Base's version, even if Derived defines a function with the
+      same name (which, per 1A Q4, would just be HIDING the base version,
+      not overriding it) — there is no runtime dispatch happening for
+      non-virtual calls at all.
+
+Q10. What is the difference between the override and final keywords?
+
+    - `override` (written after a derived function's declaration) tells
+      the compiler "this is intended to override a base virtual
+      function" — the compiler then VERIFIES this is actually true
+      (matching signature, base function is virtual) and produces a
+      COMPILE ERROR if not, catching typos/signature mismatches that
+      would otherwise silently create an unrelated new function instead
+      of an override.
+    - `final` prevents further overriding of a specific virtual function
+      in any further-derived class, or prevents an entire class from
+      being derived from at all — useful for design intent, and can
+      sometimes help the compiler with devirtualization.
+
+Q11. What is a covariant return type? Give an example.
+
+    - A covariant return type allows an OVERRIDING virtual function to
+      return a MORE DERIVED pointer/reference type than the base class
+      version declared, while still counting as a valid override.
+      Example:
+          class Animal {
+          public:
+              virtual Animal* clone() { return new Animal(*this); }
+          };
+          class Dog : public Animal {
+          public:
+              Dog* clone() override { return new Dog(*this); }  // valid!
+          };
+      `Dog::clone()` returning `Dog*` instead of `Animal*` is allowed
+      because Dog* can always safely be used wherever Animal* was
+      expected — this lets callers who already know they're working with
+      a Dog get a properly-typed Dog* directly, without manual casting.
+
+Q12. What is RTTI (Run Time Type Information)?
+
+    - RTTI is a C++ feature enabling QUERYING an object's actual type
+      information AT RUNTIME, primarily for polymorphic (virtual-
+      function-containing) class hierarchies — implemented via the
+      `dynamic_cast` operator and the `typeid` operator, both of which
+      rely on type information the compiler embeds for polymorphic
+      classes (typically referenced from the class's vtable).
+
+Q13. What is the difference between dynamic_cast and static_cast?
+
+    - `dynamic_cast<Derived*>(basePtr)` performs a RUNTIME CHECK (using
+      RTTI) to verify the object ACTUALLY IS (or derives from) the
+      target type before allowing the cast — returning `nullptr` (for
+      pointer casts) or throwing `std::bad_cast` (for reference casts) if
+      the cast is invalid. Only works on POLYMORPHIC types (types with at
+      least one virtual function).
+    - `static_cast<Derived*>(basePtr)` performs NO runtime check at all —
+      it's resolved entirely at COMPILE TIME, and if the object isn't
+      actually of the target type, using the resulting pointer is
+      UNDEFINED BEHAVIOR. It's faster (no runtime cost) but unsafe unless
+      you're certain of the actual type through other means.
+
+Q14. Can a virtual function be inline? Is it ever actually inlined?
+
+    - Yes, declaring a virtual function `inline` is syntactically valid.
+      However, it is USUALLY NOT actually inlined when called THROUGH A
+      POINTER OR REFERENCE (the typical polymorphic use case) — since the
+      compiler generally can't know at compile time which override will
+      run, it can't substitute the function body at the call site.
+    - It CAN still be inlined in the specific cases where the compiler
+      DOES know the exact type at compile time — e.g. calling the virtual
+      function directly on a concrete, local object (not through a base
+      pointer at all), or in situations where devirtualization (see 1B
+      Q5) has already resolved the call to a specific, known override.
+
+Q15. What happens to the vtable when a class uses multiple inheritance
+     with multiple virtual base classes?
+
+    - When a class inherits from multiple base classes that each have
+      their own virtual functions, the derived class's object typically
+      ends up with MULTIPLE VPTRs — one for each distinct base class
+      "sub-object" that has its own vtable, since each base's vtable
+      layout/function-slot-numbering is independent of the others. The
+      compiler adjusts the object's memory layout (and applies pointer
+      "this-adjustments" when converting between different base pointer
+      types) to keep each base's virtual dispatch mechanism working
+      correctly through its own vptr. This adds real memory overhead
+      (multiple vptrs per object instead of one) and complexity to the
+      object's layout compared to single inheritance — one more reason
+      multiple inheritance (especially combined with virtual functions
+      and/or virtual base classes) is used more carefully in performance-
+      sensitive or embedded contexts.
+
+================================================================================
+SECTION 1C — STATIC POLYMORPHISM — CRTP & TEMPLATES (ANSWERS)
+================================================================================
+
+Q1. What is CRTP (Curiously Recurring Template Pattern)? How does it
+    achieve static polymorphism without vtable overhead?
+
+    - CRTP is a technique where a class DERIVES FROM A TEMPLATE
+      instantiated with ITSELF as the template argument:
+          template <typename Derived>
+          class Base {
+          public:
+              void interface() {
+                  static_cast<Derived*>(this)->implementation();
+              }
+          };
+          class Concrete : public Base<Concrete> {
+          public:
+              void implementation() { /* concrete's own logic */ }
+          };
+      Calling `obj.interface()` internally calls
+      `static_cast<Derived*>(this)->implementation()` — since `Derived`
+      is known at COMPILE TIME (it's the template parameter), this cast
+      and the subsequent call are resolved ENTIRELY at compile time.
+    - This achieves "static polymorphism" — the effect of "calling code
+      that dispatches to the right derived-specific behavior" — WITHOUT
+      any virtual functions, vtables, or vptrs involved at all. Since the
+      exact `implementation()` to call is known at compile time (through
+      the template parameter), the compiler can INLINE it directly,
+      giving zero runtime dispatch overhead compared to true virtual
+      functions — at the cost of losing TRUE runtime polymorphism (you
+      can't have a single `std::vector<Base*>` holding different
+      concrete types and call `interface()` on each uniformly through one
+      common base pointer type, since `Base<TypeA>` and `Base<TypeB>` are
+      actually DIFFERENT, unrelated template instantiations/types).
+
+Q2. When would you prefer CRTP over virtual functions?
+
+    - Prefer CRTP when: you're in PERFORMANCE-CRITICAL code (HFT, game
+      engines, embedded/low-latency systems) where even the small
+      overhead of a virtual call (indirection + lost inlining) is
+      unacceptable, AND the concrete types you need to dispatch between
+      are KNOWN AT COMPILE TIME (you don't need to store a heterogeneous
+      collection of different derived types behind one common runtime
+      interface — e.g., you're writing a generic algorithm parameterized
+      by ONE specific policy/strategy type chosen at compile time, not
+      switching between many types dynamically at runtime).
+    - Prefer VIRTUAL FUNCTIONS instead when you genuinely need RUNTIME
+      flexibility — e.g. a `std::vector<Shape*>` holding a mix of Circle,
+      Square, and Triangle objects decided at runtime (based on user
+      input, config, or a factory pattern) — CRTP fundamentally cannot
+      express "a single container holding different concrete types
+      uniformly," since each CRTP-derived type is a genuinely different,
+      unrelated C++ type from the compiler's perspective.
+
+================================================================================
+SECTION 2 — TRICKY / GOTCHA QUESTIONS
+     (Sound right but aren't, or vice versa — classic polymorphism
+      interview traps, matching the style of your "new + free" example.)
+================================================================================
+
+1. "A derived class function with the same name AND same parameter types
+   as a base class function is always an override, as long as the base
+   version exists." TRICKY: FALSE — it's only a true OVERRIDE if the base
+   version is marked `virtual` (and the signatures match exactly,
+   including const-qualification). If the base function is NOT virtual,
+   the derived function instead HIDES the base version — calling it
+   through a Base* still invokes the base version (no dynamic dispatch
+   at all), which looks deceptively similar to overriding in the source
+   code but behaves completely differently at runtime.
+
+2. "Marking a function override in a derived class guarantees it will be
+   called polymorphically through a base pointer." TRICKY: Mostly true
+   but worth the nuance — `override` guarantees the COMPILER verifies
+   this IS a valid override of an existing base virtual function
+   (catching mismatches as compile errors) — but the actual polymorphic
+   dispatch still only happens if the call is made THROUGH a base
+   class pointer or reference. Calling the derived function directly on
+   a concrete Derived object/variable, or via a Derived* / Derived&,
+   doesn't need dynamic dispatch at all (the compiler already knows the
+   exact type) — `override` is about correctness/safety of the
+   declaration, not about forcing every call site to go through virtual
+   dispatch.
+
+3. "Since dynamic_cast performs a safe runtime check, it works on any
+   class type, including ones with no virtual functions at all." TRICKY:
+   FALSE — `dynamic_cast` (in the pointer-downcast / cross-cast sense)
+   only works on POLYMORPHIC types — classes with at least one virtual
+   function (needed because RTTI relies on information associated with
+   the vtable). Attempting a dynamic_cast involving a non-polymorphic
+   type is a compile error for cast directions that would require RTTI.
+
+4. "CRTP gives you the same runtime flexibility as virtual functions,
+   just faster." TRICKY: FALSE — CRTP gives you ZERO runtime dispatch
+   overhead but at the cost of losing TRUE runtime polymorphism. You
+   cannot store a heterogeneous collection of different CRTP-derived
+   types behind one common pointer type and call a shared interface
+   method uniformly at runtime (as you can with `std::vector<Base*>` for
+   virtual functions) — each CRTP instantiation (`Base<TypeA>` vs
+   `Base<TypeB>`) is a genuinely different, unrelated type at compile
+   time. CRTP trades runtime flexibility for compile-time performance,
+   it doesn't give you both.
+
+5. "A virtual function marked inline will never actually be inlined,
+   since virtual calls always go through the vtable." TRICKY: FALSE —
+   while it's true that calls made THROUGH a base pointer/reference are
+   usually NOT inlined (the compiler doesn't know the override at compile
+   time), a virtual function CAN still be inlined when called on an
+   object of known concrete type directly (not via a base pointer), or
+   when devirtualization has resolved the specific override at compile
+   time — "virtual" and "never inlinable" are not strictly synonymous.
+
+6. "Object slicing only happens with pointers, never with plain objects
+   or references." TRICKY: FALSE, and actually backward — slicing
+   specifically happens with PLAIN VALUE objects (assigning/passing a
+   Derived object BY VALUE into a Base-typed variable/parameter) — it
+   does NOT happen with pointers or references, since neither of those
+   copies the object at all; they just refer to the existing, intact
+   derived object. Pointers/references are in fact the STANDARD FIX for
+   slicing, not a cause of it.
+
+7. "Since a covariant return type changes what type is returned, it
+   counts as a different function signature, so it's actually function
+   overloading, not overriding." TRICKY: FALSE — a covariant return type
+   is a SPECIAL, EXPLICITLY-ALLOWED exception in the language rules for
+   OVERRIDING specifically — the C++ standard permits the return type to
+   covary (become more derived) while everything else about the override
+   rules still applies (same function name, same parameters, base
+   function must be virtual) — it is still classified and behaves as a
+   true override (runtime dispatch still applies), not an unrelated
+   overload.
+
+8. "Calling a virtual function from a constructor calls the derived
+   class's version, since by the time you're inside ANY constructor in
+   the chain, the object 'is' the most-derived type already." TRICKY:
+   FALSE — the object's vptr is updated PROGRESSIVELY as each level of
+   the constructor chain runs, not all at once at the very start. While
+   a BASE class's constructor is running, the vptr still points to the
+   BASE's vtable (the derived part of the object hasn't been constructed
+   yet at all), so a virtual call made at that point resolves to the base
+   version, regardless of what the object will eventually "be" once
+   construction fully finishes.
+
+9. "final on a virtual function or class is purely documentation with no
+   effect on the generated machine code." TRICKY: FALSE — while `final`'s
+   primary purpose is expressing design intent (with a compile error if
+   violated), it can also ENABLE devirtualization in some compilers,
+   since the compiler now knows for certain no further override is
+   possible — sometimes allowing a virtual call to be converted into a
+   direct, inlinable one, a genuine (if compiler-dependent) performance
+   benefit beyond documentation.
+
+10. "Multiple inheritance with virtual functions from multiple bases adds
+    no extra memory overhead per object compared to single inheritance,
+    since it's all still just 'one object.'" TRICKY: FALSE — an object
+    inheriting virtual functions from MULTIPLE distinct base classes
+    typically needs MULTIPLE VPTRs (one per base class's independent
+    vtable/dispatch mechanism), increasing the object's memory footprint
+    compared to single inheritance (which needs only one vptr) — "one
+    object" doesn't mean "one vptr" once multiple independent virtual
+    function tables are involved.
+
+================================================================================
+END OF FILE
+================================================================================

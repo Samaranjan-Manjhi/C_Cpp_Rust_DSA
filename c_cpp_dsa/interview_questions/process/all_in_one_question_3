@@ -1,0 +1,2698 @@
+================================================================================
+   C++ + DSA — WEIGHTED TOPIC-WISE INTERVIEW QUESTIONS (PART 3)
+   All questions are NEW — no repeats from previous files.
+   Follows exact step order of cpp_dsa_roadmap.txt
+   Count per topic weighted by interview importance.
+================================================================================
+
+FORMAT:
+  [ ] = not attempted   [~] = need revision   [x] = done
+  (E) Easy   (M) Medium   (H) Hard
+  [T] = Theory/Verbal    [C] = Coding
+
+WEIGHT TABLE (questions per topic in this file):
+  Topic                    |  E  |  M  |  H  | Total
+  -------------------------|-----|-----|-----|------
+  Variables & Operators    |  5  |  5  |  0  |  10
+  Loops & Patterns         |  5  |  5  |  0  |  10
+  Functions & Recursion    |  5  |  8  |  5  |  18
+  Arrays (most important)  | 15  | 15  | 10  |  40
+  Strings (very high)      | 10  | 10  |  8  |  28
+  Pointers & Memory        |  5  |  5  |  3  |  13
+  OOP                      |  5  |  8  |  3  |  16
+  STL / Vectors            |  5  |  8  |  3  |  16
+  Linked Lists (classic)   | 10  | 10  |  5  |  25
+  Stacks                   |  5  |  8  |  5  |  18
+  Queues                   |  5  |  5  |  3  |  13
+  Hashing                  |  5  |  8  |  3  |  16
+  Searching (BS heavy)     |  5  |  8  |  3  |  16
+  Sorting                  |  5  |  5  |  3  |  13
+  Two Pointer              |  5  |  8  |  3  |  16
+  Sliding Window           |  5  |  8  |  3  |  16
+  Prefix Sum               |  5  |  5  |  3  |  13
+  Trees (very high)        | 10  | 15  | 10  |  35
+  BST                      |  5  |  8  |  3  |  16
+  Heaps                    |  3  |  8  |  5  |  16
+  Graphs (high)            |  5  | 15  | 10  |  30
+  Backtracking             |  3  |  8  |  5  |  16
+  Divide & Conquer         |  3  |  5  |  3  |  11
+  Greedy                   |  5  |  8  |  5  |  18
+  DP — 1D                  |  5  | 10  |  5  |  20
+  DP — 2D / Knapsack       |  3  | 10  |  8  |  21
+  DP — Strings             |  2  |  5  |  5  |  12
+  DP — Advanced            |  0  |  5  |  8  |  13
+  Bit Manipulation         |  5  |  5  |  3  |  13
+  Trie                     |  2  |  5  |  3  |  10
+  Segment Tree / BIT       |  2  |  3  |  3  |   8
+  Math & Number Theory     |  5  |  5  |  3  |  13
+  Design / OOP Coding      |  0  |  8  |  3  |  11
+  -------------------------|-----|-----|-----|------
+  TOTAL                    | 163 | 242 | 115 | 520
+
+================================================================================
+PHASE 1 — VARIABLES, DATA TYPES & OPERATORS
+(5 Easy, 5 Medium — fresh questions only)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Given a = 5, b = 3, print a/b and (float)a/b. Explain the difference.
+          Expected output: 1   1.666...
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Find the sum of all digits of a number without using strings
+          e.g. 4567 -> 4+5+6+7 = 22
+          Asked at: TCS, Wipro, Capgemini
+
+  [ ] (E) Without using any variable, print numbers 1 to 5 using a for loop
+          where loop variable i starts at 0 — no extra int declaration
+          Asked at: Wipro, Infosys
+
+  [ ] (E) Given two integers, check if exactly one of them is negative
+          Hint: use XOR on sign bits — (a < 0) ^ (b < 0)
+          Asked at: Dolat Capital, Samsung
+
+  [ ] (E) Check if a number is divisible by both 3 and 7 simultaneously
+          Asked at: TCS, Capgemini
+
+MEDIUM
+-------
+  [ ] (M) Multiply a number by 7 using only bitwise operators and addition
+          Hint: x*7 = (x << 3) - x
+          Asked at: Samsung, Dolat Capital
+
+  [ ] (M) Add 1 to a number without using + operator
+          Hint: use two's complement: -(-x-1) or ~x and negate, or loop with XOR+carry
+          Asked at: Amazon, Samsung
+
+  [ ] (M) Find the two's complement of a number manually in code
+          Asked at: Sasken, Samsung, Dolat Capital
+
+  [ ] (M) Determine the sign of a product of two numbers without multiplying
+          (check signs of both numbers using bit shift)
+          Asked at: Dolat Capital, Samsung
+
+  [ ] (M) Given integer x, check if x and x+1 differ only in the last two bits
+          Asked at: Competitive Programming, Dolat Capital
+
+================================================================================
+PHASE 2 — LOOPS & PATTERNS
+(5 Easy, 5 Medium)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Print the following right-aligned number pattern for N=4:
+             1
+            12
+           123
+          1234
+          Asked at: TCS, Wipro, Capgemini
+
+  [ ] (E) Print alternating 0 and 1 in a single row for N elements
+          e.g. N=6: 0 1 0 1 0 1
+          Asked at: TCS, Wipro
+
+  [ ] (E) Print the Floyd's triangle:
+          1
+          2 3
+          4 5 6
+          7 8 9 10
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Find the sum of all even numbers between 1 and N (inclusive)
+          Asked at: TCS, Wipro, Capgemini
+
+  [ ] (E) Find the smallest divisor of N greater than 1 (for prime check)
+          Asked at: TCS, Infosys
+
+MEDIUM
+-------
+  [ ] (M) Print all perfect numbers between 1 and N
+          A perfect number = sum of its proper divisors e.g. 6 = 1+2+3
+          Asked at: Wipro, Zoho, Capgemini
+
+  [ ] (M) Find all numbers between 1 and N that are both prime and palindrome
+          Asked at: Wipro, Infosys
+
+  [ ] (M) Print the multiplication table of numbers 1 to N in matrix form
+          (N rows and N columns)
+          Asked at: Capgemini, TCS
+
+  [ ] (M) Find all pairs (i, j) where i < j and arr[i] > arr[j] — brute force O(N^2)
+          (Count inversions — brute force version before learning merge sort)
+          Asked at: TCS, Infosys, Wipro
+
+  [ ] (M) Check if N is a perfect square without using sqrt() — use loop only
+          Asked at: Amazon, TCS, Wipro
+
+================================================================================
+PHASE 3 — FUNCTIONS & RECURSION
+(5 Easy, 8 Medium, 5 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Write a function that returns the Nth term of the sequence:
+          1, 1, 2, 3, 5, 8, 13... using recursion
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Write a recursive function to compute sum of first N odd numbers
+          Asked at: TCS, Wipro
+
+  [ ] (E) Write a function that counts how many times digit d appears in number n
+          e.g. countDigit(112233, 2) = 2
+          Asked at: Wipro, Capgemini
+
+  [ ] (E) Write a function that returns true if a number is a perfect number
+          (sum of proper divisors equals the number)
+          Asked at: Zoho, Wipro
+
+  [ ] (E) Write a recursive function to find the maximum element in an array
+          Asked at: TCS, Wipro, Infosys
+
+MEDIUM
+-------
+  [ ] (M) Write a function that computes nCr (binomial coefficient) using recursion
+          with memoization to avoid recomputation
+          nCr = nC(r-1) + (n-1)C(r-1), base: nC0 = nCn = 1
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) Implement a function that flattens a nested vector<vector<int>>
+          into a single vector<int> using recursion
+          Asked at: Adobe, Atlassian
+
+  [ ] (M) Write a recursive function to generate all binary strings of length N
+          e.g. N=2: 00, 01, 10, 11
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Implement recursive binary search and count the number of recursive calls made
+          Asked at: TCS, Amazon
+
+  [ ] (M) Write a function f(n) that returns number of ways to tile a 2xN board
+          using 2x1 dominoes (same as Fibonacci recurrence)
+          Asked at: Amazon, Microsoft, Goldman Sachs
+
+  [ ] (M) Implement mutual recursion: isEven(n) calls isOdd(n-1), isOdd calls isEven
+          Asked at: Zoho, Wipro
+
+  [ ] (M) Given N, print all numbers from 1 to N using recursion, but
+          numbers divisible by 3 should be printed as "Fizz",
+          by 5 as "Buzz", by both as "FizzBuzz"
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Write recursive function to check if array is sorted in ascending order
+          Asked at: Amazon, Infosys, Wipro
+
+HARD
+-----
+  [ ] (H) Implement memoized recursion for computing number of ways to
+          reach the Nth stair where you can climb 1, 2, or 3 steps
+          Count all distinct ways. Then reduce space to O(1).
+          Asked at: Amazon, Microsoft, Google, Flipkart
+
+  [ ] (H) Josephus Problem: N people in circle, every Kth person eliminated.
+          Find position of last survivor.
+          Recurrence: josephus(n, k) = (josephus(n-1, k) + k) % n
+          Asked at: Goldman Sachs, Google, Amazon
+
+  [ ] (H) Write a function to compute all distinct ways to express N as
+          an ordered sum of positive integers (compositions of N)
+          e.g. 3: 1+1+1, 1+2, 2+1, 3
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Implement a recursive descent parser for arithmetic expressions
+          with +, -, *, /, and parentheses
+          Asked at: Google, Microsoft, Adobe
+
+  [ ] (H) Given a number N, find all expressions formed by inserting
+          + or - between digits of N that evaluate to 0
+          e.g. 123: 1+2-3=0
+          Asked at: Google, Amazon
+
+================================================================================
+PHASE 4 — ARRAYS
+(15 Easy, 15 Medium, 10 Hard — highest weight topic)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Find the sum of all elements in an array
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Count elements greater than a given value X in array
+          Asked at: TCS, Wipro, Capgemini
+
+  [ ] (E) Replace each element with the greatest element on its right side
+          e.g. [17,18,5,4,6,1] -> [18,6,6,6,1,-1]
+          Asked at: Amazon, LeetCode Easy
+
+  [ ] (E) Find the index of first occurrence of minimum element
+          Asked at: TCS, Wipro
+
+  [ ] (E) Given array of integers, separate odd and even numbers
+          (odd numbers first, even numbers after — any order within groups)
+          Asked at: TCS, Wipro, Zoho
+
+  [ ] (E) Check if two arrays have the same elements (not necessarily same order)
+          without sorting (use frequency map)
+          Asked at: TCS, Wipro
+
+  [ ] (E) Find the intersection of two unsorted arrays (common elements)
+          Asked at: Amazon, TCS
+
+  [ ] (E) Find the union of two unsorted arrays (all unique elements)
+          Asked at: Amazon, TCS, Wipro
+
+  [ ] (E) Right rotate an array by 1 position
+          Asked at: TCS, Wipro
+
+  [ ] (E) Count occurrences of each element and print only those appearing once
+          Asked at: TCS, Wipro, Amazon
+
+  [ ] (E) Find the sum of elements at even indices vs odd indices
+          Asked at: TCS, Capgemini
+
+  [ ] (E) Find the first repeating element in array
+          Asked at: Amazon, Flipkart, Paytm
+
+  [ ] (E) Find the first non-repeating element in array
+          Asked at: Amazon, Flipkart, Adobe
+
+  [ ] (E) Print all elements that appear exactly K times in array
+          Asked at: Amazon, Flipkart
+
+  [ ] (E) Check if array can be divided into pairs with equal sum
+          Asked at: TCS, Amazon
+
+MEDIUM
+-------
+  [ ] (M) Find the length of the longest subarray with equal number of 0s and 1s
+          Hint: convert 0->-1, use prefix sum + hashmap
+          Asked at: Amazon, Flipkart, Paytm, Goldman Sachs
+
+  [ ] (M) Find the minimum number of swaps required to sort an array
+          Hint: cycle detection in permutation graph
+          Asked at: Amazon, Flipkart, Goldman Sachs
+
+  [ ] (M) Find the maximum difference between two elements such that
+          larger element appears after smaller element (stock buy-sell variant)
+          Must be O(N) — not O(N^2)
+          Asked at: Amazon, Microsoft, Goldman Sachs
+
+  [ ] (M) Given an array, find all elements that appear more than N/3 times
+          Must be O(N) time O(1) space — Boyer-Moore variant
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Find the smallest positive integer that cannot be represented as
+          sum of any subset of a given sorted positive array
+          Asked at: Google, Amazon, Goldman Sachs
+
+  [ ] (M) Given array where every element appears twice except two elements,
+          find those two elements in O(N) time O(1) space
+          Hint: XOR all, split into two groups by differing bit
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Find maximum sum of exactly K consecutive elements (fixed window)
+          Asked at: Amazon, Flipkart, Paytm
+
+  [ ] (M) Given array of N integers and target T, find number of subarrays
+          whose sum equals T (allow negative numbers)
+          Hint: prefix sum + hashmap
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Rearrange array so that arr[i] becomes arr[arr[i]]
+          Must be done in O(N) time and O(1) extra space
+          Hint: use value encoding (add N * (arr[arr[i]] % N))
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Find the minimum length subarray with sum >= target
+          Hint: sliding window
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Given sorted array rotated K times, find K (number of rotations)
+          Asked at: Amazon, Flipkart
+
+  [ ] (M) Given array of intervals, insert a new interval and merge if needed
+          Asked at: Amazon, Microsoft, Google, Adobe
+
+  [ ] (M) Find number of subarrays with product less than K
+          Asked at: Amazon, Google
+
+  [ ] (M) Minimum operations to make all elements equal using increment/decrement
+          (find median — minimum absolute deviation is at median)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Given N ranges [l, r], find point covered by maximum ranges
+          Hint: difference array technique
+          Asked at: Amazon, Flipkart, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Given an array, find the maximum XOR of any two elements
+          Hint: Trie-based O(N log max_val)
+          Asked at: Amazon, Google
+
+  [ ] (H) Count subarrays with XOR equal to K
+          Hint: prefix XOR + hashmap
+          Asked at: Amazon, Flipkart, Goldman Sachs
+
+  [ ] (H) Find the K-th smallest element in an unsorted array
+          in O(N) average time using QuickSelect
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (H) Given an array, find the maximum circular subarray sum
+          Hint: total_sum - min_subarray_sum (or handle all-negative case)
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (H) Find the minimum number of elements to remove so that
+          max - min < K for the remaining elements
+          Hint: sort, use sliding window
+          Asked at: Amazon, Google
+
+  [ ] (H) Given array, find all triplets (i, j, k) where i<j<k
+          and arr[i] < arr[j] > arr[k] (peak triplet) — count them
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Maximum sum of two non-overlapping subarrays of lengths L and M
+          Hint: prefix max arrays
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Given array of positive integers, partition into two subsets
+          with minimum absolute difference of sums
+          Hint: DP — subset sum variant
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Number of subarrays with exactly K distinct integers
+          Hint: exactly K = atMost(K) - atMost(K-1)
+          Asked at: Google, Amazon
+
+  [ ] (H) Maximum width ramp: find max j-i such that arr[i] <= arr[j]
+          Hint: monotonic stack + traverse from right
+          Asked at: Google, Amazon, Goldman Sachs
+
+================================================================================
+PHASE 5 — STRINGS
+(10 Easy, 10 Medium, 8 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Find the ASCII value of each character in a string
+          Asked at: TCS, Wipro
+
+  [ ] (E) Check if a string is a valid identifier
+          (starts with letter or _, followed by letters, digits, _)
+          Asked at: TCS, Wipro, Zoho
+
+  [ ] (E) Print all characters at even index positions of a string
+          Asked at: TCS, Wipro
+
+  [ ] (E) Replace all spaces in a string with '%20' (URL encoding)
+          Asked at: Amazon, Microsoft
+
+  [ ] (E) Count the number of uppercase and lowercase letters in a string
+          Asked at: TCS, Wipro, Capgemini
+
+  [ ] (E) Find the longest word in a sentence
+          Asked at: TCS, Wipro, Zoho
+
+  [ ] (E) Remove duplicate characters from a string (keep first occurrence)
+          Asked at: Amazon, Zoho
+
+  [ ] (E) Check if a string has all unique characters (without extra space)
+          Hint: use bitmask for 26 lowercase letters
+          Asked at: Amazon, Microsoft, Adobe
+
+  [ ] (E) Convert a sentence to title case (first letter of each word uppercase)
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Find the most frequent character in a string
+          Asked at: TCS, Amazon, Zoho
+
+MEDIUM
+-------
+  [ ] (M) Find all substrings of a string and print them
+          (Generate all N*(N+1)/2 substrings — understand brute force first)
+          Asked at: TCS, Wipro, Amazon
+
+  [ ] (M) Given string, find longest substring with at most 2 distinct characters
+          Hint: sliding window with hashmap
+          Asked at: Amazon, Google, Adobe
+
+  [ ] (M) Given a pattern and a string, check if string matches pattern
+          e.g. pattern "aabb", string "redblueredblue" -> false
+               pattern "abba", string "dogcatcatdog" -> true
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Find the number of times a smaller string appears as subsequence
+          in a larger string (not substring — any positions)
+          Asked at: Amazon, Google
+
+  [ ] (M) Rearrange characters of a string so no two adjacent chars are same
+          Return empty string if not possible
+          Hint: use max-heap (greedy)
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Given a string of brackets, find the length of the longest valid
+          parentheses substring
+          Hint: stack or DP
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Find all starting indices of anagrams of pattern p in string s
+          e.g. s="cbaebabacd", p="abc" -> [0, 6]
+          Hint: sliding window + frequency array
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Check if string T can be formed by interleaving strings S1 and S2
+          Asked at: Amazon, Google (also a DP problem)
+
+  [ ] (M) Given a string, find the minimum number of characters to delete
+          to make it an anagram of another string
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Zigzag conversion: write string in zigzag on N rows, then read row by row
+          e.g. "PAYPALISHIRING" with 3 rows -> "PAHNAPLSIIGYIR"
+          Asked at: Amazon, Microsoft, Google
+
+HARD
+-----
+  [ ] (H) Implement the Z-algorithm for pattern matching
+          Z[i] = length of longest substring starting from i that is prefix of string
+          Asked at: Google, Competitive Programming
+
+  [ ] (H) Find the lexicographically smallest rotation of a string
+          Hint: Booth's algorithm or suffix array
+          Asked at: Google, Amazon
+
+  [ ] (H) Given a string, find the longest substring that is also a palindrome
+          using Manacher's algorithm in O(N)
+          Asked at: Google, Amazon, Adobe
+
+  [ ] (H) Count distinct palindromic substrings
+          Hint: Manacher's or DP with deduplication
+          Asked at: Google, Amazon
+
+  [ ] (H) Given string S and dictionary, segment S into all possible sentences
+          using dictionary words (Word Break II — print all)
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (H) Find the shortest string that contains all given strings as substrings
+          (Shortest Common Superstring — NP-hard, but DP+bitmask for small N)
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Find longest common extension of two positions in a string
+          (LCE queries) — preprocess with suffix array + LCP
+          Asked at: Google, Competitive Programming
+
+  [ ] (H) Given a list of words, find the word that can be typed using letters
+          from only one row of the keyboard (top row: qwertyuiop, etc.)
+          Extension: find longest such word
+          Asked at: Amazon, Microsoft
+
+================================================================================
+PHASE 6 — POINTERS & MEMORY
+(5 Easy, 5 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Print the address of a variable and its value using pointer
+          Show: &x, *p, p itself — what each prints
+          Asked at: TCS, Wipro, L&T Infotech
+
+  [ ] (E) Write a function that doubles the value of an integer using pointer
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Access elements of an array using pointer arithmetic only (no arr[i])
+          Asked at: TCS, L&T Infotech, Sasken
+
+  [ ] (E) What is the output? int a=5; int *p=&a; *p=10; cout<<a;
+          Explain why.
+          Asked at: TCS, Wipro, Infosys, Capgemini
+
+  [ ] (E) Dynamically allocate an integer, assign value 42, print, then free it
+          Asked at: TCS, Wipro, L&T Infotech
+
+MEDIUM
+-------
+  [ ] (M) Implement a function that takes a double pointer and modifies the original
+          pointer to point to a new dynamically allocated integer
+          Asked at: Persistent, Nagarro, L&T Infotech
+
+  [ ] (M) Write a generic swap function using void pointers (C-style)
+          void swap(void* a, void* b, size_t size)
+          Asked at: Sasken, L&T Infotech, Persistent
+
+  [ ] (M) Detect if a given pointer is pointing to stack or heap memory
+          Hint: compare pointer address with a local variable's address
+          Asked at: Dolat Capital, Sasken
+
+  [ ] (M) Implement a function that returns a pointer to a static local array
+          Explain why this works but returning pointer to local (non-static) doesn't
+          Asked at: L&T Infotech, Persistent, Sasken
+
+  [ ] (M) Implement reference counting manually for a shared resource
+          (increment on copy, decrement on destroy, free when 0)
+          Asked at: Persistent, Nagarro, Dolat Capital
+
+HARD
+-----
+  [ ] (H) Implement a custom allocator that manages a fixed memory pool
+          alloc(size) and dealloc(ptr) from a pre-allocated char buffer
+          Asked at: Dolat Capital, HFT firms, Sasken
+
+  [ ] (H) Implement a garbage collector using reference counting
+          with cycle detection using mark-and-sweep
+          Asked at: Google, Microsoft, advanced C++ roles
+
+  [ ] (H) Given a memory layout diagram, identify padding bytes in a struct
+          struct { char a; int b; char c; double d; } — draw layout, find sizeof
+          Then reorder fields to minimize padding.
+          Asked at: Sasken, Samsung, Dolat Capital, Qualcomm
+
+================================================================================
+PHASE 7 — OOP CODING
+(5 Easy, 8 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Create a class Rectangle with width and height.
+          Add methods: area(), perimeter(), isSquare()
+          Create 3 objects and call all methods.
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Create a class Counter with increment(), decrement(), reset(), getValue()
+          Use private member and demonstrate encapsulation.
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Create a base class Shape with virtual method draw().
+          Derive Circle and Square, override draw() in each.
+          Create array of Shape* and call draw() — show polymorphism.
+          Asked at: TCS, Wipro, Zoho
+
+  [ ] (E) Create a class with a static member that counts total objects created.
+          Destructor decrements count when object destroyed.
+          Asked at: Zoho, TCS, Wipro
+
+  [ ] (E) Overload the == operator for a Point class (x, y coordinates)
+          Two points are equal if x and y match.
+          Asked at: Zoho, TCS, Wipro
+
+MEDIUM
+-------
+  [ ] (M) Implement a generic Stack<T> class template with:
+          push(), pop(), top(), isEmpty(), size()
+          Handle underflow with exception.
+          Asked at: Amazon, Microsoft, Zoho, Persistent
+
+  [ ] (M) Implement an Iterator pattern for a custom linked list class
+          Support range-based for loop: for (auto x : myList) {...}
+          Requires begin(), end(), operator++, operator*, operator!=
+          Asked at: Adobe, Atlassian, Persistent
+
+  [ ] (M) Design a publish-subscribe (Observer) system:
+          EventBus class, subscribers register for events,
+          publisher emits event, all subscribers are notified
+          Asked at: Adobe, Persistent, Nagarro
+
+  [ ] (M) Implement copy-on-write string class:
+          Only deep copy when write happens (lazy copy)
+          Asked at: Dolat Capital, Adobe, advanced C++ roles
+
+  [ ] (M) Design an immutable class in C++
+          All members set in constructor, no setters, all methods const
+          Asked at: Persistent, Nagarro, Google
+
+  [ ] (M) Implement the Builder pattern for constructing a complex Pizza order:
+          setPizzaSize(), addTopping(), setBase(), build() -> Pizza object
+          Asked at: Persistent, Nagarro, Amazon
+
+  [ ] (M) Implement CRTP (Curiously Recurring Template Pattern) for static polymorphism
+          Base<Derived> class with non-virtual interface() method
+          Show it avoids vtable overhead
+          Asked at: Dolat Capital, HFT firms, advanced C++ roles
+
+  [ ] (M) Create a class Matrix with operator+ and operator* overloaded.
+          operator* should do actual matrix multiplication.
+          Asked at: Samsung, Adobe, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Implement a type-safe variant class (like std::variant) from scratch
+          Stores one of several types, supports get<T>() and visit()
+          Asked at: Google, advanced C++ roles
+
+  [ ] (H) Implement a thread-safe object pool with acquire() and release()
+          Objects reused — not re-allocated. Support templated type.
+          Asked at: Dolat Capital, HFT firms, Persistent
+
+  [ ] (H) Design a plugin system where plugins are loaded as .so files at runtime
+          Plugins implement a common interface, discovered via dlopen/dlsym
+          Asked at: L&T Infotech, Sasken, advanced roles
+
+================================================================================
+PHASE 8 — STL / VECTOR-BASED PROBLEMS
+(5 Easy, 8 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Given vector<int>, remove all elements equal to X in-place using erase-remove idiom
+          v.erase(remove(v.begin(), v.end(), x), v.end())
+          Asked at: Amazon, Persistent, Nagarro
+
+  [ ] (E) Find the second smallest element in vector<int> without sorting
+          Asked at: TCS, Amazon, Wipro
+
+  [ ] (E) Given vector<pair<string,int>>, sort by string length ascending,
+          then by string alphabetically for equal lengths
+          Asked at: Amazon, Flipkart
+
+  [ ] (E) Use std::accumulate to compute product of all elements in vector
+          Asked at: Persistent, Nagarro
+
+  [ ] (E) Given vector<int>, use std::partition to separate even and odd elements
+          Show result without sorting
+          Asked at: Persistent, Nagarro
+
+MEDIUM
+-------
+  [ ] (M) Implement a custom comparator for std::sort that sorts strings
+          by number of vowels descending, then alphabetically for ties
+          Asked at: Amazon, Adobe
+
+  [ ] (M) Using STL only (no raw loops), find the top-3 most frequent elements
+          from a vector<int> — use unordered_map + partial_sort
+          Asked at: Amazon, Google
+
+  [ ] (M) Given vector<vector<int>> (2D grid), flatten it into 1D using STL
+          Use std::accumulate with lambda or std::copy
+          Asked at: Adobe, Atlassian
+
+  [ ] (M) Implement a multimap<int, string> frequency tracker:
+          count words, then iterate from highest to lowest frequency
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Use std::next_permutation to generate all permutations of a sorted vector
+          Count total permutations and verify = N!
+          Asked at: Amazon, Competitive Programming
+
+  [ ] (M) Given two sorted vectors, merge them into one sorted vector
+          without using sort() — use std::merge
+          Asked at: Amazon, Adobe
+
+  [ ] (M) Implement LRU using std::list + std::unordered_map<key, list::iterator>
+          get(key) and put(key, value) both O(1)
+          Asked at: Amazon, Microsoft, Google, Flipkart
+
+  [ ] (M) Given vector<int>, find the maximum element in every window of size K
+          using std::deque as monotonic queue — O(N)
+          Asked at: Amazon, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Implement a generic priority queue that supports:
+          push(), pop(), top(), update_priority(element, new_priority)
+          (decrease-key operation — needed for Dijkstra)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Implement a sorted container that supports O(log N) insert, O(log N) delete,
+          and O(1) findMin and findMax simultaneously
+          Hint: use std::set and maintain min/max iterators
+          Asked at: Dolat Capital, Goldman Sachs
+
+  [ ] (H) Implement a custom hash map from scratch with:
+          separate chaining, load factor tracking, automatic rehashing
+          Templated for key and value types
+          Asked at: Google, Amazon, Microsoft
+
+================================================================================
+PHASE 9 — LINKED LISTS
+(10 Easy, 10 Medium, 5 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Insert a node at the beginning of a singly linked list
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Insert a node at the end of a singly linked list
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Insert a node at position K in a linked list
+          Asked at: TCS, Wipro
+
+  [ ] (E) Delete the first node of a linked list
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Delete the last node of a linked list
+          Asked at: TCS, Wipro
+
+  [ ] (E) Count the number of nodes in a linked list
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Search for an element in linked list — return position (1-indexed)
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Print linked list in reverse without reversing it
+          Hint: recursion or stack
+          Asked at: TCS, Wipro, Amazon
+
+  [ ] (E) Check if a linked list is empty and return the head value safely
+          Asked at: TCS, Wipro
+
+  [ ] (E) Concatenate two linked lists (append second to end of first)
+          Asked at: TCS, Wipro, Infosys
+
+MEDIUM
+-------
+  [ ] (M) Remove all nodes from linked list that have a greater node to their right
+          e.g. 5->2->13->3->8 -> 13->8
+          Asked at: Amazon, Flipkart, Paytm
+
+  [ ] (M) Rearrange linked list: move all even-positioned nodes to the end
+          maintaining relative order of both odd and even groups
+          (LeetCode: Odd Even Linked List)
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (M) Given sorted linked list and a value X, split into two lists:
+          one with elements < X, one with elements >= X
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Swap adjacent nodes in pairs (not values — actual nodes)
+          e.g. 1->2->3->4 -> 2->1->4->3
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Given linked list and integer K, split into K parts as evenly as possible
+          Longer parts come first
+          Asked at: Amazon, Google
+
+  [ ] (M) Rotate linked list to the left by K positions
+          (Previous file covered right rotation — this is left)
+          Asked at: Amazon, Flipkart
+
+  [ ] (M) Find the longest palindrome sub-list of a linked list
+          Asked at: Google, Amazon
+
+  [ ] (M) Given two linked lists representing polynomials, add them
+          Each node has coefficient and exponent
+          Asked at: Goldman Sachs, Zoho
+
+  [ ] (M) Convert binary number represented as linked list to decimal integer
+          e.g. 1->0->1 = 5
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Given a linked list where each node has a next pointer AND a child pointer
+          (child points to another linked list), flatten it into one sorted list
+          Asked at: Amazon, Microsoft, Adobe
+
+HARD
+-----
+  [ ] (H) Given a sorted linked list, delete all nodes that have duplicate values
+          (keep none of the duplicates — not just distinct)
+          e.g. 1->2->2->3->3->4 -> 1->4
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (H) Merge K sorted linked lists using divide and conquer approach
+          (NOT just priority queue — implement the D&C version)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Given two linked lists, where each represents a number (digits in order),
+          multiply them and return result as linked list
+          Asked at: Goldman Sachs, Competitive Programming
+
+  [ ] (H) Given linked list, rearrange so that all nodes with value <= X come first,
+          then nodes with value == X, then nodes > X
+          All while maintaining relative order (stable partition)
+          Asked at: Amazon, Microsoft
+
+  [ ] (H) Implement a doubly linked list that supports O(1) insert at position
+          given an iterator, O(1) delete given an iterator, and O(N) traversal
+          Add operator[] but make it clear it's O(N)
+          Asked at: Dolat Capital, Persistent, Adobe
+
+================================================================================
+PHASE 10 — STACKS
+(5 Easy, 8 Medium, 5 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Implement a stack using a singly linked list (no array)
+          Asked at: TCS, Wipro, Amazon
+
+  [ ] (E) Reverse a string using a stack (implement stack from scratch first)
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Check if given sequence of push and pop operations on stack is valid
+          e.g. push: [1,2,3,4,5], pop: [4,5,3,2,1] — valid?
+          Asked at: Amazon, Microsoft
+
+  [ ] (E) Implement a stack that supports push(), pop(), top(), and size()
+          with all operations tracked in a log (print each operation)
+          Asked at: TCS, Wipro
+
+  [ ] (E) Given a string of digits, find the maximum number formed by removing K digits
+          (Easy version: K=1 only)
+          Asked at: Amazon
+
+MEDIUM
+-------
+  [ ] (M) Given infix expression, evaluate it directly (without converting to postfix)
+          Handle +, -, *, / and parentheses using two stacks
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Next smaller element to the right for each element in array
+          (Similar to next greater but reversed — monotonic stack)
+          Asked at: Amazon, Flipkart, Goldman Sachs
+
+  [ ] (M) Given array, find the sum of subarray minimums
+          Hint: monotonic stack, contribution technique
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Count of subarrays with max element greater than K using stack
+          Asked at: Amazon, Google
+
+  [ ] (M) Implement a stack that supports push(x), pop(), and getMax() in O(1)
+          (Exactly like Min Stack but for maximum)
+          Asked at: Amazon, Microsoft, Adobe
+
+  [ ] (M) Given a string of brackets with numbers in between, compute the score:
+          () = 1, AB = A+B (concatenation), (A) = 2*A (nesting)
+          e.g. "(()(()))" = 6
+          Hint: stack of scores
+          Asked at: Google, Amazon
+
+  [ ] (M) Find the number of valid bracket subsequences in a string
+          (Count all non-contiguous subsequences that form valid brackets)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Using a stack, check if a given sequence could be the result of
+          push/pop operations on a initially empty stack
+          (Validate Stack Sequences — LeetCode 946)
+          Asked at: Amazon, Microsoft
+
+HARD
+-----
+  [ ] (H) Maximum area of rectangle under a histogram — extend to multiple queries
+          Precompute answer for all possible bars as "base" efficiently
+          Asked at: Google, Amazon, Goldman Sachs
+
+  [ ] (H) Given N buildings with heights, find buildings that can see the sunset
+          (all buildings to the right are shorter — stack-based)
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (H) Find the maximum rectangle in a binary matrix row by row
+          (Build histogram for each row, apply largest rectangle in histogram)
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (H) Implement a queue using a single stack and recursion (no second stack variable)
+          Hint: use call stack as implicit second stack
+          Asked at: Amazon, Microsoft
+
+  [ ] (H) Design a stack that supports all standard operations AND
+          a getMedian() operation in O(log N)
+          Hint: maintain two heaps (max-heap for lower half, min-heap for upper half)
+          Asked at: Goldman Sachs, Dolat Capital
+
+================================================================================
+PHASE 11 — QUEUES
+(5 Easy, 5 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Implement a queue using a singly linked list
+          enqueue at rear, dequeue from front
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Implement a circular queue using a fixed-size array
+          Handle wraparound with modular arithmetic
+          Asked at: TCS, Wipro, Sasken, Dolat Capital
+
+  [ ] (E) Reverse the first K elements of a queue (use a stack)
+          Asked at: Amazon, Flipkart
+
+  [ ] (E) Given a queue of integers, rearrange it so that all even numbers
+          come before odd numbers (maintain relative order within each group)
+          Asked at: Amazon, TCS
+
+  [ ] (E) Implement a queue that rejects duplicates (set + queue combo)
+          Asked at: Amazon, Zoho
+
+MEDIUM
+-------
+  [ ] (M) Given a number N, print all N-digit numbers starting with 1
+          in BFS order (each number's last digit ranges 0-9)
+          e.g. N=2: 10,11,12,...,19,100,...
+          Asked at: Amazon, Paytm
+
+  [ ] (M) Implement a double-ended queue (deque) from scratch using doubly linked list
+          Support: pushFront, pushBack, popFront, popBack, front, back — all O(1)
+          Asked at: Amazon, Persistent
+
+  [ ] (M) Level order traversal of binary tree — print each level on a separate line
+          using a queue (not the same as standard BFS — formatted output)
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (M) Implement a scheduler: tasks arrive with priority, execute highest priority first
+          If two tasks have same priority, execute in arrival order (FIFO within priority)
+          Use priority_queue with custom comparator
+          Asked at: Amazon, Microsoft, Dolat Capital
+
+  [ ] (M) Given stream of integers, use queue to find moving average of last K elements
+          Output the average after each insertion
+          Asked at: Amazon, Goldman Sachs, Dolat Capital
+
+HARD
+-----
+  [ ] (H) Implement a blocking queue in C++ with multiple producers and consumers
+          using mutex + condition_variable
+          Producers block when full, consumers block when empty
+          Asked at: Dolat Capital, Amazon, Microsoft, Persistent
+
+  [ ] (H) Design and implement a message queue system with:
+          publish(topic, message), subscribe(topic), consume(topic) -> message
+          Support multiple topics
+          Asked at: Dolat Capital, Amazon, Adobe
+
+  [ ] (H) Given a sequence of enqueue and dequeue operations with timestamps,
+          find the maximum queue size at any point in time
+          Hint: use a difference array or event-based sweep
+          Asked at: Goldman Sachs, Dolat Capital
+
+================================================================================
+PHASE 12 — HASHING
+(5 Easy, 8 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Given array, find all elements that appear exactly twice
+          Asked at: Amazon, TCS
+
+  [ ] (E) Find the element that makes the array a non-permutation of [1, N]
+          (exactly one element is missing, one is extra — find both)
+          Asked at: Amazon, Microsoft, TCS
+
+  [ ] (E) Given two strings, find characters present in first but not in second
+          Asked at: TCS, Wipro, Amazon
+
+  [ ] (E) Check if all characters of one string appear in another string
+          Asked at: TCS, Amazon, Zoho
+
+  [ ] (E) Find the intersection of two arrays allowing duplicate counts
+          e.g. [1,2,2,1] ∩ [2,2] = [2,2]
+          Asked at: Amazon, Microsoft
+
+MEDIUM
+-------
+  [ ] (M) Find the number of subarrays with sum divisible by K
+          Hint: use prefix sum modulo K and a frequency map
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Given a list of words, group them by their sorted character signature
+          then return the group with the most words
+          Asked at: Amazon, Adobe
+
+  [ ] (M) Find the longest subarray where absolute difference between max and min <= K
+          Hint: sliding window with two monotonic deques
+          Asked at: Google, Amazon
+
+  [ ] (M) Count number of nice pairs: arr[i] + rev(arr[j]) == arr[j] + rev(arr[i])
+          Simplify to: arr[i] - rev(arr[i]) == arr[j] - rev(arr[j])
+          Use hashmap on diff values
+          Asked at: Amazon, Google
+
+  [ ] (M) Find the minimum window in array A containing all elements of array B
+          (Minimum window subarray — array version, not string)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Given array of strings, find all pairs that are isomorphic
+          (same character mapping pattern — same as isomorphic strings problem)
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Check if a given Sudoku board is valid (use sets for rows, cols, boxes)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Find maximum length of a subarray with equal number of 0s, 1s, and 2s
+          Hint: reduce to 2 prefix-sum equations, hashmap of pairs
+          Asked at: Google, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Find the minimum number of distinct elements after removing exactly K elements
+          Hint: remove elements with lowest frequency first (greedy + hashmap)
+          Asked at: Amazon, Google
+
+  [ ] (H) Count pairs (i, j) such that arr[i] XOR arr[j] has exactly K set bits
+          Asked at: Google, Goldman Sachs, Competitive Programming
+
+  [ ] (H) Design a data structure that supports:
+          insert(key), delete(key), search(key), getRandom() — all O(1)
+          Using unordered_map + vector (swap with last for O(1) delete)
+          Asked at: Amazon, Microsoft, Google, Facebook
+
+================================================================================
+PHASE 13 — BINARY SEARCH
+(5 Easy, 8 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Find if a target exists in a sorted array — return true/false
+          Must implement binary search from scratch (no STL)
+          Asked at: TCS, Amazon, Microsoft
+
+  [ ] (E) Find the number of occurrences of a target in a sorted array
+          Hint: last_occurrence - first_occurrence + 1
+          Asked at: Amazon, Flipkart, TCS
+
+  [ ] (E) Find the position to insert a new element in a sorted array
+          (same as lower_bound)
+          Asked at: TCS, Amazon, Wipro
+
+  [ ] (E) Find the largest element in array that is <= X (floor in BST analog)
+          Hint: binary search variant
+          Asked at: Amazon, Flipkart
+
+  [ ] (E) Check if a sorted array is a rotation of another sorted array
+          Hint: binary search to find pivot
+          Asked at: Amazon, Microsoft
+
+MEDIUM
+-------
+  [ ] (M) Find the Kth missing positive integer in a sorted array
+          Hint: binary search on the count of missing numbers
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Find two elements in sorted array whose sum is closest to target
+          Hint: two pointer (binary search variant)
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) Capacity to ship packages within D days — minimize ship capacity
+          Hint: binary search on capacity, check feasibility
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Find the row with maximum 1s in a 0-1 matrix
+          (each row is sorted: all 0s then all 1s)
+          Hint: binary search in each row for first 1
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (M) Given N bags of coins, find minimum number of coins to add so that
+          you can form every value from 1 to N (binary search on answer)
+          Asked at: Amazon, Google
+
+  [ ] (M) Find the minimum speed to arrive on time (LeetCode 1870)
+          Hint: binary search on speed
+          Asked at: Amazon, Google
+
+  [ ] (M) Given sorted matrix (each row sorted, first element of each row >
+          last element of previous row), binary search for a target
+          Must be O(log(M*N))
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Find the pivot (smallest element index) in a rotated sorted array
+          with duplicates allowed
+          Asked at: Amazon, Microsoft
+
+HARD
+-----
+  [ ] (H) Find the K-th smallest element in a multiplication table N x N
+          Hint: binary search on answer — count elements <= mid
+          Asked at: Google, Amazon
+
+  [ ] (H) Find the K-th smallest pair distance in an array
+          Hint: binary search on distance + two pointer count
+          Asked at: Google, Amazon, Goldman Sachs
+
+  [ ] (H) Given array of integers, find the maximum value of floor(arr[i]/arr[j])
+          for all valid i != j pairs efficiently
+          Asked at: Google, Goldman Sachs
+
+================================================================================
+PHASE 14 — SORTING
+(5 Easy, 5 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Implement Bubble Sort and count the number of swaps made
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Implement Selection Sort — identify it is NOT stable with an example
+          Asked at: TCS, Wipro, Infosys
+
+  [ ] (E) Implement Insertion Sort and show it works well on nearly-sorted arrays
+          Asked at: TCS, Wipro, Amazon
+
+  [ ] (E) Sort an array of strings by their lengths (use std::sort with lambda)
+          Asked at: Amazon, Microsoft
+
+  [ ] (E) Given array of 0s and 1s, sort it in O(N) using counting sort
+          (simpler version of Dutch flag — only 2 values)
+          Asked at: TCS, Amazon, Wipro
+
+MEDIUM
+-------
+  [ ] (M) Implement counting sort for array with values in range [0, K]
+          Must be stable (maintain relative order of equal elements)
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Sort a linked list using merge sort (in-place, O(N log N))
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Given array of intervals, sort by start time and merge overlapping ones
+          Return the minimum number of intervals after merging
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Sort array of strings such that all anagrams are adjacent
+          Without using extra space for grouping (sort each string then sort array)
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Find minimum number of swaps to make two arrays strictly increasing
+          Hint: DP with state (swap at i, no swap at i)
+          Asked at: Amazon, Google
+
+HARD
+-----
+  [ ] (H) Sort a nearly sorted (k-sorted) array where each element is at most
+          K positions from its correct position — O(N log K) using min-heap
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (H) Given array, sort it such that positive and negative numbers alternate
+          starting with positive, maintaining relative order — O(N) time O(1) space
+          Asked at: Amazon, Flipkart, Goldman Sachs
+
+  [ ] (H) External sort: describe how you'd sort a file of 10 GB of integers
+          when you only have 1 GB of RAM
+          Hint: merge sort with disk-based chunks
+          Asked at: Google, Goldman Sachs, Amazon
+
+================================================================================
+PHASE 15 — TWO POINTER
+(5 Easy, 8 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Check if array has a pair summing to 0 (sorted array, two pointers)
+          Asked at: Amazon, TCS
+
+  [ ] (E) Find all pairs in sorted array with given difference D
+          Asked at: Amazon, Flipkart
+
+  [ ] (E) Remove all occurrences of value val in array in-place (return new length)
+          Hint: two pointers (read pointer and write pointer)
+          Asked at: Amazon, LeetCode Easy
+
+  [ ] (E) Given sorted array, return array of squares in sorted order
+          Hint: two pointers from both ends (squares can be negative)
+          Asked at: Amazon, Microsoft
+
+  [ ] (E) Find if sorted array can be divided into consecutive pairs
+          Asked at: Amazon, Wipro
+
+MEDIUM
+-------
+  [ ] (M) 3Sum closest: find triplet whose sum is closest to target
+          (not exact — return the closest sum, not indices)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) 4Sum II: given 4 arrays, count tuples (i,j,k,l) where
+          A[i]+B[j]+C[k]+D[l] == 0
+          Hint: hashmap of pairwise sums from A+B, then search C+D
+          Asked at: Amazon, Google
+
+  [ ] (M) Find the longest mountain in array
+          A mountain has strictly increasing then strictly decreasing sequence
+          Hint: two pointers expanding from each peak
+          Asked at: Amazon, Google
+
+  [ ] (M) Sort a linked list of 0s, 1s and 2s without changing node data
+          (Change links only, not values — 3 dummy heads technique)
+          Asked at: Amazon, Flipkart, Paytm
+
+  [ ] (M) Given sorted array, find number of triplets with sum less than K
+          Hint: fix one element, binary search or two-pointer for remaining two
+          Asked at: Amazon, Google
+
+  [ ] (M) Minimum size subarray sum >= S — sliding window two pointer
+          Return minimum length (or 0 if impossible)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Find the maximum area of a container formed by two lines in array
+          (Container with most water — but now find ALL pairs giving max area)
+          Asked at: Amazon, Google
+
+  [ ] (M) Given two sorted arrays, find K pairs with smallest sums (one from each)
+          Hint: min-heap of size K
+          Asked at: Amazon, Google
+
+HARD
+-----
+  [ ] (H) Trapping rain water — 3D version (elevation map)
+          Use min-heap with BFS from borders
+          Asked at: Google, Amazon
+
+  [ ] (H) Given array, find the maximum sum of subsequence such that
+          no two adjacent elements are taken AND array is circular
+          (House Robber III variant on array)
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (H) Find all unique quadruplets (a,b,c,d) from array summing to 0
+          AND no two quadruplets share same element positions
+          Asked at: Amazon, Microsoft
+
+================================================================================
+PHASE 16 — SLIDING WINDOW
+(5 Easy, 8 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Find maximum sum subarray of exactly size K
+          Asked at: TCS, Amazon, Wipro
+
+  [ ] (E) Find minimum sum subarray of exactly size K
+          Asked at: TCS, Amazon
+
+  [ ] (E) Check if any subarray of size K has all distinct elements
+          Hint: sliding window + set
+          Asked at: Amazon, Flipkart
+
+  [ ] (E) Find the average of all subarrays of size K
+          Return array of averages
+          Asked at: TCS, Amazon
+
+  [ ] (E) Given binary array, find the maximum number of consecutive 1s
+          Asked at: Amazon, Microsoft, LeetCode Easy
+
+MEDIUM
+-------
+  [ ] (M) Longest substring with exactly K distinct characters
+          Hint: sliding window with hashmap
+          Asked at: Amazon, Google, Adobe
+
+  [ ] (M) Find the smallest window in string S that contains all characters of pattern P
+          with their exact frequencies (not just distinct)
+          Asked at: Amazon, Google, Microsoft, Goldman Sachs
+
+  [ ] (M) Maximum sum of non-overlapping subarrays each of length K
+          (Pick M non-overlapping subarrays to maximize total sum)
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) Longest subarray with ones after replacement (can flip at most K zeros)
+          Hint: sliding window — track zeros count
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Number of subarrays with exactly K odd numbers
+          Hint: exactly K = atMost(K) - atMost(K-1)
+          Asked at: Amazon, Google
+
+  [ ] (M) Find the minimum number of adjacent swaps to group all 1s together
+          Hint: sliding window of size count(1s)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Given string of lowercase letters, find the minimum window size such that
+          all characters in the window appear at least K times
+          Asked at: Google, Amazon
+
+  [ ] (M) Maximum points from cards (pick K cards from either end to maximize sum)
+          Hint: sliding window on REMAINING middle cards (minimize middle)
+          Asked at: Amazon, Google
+
+HARD
+-----
+  [ ] (H) Find the substring with concatenation of all words
+          Given string s and list of words (all same length), find all starting indices
+          where a substring is a concatenation of all words
+          Asked at: Google, Amazon
+
+  [ ] (H) Minimum number of K consecutive bit flips
+          to make array contain no 0s (greedy + sliding window)
+          Asked at: Google, Amazon
+
+  [ ] (H) Subarrays with bounded maximum (count subarrays where max in [L, R])
+          Hint: contribution counting, O(N) two-pass
+          Asked at: Google, Amazon, Goldman Sachs
+
+================================================================================
+PHASE 17 — PREFIX SUM
+(5 Easy, 5 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Build prefix sum array and answer Q range sum queries in O(1) each
+          Asked at: TCS, Amazon, Competitive Programming
+
+  [ ] (E) Find the number of subarrays with sum equal to 0
+          Hint: prefix sum — count repeated prefix sums
+          Asked at: Amazon, Flipkart
+
+  [ ] (E) Given array of 1s and -1s, find if any prefix sum equals K
+          Asked at: TCS, Amazon
+
+  [ ] (E) Find the equilibrium index: index where left sum equals right sum
+          Asked at: Amazon, Flipkart, TCS
+
+  [ ] (E) 2D prefix sum: given matrix, answer rectangle sum queries in O(1)
+          Asked at: Amazon, Google, Goldman Sachs
+
+MEDIUM
+-------
+  [ ] (M) Find the maximum sum rectangle in 2D matrix
+          Hint: fix top and bottom row, use Kadane's on column sums
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Count subarrays where sum lies in range [lower, upper]
+          Hint: merge sort on prefix sums
+          Asked at: Google, Goldman Sachs
+
+  [ ] (M) Given binary matrix, count number of rectangles filled with all 1s
+          Hint: for each (i,j), count consecutive 1s above (height),
+          then prefix sum on heights
+          Asked at: Google, Amazon
+
+  [ ] (M) Find maximum length of subarray having sum = K allowing negative numbers
+          Hint: prefix sum + first occurrence hashmap
+          Asked at: Amazon, Google, Flipkart
+
+  [ ] (M) Given array, find number of subarrays with average >= K
+          Hint: subtract K from each element, find subarrays with sum >= 0
+          Asked at: Amazon, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Count subarrays where XOR of all elements is less than K
+          Hint: build XOR prefix array, use trie for count
+          Asked at: Google, Goldman Sachs, Competitive Programming
+
+  [ ] (H) Maximum sum of submatrix no larger than K
+          Hint: 2D prefix sum + binary search with sorted set
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Given 2D grid, find number of paths from top-left to bottom-right
+          where path sum equals exactly K (only right and down moves allowed)
+          Hint: 2D DP with prefix sum hashmap per diagonal
+          Asked at: Google, Amazon
+
+================================================================================
+PHASE 18 — BINARY TREES
+(10 Easy, 15 Medium, 10 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Implement preorder, inorder, postorder traversal iteratively using a stack
+          (NOT recursion — most beginners only know recursive version)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (E) Find the minimum depth of a binary tree (depth of nearest leaf)
+          Asked at: Amazon, Microsoft
+
+  [ ] (E) Check if a binary tree is a complete binary tree
+          Hint: BFS — once null node found, no more non-null should follow
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (E) Print all leaf nodes of a binary tree from left to right
+          Asked at: Amazon, Flipkart, TCS
+
+  [ ] (E) Find the sum of all leaf nodes in a binary tree
+          Asked at: TCS, Amazon
+
+  [ ] (E) Find the sum of nodes at a given level K (root is level 0)
+          Asked at: Amazon, TCS, Paytm
+
+  [ ] (E) Check if two binary trees are mirror images of each other
+          (Not symmetric check — two separate trees as input)
+          Asked at: Amazon, Microsoft
+
+  [ ] (E) Count the number of nodes at maximum depth in a binary tree
+          Asked at: Amazon, TCS
+
+  [ ] (E) Find the rightmost node at each level (right side view) iteratively
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (E) Check if a given tree is a subtree of a larger tree
+          Asked at: Amazon, Microsoft, TCS
+
+MEDIUM
+-------
+  [ ] (M) Find the vertical sum of binary tree nodes
+          (Group nodes by their horizontal distance from root and sum each group)
+          Asked at: Amazon, Flipkart, Adobe
+
+  [ ] (M) Morris Inorder Traversal — inorder traversal in O(1) space (no stack)
+          Asked at: Google, Amazon, Microsoft
+
+  [ ] (M) Print nodes at distance K from a given target node
+          (May need parent pointers — BFS with parent map)
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Find the maximum width of a binary tree (max nodes at any level)
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (M) Given binary tree, find the deepest left leaf node
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Sum of longest path from root to leaf
+          If multiple longest paths, return max sum among them
+          Asked at: Amazon, Flipkart
+
+  [ ] (M) Find the maximum level sum in a binary tree
+          (Level with maximum sum of node values)
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Convert binary tree to its mirror (in-place)
+          and verify it's the mirror of original
+          Asked at: Amazon, TCS
+
+  [ ] (M) Find the path with maximum average from root to a leaf
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) Given binary tree with parent pointers, find inorder successor of a node
+          (No BST property — general binary tree)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Given tree, count all paths (need not start/end at root/leaf)
+          that sum to a given value — must be top-down
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Find the distance between two nodes in a binary tree
+          (Use LCA: dist(u,v) = depth(u) + depth(v) - 2*depth(LCA))
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (M) Convert a binary tree to a sum tree
+          (Each node's value = sum of all nodes in its subtree)
+          Asked at: Amazon, Flipkart, Paytm
+
+  [ ] (M) Check if a binary tree is a sum tree
+          (Each node = sum of its left + right subtrees)
+          Asked at: Amazon, Flipkart, Paytm
+
+  [ ] (M) Find the maximum sum of nodes such that no two selected nodes
+          are parent and child (House Robber on tree)
+          Asked at: Amazon, Google, Microsoft
+
+HARD
+-----
+  [ ] (H) Given binary tree, print all nodes that don't have a sibling
+          (nodes whose parent has only one child)
+          Asked at: Amazon, Flipkart
+
+  [ ] (H) Reconstruct binary tree given its level-order and inorder traversals
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (H) Binary Tree to DLL: convert to in-place doubly linked list
+          Left pointer = previous, right pointer = next
+          (No extra space allowed)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (H) Given binary tree, find the largest subtree that is also a BST
+          Return root and size of that BST
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (H) Given binary tree and target, prune all subtrees that don't contain target
+          (Remove any node whose entire subtree has no target value)
+          Asked at: Amazon, Google
+
+  [ ] (H) Find the maximum path sum in a binary tree from any leaf to any leaf
+          (Both endpoints must be leaves — different from any node to any node)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Given binary tree, flip it to make it heap-ordered (parent > children)
+          Minimum number of flips
+          Asked at: Google
+
+  [ ] (H) Serialize and deserialize N-ary tree (each node has arbitrary children)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (H) Given perfect binary tree, populate each node's next pointer
+          to point to its next right node — O(1) extra space
+          (Can't use queue — use already established next pointers)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (H) Find minimum operations to make binary tree into BST
+          (Can change node values — minimize changes)
+          Asked at: Google, Goldman Sachs
+
+================================================================================
+PHASE 19 — BST
+(5 Easy, 8 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Insert a new node into a BST (iterative version, not recursive)
+          Asked at: TCS, Amazon, Microsoft
+
+  [ ] (E) Find the inorder predecessor of a node in BST
+          (Largest value smaller than node — go left then rightmost)
+          Asked at: Amazon, Microsoft
+
+  [ ] (E) Given BST, find the Kth largest element
+          Hint: reverse inorder (right-root-left), stop at Kth
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (E) Count nodes in BST that lie in range [L, R] (inclusive)
+          Asked at: Amazon, TCS
+
+  [ ] (E) Find the LCA in BST (simpler than general binary tree — use BST property)
+          Asked at: Amazon, Microsoft, Google
+
+MEDIUM
+-------
+  [ ] (M) Trim a BST: remove all nodes with values outside [L, R]
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Given BST, find the two nodes that are swapped by mistake. Fix the BST.
+          (Recover BST — O(1) space using Morris traversal)
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Given two BSTs, merge them into a single balanced BST
+          Hint: inorder both -> merge sorted arrays -> build BST
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (M) Convert BST to Greater Sum Tree
+          (Each node's value = sum of all nodes >= node's value)
+          Hint: reverse inorder with running sum
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (M) Given a BST and a target K, check if there exist two nodes summing to K
+          Hint: BFS/DFS + hashset, or inorder into array then two-pointer
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Given BST, return all values in range [L, R] in sorted order
+          Without converting to array first — use recursive in-range DFS
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Flatten BST to a sorted linked list using only right pointers
+          (Left pointer of every node set to null)
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (M) Given sorted singly linked list, convert to balanced BST
+          in O(N) time (mid of list becomes root)
+          Asked at: Amazon, Microsoft, Google
+
+HARD
+-----
+  [ ] (H) Design a data structure that supports insert, delete, and getMedian in O(log N)
+          Hint: use an order-statistics tree or two BSTs + augmentation
+          Asked at: Google, Goldman Sachs, Amazon
+
+  [ ] (H) Given N keys, count the number of structurally unique BSTs possible
+          Hint: Catalan numbers, solve with DP
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Given BST, find the maximum difference between any two nodes
+          that are in an ancestor-descendant relationship
+          Asked at: Amazon, Google
+
+================================================================================
+PHASE 20 — HEAPS
+(3 Easy, 8 Medium, 5 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Build a max-heap from an unsorted array — show the heapify process step by step
+          Asked at: TCS, Amazon, Samsung
+
+  [ ] (E) Given max-heap array, verify it satisfies heap property
+          Asked at: TCS, Amazon
+
+  [ ] (E) Find the Kth smallest element in a max-heap
+          (Convert to sorted or extract K times)
+          Asked at: Amazon, Flipkart
+
+MEDIUM
+-------
+  [ ] (M) Given N sorted arrays each of size K, find the element at overall Kth position
+          Hint: min-heap of (element, array_index, element_index)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Schedule tasks to minimize total waiting time
+          (Each task has duration — sort ascending, weight by remaining tasks)
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) Given list of points (x,y) and query point, find K nearest points
+          Hint: max-heap of size K (use distance as key)
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Find the maximum sum of K non-overlapping pairs from array
+          Hint: precompute max pair sum from left and right using heaps
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) Given stream of integers, find the Kth largest after every insertion
+          Hint: maintain min-heap of size K
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Meeting rooms: given list of meeting intervals, find minimum number of
+          meeting rooms — heap-based solution (track end times)
+          Asked at: Amazon, Microsoft, Goldman Sachs
+
+  [ ] (M) Given list of jobs with start, end, profit, find max profit
+          such that no two jobs overlap — sort by end time, min-heap
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) IPO problem: given limited capital, maximize capital by completing
+          projects in order of maximum profit within current capital
+          Hint: two heaps (min-heap by cost, max-heap by profit)
+          Asked at: Google, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Find the median of a matrix where each row and column is sorted
+          Hint: binary search + count elements <= mid
+          Asked at: Google, Goldman Sachs, Amazon
+
+  [ ] (H) Find the smallest range covering at least one element from each of K sorted lists
+          Hint: min-heap of current elements + track max
+          Asked at: Google, Goldman Sachs, Amazon
+
+  [ ] (H) Given array, for each window of size K, find both min and max simultaneously
+          Hint: two monotonic deques (one for min, one for max)
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Merge K sorted arrays of different sizes into one sorted array
+          AND return the merged array without using STL sort
+          Hint: min-heap with (value, array_idx, element_idx)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Implement Dijkstra's algorithm from scratch using a custom min-heap
+          (without using STL priority_queue — show decrease-key operation)
+          Asked at: Google, Goldman Sachs, Dolat Capital
+
+================================================================================
+PHASE 21 — GRAPHS (extra weight)
+(5 Easy, 15 Medium, 10 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Build an adjacency list for a weighted directed graph from edge list input
+          Asked at: TCS, Amazon, Wipro
+
+  [ ] (E) Find in-degree and out-degree of every vertex in directed graph
+          Asked at: TCS, Amazon
+
+  [ ] (E) Check if a path exists between two nodes using BFS
+          Asked at: TCS, Amazon, Wipro
+
+  [ ] (E) Find all neighbors of a given vertex in adjacency list representation
+          Asked at: TCS, Wipro
+
+  [ ] (E) Check if an undirected graph is connected (single connected component)
+          Asked at: TCS, Amazon, Wipro
+
+MEDIUM
+-------
+  [ ] (M) Find the number of connected components in an undirected graph
+          using Union-Find (not DFS)
+          Asked at: Amazon, Microsoft, Flipkart
+
+  [ ] (M) Detect if undirected graph has a cycle using Union-Find only
+          (not DFS — demonstrate two approaches)
+          Asked at: Amazon, Microsoft, Goldman Sachs
+
+  [ ] (M) Find the shortest path in a weighted DAG using topological sort + relaxation
+          (Faster than Dijkstra for DAGs)
+          Asked at: Amazon, Goldman Sachs, Competitive Programming
+
+  [ ] (M) Given directed graph, find if it is a DAG (Directed Acyclic Graph)
+          Hint: DFS with 3-color marking (white/gray/black)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Find the longest path in a DAG
+          Hint: topological sort + reverse relaxation (negated weights)
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) Given N cities and M flights, find the cheapest flight
+          with at most K stops — Bellman-Ford limited to K iterations
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Find all nodes that are reachable from a given source in a directed graph
+          Asked at: Amazon, Flipkart
+
+  [ ] (M) Given graph of friendships (undirected), find the friend group (clique)
+          with maximum number of friends for a given person
+          Hint: BFS/DFS to find component, then count
+          Asked at: Amazon, Flipkart, Paytm
+
+  [ ] (M) Find the minimum number of edges to add to make a directed graph
+          strongly connected — Hint: count nodes with in-degree 0 and out-degree 0
+          Asked at: Google, Goldman Sachs
+
+  [ ] (M) Given directed graph, print all SCCs (Strongly Connected Components)
+          using Kosaraju's algorithm
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Find the mother vertex in a directed graph
+          (A vertex from which all other vertices are reachable)
+          Hint: last finished vertex in DFS is a candidate
+          Asked at: Amazon, Google
+
+  [ ] (M) Given grid, find the number of distinct islands
+          (Two islands are same if they have same shape)
+          Hint: DFS + normalize path signature
+          Asked at: Google, Amazon, Facebook
+
+  [ ] (M) Find the shortest cycle in an undirected graph
+          Hint: BFS from each vertex, track parent, detect back edge
+          Asked at: Google, Goldman Sachs
+
+  [ ] (M) Given a grid of heights, find path from top-left to bottom-right
+          that minimizes the maximum height difference between consecutive cells
+          Hint: binary search on answer + BFS/DFS to check
+          Asked at: Google, Amazon
+
+  [ ] (M) Check if a given undirected graph can be colored with 2 colors
+          (Bipartite check) — use BFS, track alternating colors
+          Asked at: Amazon, Microsoft, Google
+
+HARD
+-----
+  [ ] (H) Find all bridges in an undirected graph using Tarjan's algorithm
+          (edges whose removal disconnects graph)
+          Asked at: Amazon, Google, Facebook, Atlassian
+
+  [ ] (H) Find all articulation points in a graph using Tarjan's
+          (vertices whose removal disconnects graph)
+          Asked at: Amazon, Google, Facebook
+
+  [ ] (H) Given flight schedule, find minimum cost to visit all cities exactly once
+          and return to start (TSP — exact DP+bitmask for small N)
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Given N*N grid with obstacles, find the shortest path from (0,0) to (N-1,N-1)
+          where you can eliminate at most K obstacles
+          Hint: BFS with state (row, col, eliminations_used)
+          Asked at: Google, Amazon, Goldman Sachs
+
+  [ ] (H) Find the minimum number of vertices to remove to make graph acyclic
+          (Minimum Feedback Vertex Set — NP-hard general, DP for DAG-like)
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Given directed graph with edge weights, find the minimum weight cycle
+          Hint: Floyd-Warshall modified — diagonal becomes cycle weight
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Design a network routing system: given N routers and connections,
+          find the path that maximizes minimum bandwidth along the path
+          Hint: binary search on answer or modified Dijkstra with max-min
+          Asked at: Google, Dolat Capital, Goldman Sachs
+
+  [ ] (H) Find the maximum flow in a network using Edmonds-Karp (BFS-based Ford-Fulkerson)
+          Then verify min-cut equals max-flow
+          Asked at: Google, Goldman Sachs, Competitive Programming
+
+  [ ] (H) Given a dependency graph, find minimum time to complete all tasks
+          if you can execute K tasks in parallel (topological sort + multi-source BFS)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Count the number of ways to reach from source to destination in a DAG
+          with exactly K edges
+          Hint: DP[edges][node] or matrix exponentiation
+          Asked at: Google, Goldman Sachs, Competitive Programming
+
+================================================================================
+PHASE 22 — BACKTRACKING (extra weight)
+(3 Easy, 8 Medium, 5 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Generate all binary strings of length N (each position is 0 or 1)
+          Asked at: Amazon, TCS
+
+  [ ] (E) Find all paths in a maze from (0,0) to (N-1,N-1) — only right and down moves
+          Asked at: Amazon, TCS, Wipro
+
+  [ ] (E) Generate all strings of length K using characters from given set
+          Asked at: TCS, Wipro
+
+MEDIUM
+-------
+  [ ] (M) Given N, generate all N-bit Gray code sequences
+          (Each consecutive pair differs by exactly 1 bit)
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Find all possible ways to express N as ordered sum of positive integers
+          >= 2 (compositions with minimum part 2)
+          Asked at: Competitive Programming, Goldman Sachs
+
+  [ ] (M) Given NxN board and a knight, find a Knight's Tour
+          (visit every cell exactly once using backtracking + Warnsdorff's heuristic)
+          Asked at: Amazon, Google, competitive
+
+  [ ] (M) Given list of integers with duplicates, find all unique combinations
+          that sum to target (each number used at most once)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Find all valid phone words: given 7-digit phone number,
+          generate all valid English words that can be formed using keypad mapping
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Given a partially filled N×N latin square, complete it
+          (each digit 1-N appears exactly once in each row and column)
+          Asked at: Google, Amazon
+
+  [ ] (M) Find minimum number of steps to solve a maze using backtracking
+          (also compare with BFS approach — why BFS is better for shortest path)
+          Asked at: Amazon, Flipkart
+
+  [ ] (M) Given set of numbers, find all subsets with sum within range [L, R]
+          (Bounded subset sum — backtracking with pruning)
+          Asked at: Amazon, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Solve the Crossword puzzle: given grid with blank cells,
+          fill them using given word list so all words fit horizontally and vertically
+          Asked at: Google, Amazon, competitive
+
+  [ ] (H) Count the number of distinct N-Queens solutions (not just one)
+          AND identify all symmetric solutions
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Given expression with +, -, * operators and numbers,
+          find all ways to parenthesize it to get maximum result
+          (Backtracking + memoization on sub-expression ranges)
+          Asked at: Google, Amazon, Goldman Sachs
+
+  [ ] (H) Cryptarithmetic solver: given equation like SEND + MORE = MONEY,
+          assign digits 0-9 to letters so the equation holds
+          Hint: backtracking with constraint propagation
+          Asked at: Google, competitive
+
+  [ ] (H) Find minimum cost Hamiltonian path (visit all nodes exactly once)
+          in a small graph (N<=15) using DP + bitmask
+          Asked at: Google, Goldman Sachs, competitive
+
+================================================================================
+PHASE 23 — DIVIDE AND CONQUER
+(3 Easy, 5 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Find maximum element in array using divide and conquer
+          (Not trivial linear scan — must split and conquer)
+          Asked at: TCS, Amazon
+
+  [ ] (E) Find sum of array using divide and conquer
+          Asked at: TCS, Wipro
+
+  [ ] (E) Check if array is sorted using divide and conquer
+          Asked at: TCS, Wipro
+
+MEDIUM
+-------
+  [ ] (M) Find the longest increasing subsequence using divide and conquer + binary search
+          O(N log N) solution — not the O(N^2) DP version
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Count the number of 0s in a sorted binary array using divide and conquer
+          (Binary search variant)
+          Asked at: Amazon, TCS
+
+  [ ] (M) Implement Strassen's matrix multiplication algorithm
+          Reduce 8 multiplications to 7 per level — O(N^2.807)
+          Asked at: Google, Goldman Sachs
+
+  [ ] (M) Given sorted array of distinct integers, find a fixed point (arr[i] == i)
+          using divide and conquer
+          Asked at: Amazon, Google
+
+  [ ] (M) Find the element appearing more than N/3 times using D&C
+          (Majority element — D&C approach)
+          Asked at: Amazon, Microsoft
+
+HARD
+-----
+  [ ] (H) Closest pair of points in 2D plane — O(N log N) using D&C
+          Divide into halves, find min distance, check strip of width 2*d
+          Asked at: Google, Amazon, Goldman Sachs
+
+  [ ] (H) Karatsuba algorithm for multiplying two large numbers
+          O(N^1.585) instead of O(N^2) for N-digit multiplication
+          Asked at: Google, Goldman Sachs, competitive
+
+  [ ] (H) Find Kth order statistic in O(N) worst case using median-of-medians
+          (Not average O(N) QuickSelect — guaranteed O(N))
+          Asked at: Google, Goldman Sachs
+
+================================================================================
+PHASE 24 — GREEDY (extra weight)
+(5 Easy, 8 Medium, 5 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Find minimum number of coins to make change for amount N
+          (standard coin system: 1, 5, 10, 25 — greedy works here)
+          Asked at: TCS, Wipro, Amazon
+
+  [ ] (E) Given weights of N items, find maximum items you can carry with capacity W
+          (each item is either fully taken or not — take smallest weight first)
+          Asked at: TCS, Amazon, Flipkart
+
+  [ ] (E) Given N ropes, connect all into one rope with minimum cost
+          (min-heap: always connect two shortest ropes)
+          Asked at: Amazon, Flipkart, Goldman Sachs
+
+  [ ] (E) Find the minimum number of refueling stops on a highway
+          given fuel tank capacity and list of fuel stations
+          Asked at: Amazon, Google
+
+  [ ] (E) Given a set of tasks with deadlines and profits, schedule to maximize profit
+          (Each task takes 1 unit, must be done before deadline)
+          Asked at: Amazon, Flipkart, Goldman Sachs
+
+MEDIUM
+-------
+  [ ] (M) Given N workers and N jobs with cost[i][j] = cost of assigning worker i to job j,
+          find minimum cost assignment (greedy approximation — sort by min cost per row)
+          Asked at: Goldman Sachs, Amazon
+
+  [ ] (M) Given array of non-negative integers, make all elements equal
+          using minimum operations: increment or decrement by 1 each step
+          Optimal: convert to median
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) Find minimum number of meeting rooms to schedule N meetings
+          such that meetings with same deadline are batched
+          (Different from standard meeting rooms — deadline-based)
+          Asked at: Goldman Sachs, Dolat Capital
+
+  [ ] (M) Lemonade change: given list of customer bills ($5, $10, $20),
+          can you give correct change to everyone? Greedy simulation.
+          Asked at: Amazon, LeetCode Medium
+
+  [ ] (M) Given string of digits, find the largest number you can form
+          by removing exactly K digits — must not have leading zeros
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Minimum number of taps to open to water the entire garden
+          (Each tap covers a range — reduce to jump game on intervals)
+          Asked at: Amazon, Google
+
+  [ ] (M) Reconstruct queue by height: given people with (height, people_in_front_taller),
+          reconstruct the original queue order
+          Hint: sort by height desc, insert at index k
+          Asked at: Amazon, Google
+
+  [ ] (M) Find the maximum number of events you can attend (one per day per event)
+          Hint: min-heap by end day, greedy day sweep
+          Asked at: Amazon, Google, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Given N projects each with deadline, profit, and duration (> 1 unit),
+          find maximum profit subset that can be completed before deadlines
+          (Multi-unit job scheduling — greedy + segment tree)
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Text justification: given words and line width, format text
+          such that each line is exactly width characters with spaces distributed evenly
+          Asked at: Google, Amazon, Microsoft
+
+  [ ] (H) Find minimum number of arrows to burst all balloons
+          (Each balloon is interval [start, end], arrow at x bursts all containing x)
+          Hint: sort by end, greedily choose end of each group
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Minimum cost to hire K workers: each worker must be paid at least
+          their minimum wage AND workers in group must have same pay rate
+          Hint: sort by ratio, sliding window min-heap
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Given array and integer K, split array into K non-empty subarrays
+          to minimize the maximum sum among all subarrays
+          (Binary search on answer + greedy feasibility check)
+          Asked at: Google, Goldman Sachs, Amazon
+
+================================================================================
+PHASE 25 — DP: 1D PROBLEMS (extra weight)
+(5 Easy, 10 Medium, 5 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Find minimum number of jumps to reach last index (greedy first, then DP)
+          DP: dp[i] = min jumps to reach index i
+          Asked at: Amazon, Microsoft, TCS
+
+  [ ] (E) Count number of ways to reach Nth stair with 1, 2, or 3 steps
+          Asked at: Amazon, Microsoft, Google, Goldman Sachs
+
+  [ ] (E) Find maximum sum of alternating elements
+          (Pick elements at even or odd indices to maximize sum)
+          Asked at: TCS, Amazon
+
+  [ ] (E) Given array, find length of longest subarray with all equal elements
+          Asked at: TCS, Wipro
+
+  [ ] (E) Find the minimum cost to reach last cell of array
+          where cost[i] = cost to step on cell i
+          Asked at: TCS, Amazon
+
+MEDIUM
+-------
+  [ ] (M) Paint fence: N fence posts, K colors. Adjacent posts can't have same color
+          for 3 or more consecutive posts. Count valid colorings.
+          dp[i] = (K-1) * (dp[i-1] + dp[i-2])
+          Asked at: Amazon, Google
+
+  [ ] (M) Given N dice each with M faces, count ways to get sum S
+          dp[dice][sum] = sum over all face values
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Ugly numbers: find the Nth ugly number (factors only 2, 3, 5)
+          DP with 3 pointers
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Count derangements of N elements (no element appears in original position)
+          D(N) = (N-1) * (D(N-1) + D(N-2))
+          Asked at: Goldman Sachs, Google
+
+  [ ] (M) Given array of coin denominations and amount, find minimum coins
+          AND also reconstruct which coins were used (trace back)
+          Asked at: Amazon, Flipkart
+
+  [ ] (M) Given binary string, find minimum flips to make it K-periodic
+          (repeating pattern of length K)
+          Asked at: Google, Goldman Sachs
+
+  [ ] (M) Tiling problem: count ways to tile 2xN board with 1x2 and 2x1 tiles
+          dp[N] = dp[N-1] + dp[N-2]
+          Asked at: Amazon, Microsoft
+
+  [ ] (M) Delete and earn: given array, pick arr[i] to earn arr[i] points
+          but must delete all occurrences of arr[i]-1 and arr[i]+1
+          (Reduce to house robber on value frequencies)
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Count number of binary strings of length N with no two consecutive 1s
+          Asked at: Amazon, Flipkart, Goldman Sachs
+
+  [ ] (M) Minimum cost to merge stones: merge K adjacent piles into one
+          cost = sum of merged piles. Return minimum total cost or -1.
+          (Only possible if (N-1) % (K-1) == 0)
+          Asked at: Google, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Minimum cost to cut a rod into pieces at given positions
+          DP[left][right] = min cost to make all cuts between left and right
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Stone game: two players take from either end of array,
+          each plays optimally — does first player always win?
+          Prove it and implement: dp[i][j] = max advantage first player gets
+          Asked at: Amazon, Google
+
+  [ ] (H) Largest divisible subset of array
+          Find largest subset where every pair (a,b) satisfies a%b==0 or b%a==0
+          Hint: sort + LIS-style DP
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Count the number of LIS (Longest Increasing Subsequences)
+          Not just length — count how many achieve it
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Russian Doll Envelopes: find maximum envelopes you can stack
+          (Each must strictly fit inside next in both dimensions)
+          Hint: sort by width asc, height desc, then LIS on heights
+          Asked at: Amazon, Google, Goldman Sachs
+
+================================================================================
+PHASE 26 — DP: 2D & KNAPSACK VARIANTS
+(3 Easy, 10 Medium, 8 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Count paths from top-left to bottom-right of grid (only right/down)
+          with no obstacles — find formula and verify with DP
+          Asked at: TCS, Amazon
+
+  [ ] (E) Given 2D grid, find maximum sum path from top-left to bottom-right
+          (Can move right or down only)
+          Asked at: TCS, Amazon, Wipro
+
+  [ ] (E) Find if there exists a subset of array with sum equal to half of total sum
+          (Partition check — boolean DP)
+          Asked at: TCS, Amazon
+
+MEDIUM
+-------
+  [ ] (M) Count number of subsets with sum divisible by K
+          dp[i][r] = count of subsets using first i elements with sum % K == r
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) Maximum profit knapsack with repetition (unbounded knapsack)
+          Each item can be taken any number of times
+          Asked at: Amazon, Flipkart, Goldman Sachs
+
+  [ ] (M) Find the number of ways to assign + or - to N numbers
+          so that they sum to target S (Target Sum problem)
+          Reduce to subset sum with dp[sum + offset]
+          Asked at: Amazon, Google, Facebook
+
+  [ ] (M) Paint houses: N houses, K colors, cost[i][j] = cost of painting house i with color j.
+          No two adjacent houses same color. Find minimum total cost.
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Cherry pickup: collect max cherries going from (0,0) to (N-1,N-1) and back
+          (Both trips simultaneously to avoid double counting)
+          Hint: two robots moving from top simultaneously
+          Asked at: Google, Amazon
+
+  [ ] (M) Count palindromic subsequences: count distinct palindromic subsequences in string
+          dp[i][j] = count of palindromes in s[i..j]
+          Asked at: Amazon, Google
+
+  [ ] (M) Minimum path sum in triangle (top to bottom, adjacent elements only)
+          O(N) space bottom-up
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Maximum square of 1s in binary matrix
+          dp[i][j] = min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]) + 1
+          Asked at: Amazon, Microsoft, Google, Goldman Sachs
+
+  [ ] (M) Count distinct ways to fill NxM grid using 1x2 tiles
+          (Profile DP — complex, good for advanced learners)
+          Asked at: Google, Competitive Programming
+
+  [ ] (M) Given two sequences, find minimum number of deletions from both
+          to make them equal (= len(A) + len(B) - 2*LCS)
+          Asked at: Amazon, Google
+
+HARD
+-----
+  [ ] (H) Given N items with weights and values and M knapsacks each with capacity,
+          maximize total value (Multi-knapsack problem)
+          Asked at: Goldman Sachs, Google
+
+  [ ] (H) Count number of ways to partition string into palindromic substrings
+          (Not just minimum cuts — count ALL ways)
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Cutting ribbon: cut ribbon of length N into K pieces
+          to maximize the minimum piece length (binary search + DP)
+          Asked at: Google, Amazon, Goldman Sachs
+
+  [ ] (H) Interleaving string DP: check if S3 is formed by interleaving S1 and S2
+          AND count number of distinct interleavings
+          Asked at: Amazon, Google
+
+  [ ] (H) Count all palindromic subsequences (not just length — exact count mod 1e9+7)
+          dp[i][j] in O(N^2) with 4 base cases
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Given array of jobs (start, end, profit), find max profit
+          such that selected jobs don't overlap — weighted interval scheduling
+          Hint: sort by end time, binary search for last compatible job
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Minimum cost to buy all candies: buy one, get one free if prices
+          satisfy certain condition — sort desc, pair optimally
+          Asked at: Amazon, Google
+
+  [ ] (H) Given binary matrix, find the number of distinct rectangles
+          where all border cells are 1 (not just any rectangle of 1s)
+          Asked at: Google, Goldman Sachs
+
+================================================================================
+PHASE 27 — DP: STRINGS
+(2 Easy, 5 Medium, 5 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Find if string B is a subsequence of string A (2-pointer solution first)
+          Then implement DP version: dp[i][j] = length of LCS(A[0..i], B[0..j])
+          Asked at: Amazon, TCS
+
+  [ ] (E) Count occurrences of pattern as subsequence in text
+          dp[i][j] = ways pattern[0..j] is subsequence of text[0..i]
+          Asked at: Amazon, Google
+
+MEDIUM
+-------
+  [ ] (M) Find the minimum ASCII delete sum to make two strings equal
+          Similar to edit distance but minimize sum of ASCII values of deleted chars
+          Asked at: Amazon, Google
+
+  [ ] (M) Palindrome pairs: given list of words, find all pairs (i,j) where
+          words[i] + words[j] is a palindrome — O(N * L^2) using hashmap
+          Asked at: Amazon, Google
+
+  [ ] (M) Print the actual LCS string (not just length)
+          Trace back through the DP table
+          Asked at: Amazon, Microsoft, Goldman Sachs
+
+  [ ] (M) Given string, find minimum number of insertions to make it palindrome
+          = length - LPS (longest palindromic subsequence)
+          Asked at: Amazon, Microsoft, Goldman Sachs
+
+  [ ] (M) Count of strings at edit distance <= K from query string
+          Given dictionary — for each query, count how many words are within K edits
+          Asked at: Google, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Given two strings, find the shortest string S such that both strings
+          are subsequences of S (Shortest Common Supersequence — reconstruct it)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Find the longest palindromic substring in O(N) — Manacher's algorithm
+          (Different from DP — must implement actual Manacher's with P array)
+          Asked at: Google, Amazon, Adobe
+
+  [ ] (H) Minimum window subsequence: find shortest substring of S
+          such that T is a subsequence of it
+          Hint: DP or two-pointer in O(N*M)
+          Asked at: Google, Amazon
+
+  [ ] (H) Scramble string: check if s2 is a scrambled version of s1
+          (Can split and swap recursively — exponential states, memo with map)
+          Asked at: Amazon, Google
+
+  [ ] (H) Given two strings, count minimum number of operations (insert, delete, replace)
+          to convert one to another AND reconstruct the edit sequence
+          Asked at: Amazon, Google, Goldman Sachs, Adobe
+
+================================================================================
+PHASE 28 — ADVANCED DP (bitmask, digit, interval)
+(0 Easy, 5 Medium, 8 Hard)
+================================================================================
+
+MEDIUM
+-------
+  [ ] (M) Find the minimum number of steps to reach target word from start word
+          where each step changes exactly one character (Bitmask DP not needed — BFS)
+          Asked at: Amazon, Google
+
+  [ ] (M) Number of subsets with sum in range [L, R]
+          (Extension of subset sum — count instead of boolean)
+          Asked at: Amazon, Goldman Sachs
+
+  [ ] (M) Partition array into two subsets with minimum difference
+          dp[sum] = true/false, then find largest reachable sum <= total/2
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Count numbers with unique digits from 0 to 10^N
+          dp[i] = count of valid i-digit numbers
+          Asked at: Amazon, Google
+
+  [ ] (M) Arithmetic slices II: count number of arithmetic subsequences
+          (not subarrays — any subsequence with same difference)
+          dp[i][diff] = count of arithmetic subsequences ending at i with diff
+          Asked at: Amazon, Google
+
+HARD
+-----
+  [ ] (H) Bitmask DP: Given N masks (bitmasks), find minimum number of masks
+          to cover all bits 0 to M-1 (Set Cover — NP-hard, bitmask DP for small N)
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Bitmask DP: Count number of ways to assign N tasks to N people
+          (one task per person) such that total cost is minimized
+          dp[mask] = min cost to assign tasks represented by mask
+          Asked at: Google, Goldman Sachs, competitive
+
+  [ ] (H) Interval DP: Stone Merge — merge N piles of stones into one pile
+          cost = sum of two merged piles. Find minimum cost.
+          dp[i][j] = min cost to merge stones from i to j
+          Asked at: Google, Goldman Sachs
+
+  [ ] (H) Digit DP: Count numbers in [L, R] whose digit sum is divisible by K
+          State: (position, sum_mod_K, is_tight, started)
+          Asked at: Google, Goldman Sachs, competitive
+
+  [ ] (H) Digit DP: Count numbers in [1, N] that don't have digit d
+          State: (position, is_tight, has_started)
+          Asked at: Google, competitive
+
+  [ ] (H) Convex Hull Trick: optimize DP where transition is
+          dp[i] = min over j < i of (dp[j] + cost(j, i))
+          and cost has a linear structure
+          Asked at: Google, Goldman Sachs, competitive
+
+  [ ] (H) Knuth optimization: optimize interval DP from O(N^3) to O(N^2)
+          when cost satisfies quadrangle inequality
+          Asked at: Google, competitive
+
+  [ ] (H) Tree rerooting DP: compute answer for each node as root in O(N)
+          Two DFS passes — first downward, then upward propagation
+          Asked at: Google, Goldman Sachs, competitive
+
+================================================================================
+PHASE 29 — BIT MANIPULATION (fresh questions only)
+(5 Easy, 5 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Given number N, set the Kth bit (0-indexed from right)
+          Answer: N | (1 << K)
+          Asked at: TCS, Amazon, Samsung
+
+  [ ] (E) Given number N, clear (unset) the Kth bit
+          Answer: N & ~(1 << K)
+          Asked at: TCS, Amazon, Samsung
+
+  [ ] (E) Given number N, toggle the Kth bit
+          Answer: N ^ (1 << K)
+          Asked at: TCS, Amazon, Samsung
+
+  [ ] (E) Check if the Kth bit of N is set
+          Answer: (N >> K) & 1 == 1
+          Asked at: TCS, Amazon, TCS
+
+  [ ] (E) Find XOR of all numbers from 1 to N using the cycle pattern
+          XOR(N) cycles: N, 1, N+1, 0 for N%4 = 0,1,2,3
+          Asked at: Amazon, Competitive Programming
+
+MEDIUM
+-------
+  [ ] (M) Given an integer, check if it is a palindrome in binary representation
+          Hint: reverse bits and compare
+          Asked at: Amazon, Samsung, Dolat Capital
+
+  [ ] (M) Find the position of the most significant bit (leftmost set bit)
+          Hint: log2(n) floored, or bit shifting right until 0
+          Asked at: Samsung, Dolat Capital
+
+  [ ] (M) Given array, find the element that appears exactly K times
+          when all others appear M times (K < M)
+          Hint: count each bit across all numbers, mod M
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (M) Find the number of integers in [L, R] with even number of set bits
+          Hint: precompute prefix XOR parity or use bit DP
+          Asked at: Google, Goldman Sachs, competitive
+
+  [ ] (M) Determine if a number is a power of 4
+          Hint: power of 2 check AND the set bit must be at even position
+          N & (N-1) == 0 AND (N & 0xAAAAAAAA) == 0
+          Asked at: Amazon, Google
+
+HARD
+-----
+  [ ] (H) Find the maximum AND value of any pair in array
+          (Greedy from most significant bit — keep candidates with bit set)
+          Asked at: Amazon, Competitive Programming, Goldman Sachs
+
+  [ ] (H) Count total set bits in all numbers from 1 to N
+          (Each bit position contributes independently — math formula)
+          Asked at: Amazon, Google, Goldman Sachs
+
+  [ ] (H) Given array, find the maximum XOR of any subarray (contiguous)
+          Hint: prefix XOR + Trie, similar to maximum XOR pair
+          Asked at: Google, Goldman Sachs, competitive
+
+================================================================================
+PHASE 30 — TRIE (fresh questions)
+(2 Easy, 5 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Count the number of words in a Trie that have a given prefix
+          Add a count field to each TrieNode
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (E) Delete a word from a Trie
+          (Tricky — only delete nodes not shared with other words)
+          Asked at: Amazon, Microsoft
+
+MEDIUM
+-------
+  [ ] (M) Given list of words, find the longest compound word
+          (a word that can be formed by concatenation of other words in the list)
+          Hint: Trie + DFS
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Given words, implement a spell checker: for query word,
+          return all words in dictionary within edit distance 1
+          Hint: Trie traversal with error budget
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Implement a phone directory: given list of contacts,
+          for each prefix of a search string, return top 3 lexicographically smallest contacts
+          Asked at: Amazon, Microsoft, Google
+
+  [ ] (M) Map sum pairs: insert (key, val) and sum all values whose keys
+          start with given prefix — use Trie with value at nodes
+          Asked at: Amazon, Google
+
+  [ ] (M) Given N binary strings, find the maximum XOR of any two
+          Hint: bit-by-bit Trie insertion of binary representations
+          Asked at: Amazon, Google, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Concatenated words: find all words in dictionary that can be formed
+          by concatenating two or more shorter words from the same dictionary
+          Hint: Trie + DP or DFS with memoization
+          Asked at: Google, Amazon
+
+  [ ] (H) Stream of characters: implement search(letter) that returns true
+          if any suffix of the current stream is a word in dictionary
+          Hint: reverse insert into Trie, stream backwards
+          Asked at: Google, Amazon, Facebook
+
+  [ ] (H) Design a system for top-K frequent searches with autocomplete
+          Trie with min-heap of size K at each node
+          Asked at: Google, Amazon, Goldman Sachs
+
+================================================================================
+PHASE 31 — SEGMENT TREE & FENWICK TREE (fresh questions)
+(2 Easy, 3 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Build a Fenwick Tree (BIT) for prefix sum queries
+          Point update in O(log N), prefix sum query in O(log N)
+          Asked at: Amazon, Goldman Sachs, competitive
+
+  [ ] (E) Given array, answer Q queries: how many elements in range [L, R] equal X?
+          Offline: sort + BIT for count queries
+          Asked at: Amazon, competitive
+
+MEDIUM
+-------
+  [ ] (M) Range GCD query with point updates using Segment Tree
+          Asked at: Google, competitive
+
+  [ ] (M) Count of elements in range [L, R] that are > K using merge sort tree
+          (Segment tree of sorted arrays — offline)
+          Asked at: Google, Goldman Sachs, competitive
+
+  [ ] (M) Find the K-th smallest element in a range [L, R] of an array
+          Hint: persistent segment tree or offline merge sort tree
+          Asked at: Google, Goldman Sachs, competitive
+
+HARD
+-----
+  [ ] (H) Range update (add V to all elements in [L, R]) + range query (sum of [L, R])
+          using Segment Tree with lazy propagation
+          Asked at: Google, Goldman Sachs, competitive
+
+  [ ] (H) Given array, for each query (L, R, K), count elements divisible by K
+          Offline approach with Fenwick Tree
+          Asked at: Google, competitive
+
+  [ ] (H) Find the number of inversions in a range [L, R] of array
+          Hint: merge sort tree or persistent segment tree
+          Asked at: Google, Goldman Sachs, competitive
+
+================================================================================
+PHASE 32 — MATH & NUMBER THEORY (fresh questions)
+(5 Easy, 5 Medium, 3 Hard)
+================================================================================
+
+EASY
+-----
+  [ ] (E) Find all divisors of N and print them in sorted order efficiently
+          Hint: go up to sqrt(N), collect pairs
+          Asked at: Amazon, TCS, Goldman Sachs
+
+  [ ] (E) Check if N is a perfect number (sum of proper divisors = N)
+          Asked at: TCS, Wipro, Zoho
+
+  [ ] (E) Find N! mod P where P is prime
+          Hint: use Wilson's theorem if N >= P, else compute iteratively with mod
+          Asked at: Goldman Sachs, competitive
+
+  [ ] (E) Given two numbers A and B, find LCM without overflow
+          Hint: lcm = (A / gcd(A,B)) * B (divide first!)
+          Asked at: Amazon, TCS, Goldman Sachs
+
+  [ ] (E) Find the number of trailing zeros in N!
+          Hint: count pairs of 2 and 5 — 5s are limiting factor
+          Asked at: Amazon, Goldman Sachs, Google
+
+MEDIUM
+-------
+  [ ] (M) Segmented Sieve: find all primes in range [L, R] where R can be up to 10^12
+          Hint: sieve primes up to sqrt(R), then mark composites in [L,R]
+          Asked at: Competitive Programming, Goldman Sachs
+
+  [ ] (M) Find the smallest number with exactly N divisors
+          Hint: factorize N, assign prime exponents greedily from largest
+          Asked at: Goldman Sachs, competitive
+
+  [ ] (M) Given N and K, compute N! / K! mod P efficiently
+          Hint: telescoping product + modular inverse
+          Asked at: Goldman Sachs, competitive
+
+  [ ] (M) Find all primitive roots modulo P (generator of multiplicative group)
+          Asked at: Goldman Sachs, competitive, Dolat Capital
+
+  [ ] (M) Chinese Remainder Theorem: solve system of congruences
+          x ≡ a1 (mod m1), x ≡ a2 (mod m2), ... find smallest x
+          Asked at: Goldman Sachs, competitive, Dolat Capital
+
+HARD
+-----
+  [ ] (H) Count numbers in [1, N] coprime to all numbers in a given set S
+          Hint: inclusion-exclusion on prime factors of elements in S
+          Asked at: Goldman Sachs, competitive
+
+  [ ] (H) Find the largest prime factor of N in O(sqrt(N))
+          Then extend to find ALL prime factors with multiplicity
+          Asked at: Goldman Sachs, competitive
+
+  [ ] (H) Given matrix A and integer N, compute A^N mod M using matrix exponentiation
+          Apply to: Fibonacci, linear recurrences, counting paths in graphs
+          Asked at: Goldman Sachs, Google, competitive
+
+================================================================================
+PHASE 33 — DESIGN / OOP CODING
+(0 Easy, 8 Medium, 3 Hard)
+================================================================================
+
+MEDIUM
+-------
+  [ ] (M) Design a Least Frequently Used (LFU) Cache
+          get(key) and put(key, value) both O(1)
+          Hint: two hashmaps + min frequency tracker + doubly linked lists per frequency
+          Asked at: Amazon, Google, Microsoft
+
+  [ ] (M) Design a Task Manager: addTask(name, priority, deadline),
+          getNextTask() returns highest priority task respecting deadlines
+          Asked at: Amazon, Microsoft, Dolat Capital
+
+  [ ] (M) Design a Price Alert System:
+          setAlert(stock, price) — notify when stock price crosses threshold
+          updatePrice(stock, price) — update current price
+          Must support multiple alerts per stock
+          Asked at: Dolat Capital, Goldman Sachs, ICICI Securities
+
+  [ ] (M) Implement a generic event-driven state machine:
+          addState(name), addTransition(from, event, to), trigger(event)
+          currentState() returns current state
+          Asked at: Adobe, Persistent, Nagarro
+
+  [ ] (M) Design a thread-safe Singleton with lazy initialization
+          using call_once (C++11 way) and local static (Meyers' way)
+          Explain why double-checked locking is broken without std::atomic
+          Asked at: Amazon, Microsoft, Dolat Capital, Persistent
+
+  [ ] (M) Implement a copy-on-write (COW) vector:
+          Multiple readers share same array; copy only when written
+          Asked at: Dolat Capital, Adobe, Persistent
+
+  [ ] (M) Design a notification system:
+          subscribe(userId, eventType), unsubscribe(userId, eventType),
+          publish(eventType, message) — notify all subscribers
+          Asked at: Amazon, Adobe, Persistent
+
+  [ ] (M) Design a simple in-memory database supporting:
+          set(key, value), get(key), delete(key), begin(), commit(), rollback()
+          Hint: use stack of transaction snapshots (hashmap copies)
+          Asked at: Amazon, Google, Goldman Sachs
+
+HARD
+-----
+  [ ] (H) Design a real-time leaderboard system for a competitive game:
+          updateScore(playerId, score), getTopK(K), getRank(playerId)
+          All operations O(log N)
+          Hint: balanced BST (std::set with custom struct) or order-statistics tree
+          Asked at: Amazon, Google, Goldman Sachs, Dolat Capital
+
+  [ ] (H) Design a concurrent hash map supporting parallel reads and
+          stripe-level locking for parallel writes
+          N stripes, each with its own mutex
+          Asked at: Dolat Capital, Amazon, Google, Persistent
+
+  [ ] (H) Design a distributed key-value store with:
+          consistent hashing for key partitioning across N nodes,
+          replication factor R, and read/write quorum
+          Asked at: Amazon, Google, Goldman Sachs
+
+================================================================================
+TOTAL SUMMARY
+================================================================================
+
+  Topic                    |  E  |  M  |  H  | Total
+  -------------------------|-----|-----|-----|------
+  Variables & Operators    |  5  |  5  |  0  |  10
+  Loops & Patterns         |  5  |  5  |  0  |  10
+  Functions & Recursion    |  5  |  8  |  5  |  18
+  Arrays                   | 15  | 15  | 10  |  40
+  Strings                  | 10  | 10  |  8  |  28
+  Pointers & Memory        |  5  |  5  |  3  |  13
+  OOP Coding               |  5  |  8  |  3  |  16
+  STL / Vectors            |  5  |  8  |  3  |  16
+  Linked Lists             | 10  | 10  |  5  |  25
+  Stacks                   |  5  |  8  |  5  |  18
+  Queues                   |  5  |  5  |  3  |  13
+  Hashing                  |  5  |  8  |  3  |  16
+  Binary Search            |  5  |  8  |  3  |  16
+  Sorting                  |  5  |  5  |  3  |  13
+  Two Pointer              |  5  |  8  |  3  |  16
+  Sliding Window           |  5  |  8  |  3  |  16
+  Prefix Sum               |  5  |  5  |  3  |  13
+  Binary Trees             | 10  | 15  | 10  |  35
+  BST                      |  5  |  8  |  3  |  16
+  Heaps                    |  3  |  8  |  5  |  16
+  Graphs                   |  5  | 15  | 10  |  30
+  Backtracking             |  3  |  8  |  5  |  16
+  Divide & Conquer         |  3  |  5  |  3  |  11
+  Greedy                   |  5  |  8  |  5  |  18
+  DP — 1D                  |  5  | 10  |  5  |  20
+  DP — 2D / Knapsack       |  3  | 10  |  8  |  21
+  DP — Strings             |  2  |  5  |  5  |  12
+  DP — Advanced            |  0  |  5  |  8  |  13
+  Bit Manipulation         |  5  |  5  |  3  |  13
+  Trie                     |  2  |  5  |  3  |  10
+  Segment Tree / BIT       |  2  |  3  |  3  |   8
+  Math & Number Theory     |  5  |  5  |  3  |  13
+  Design / OOP Coding      |  0  |  8  |  3  |  11
+  -------------------------|-----|-----|-----|------
+  THIS FILE TOTAL          | 168 | 244 | 115 | 527
+  ========================================================
+  File 1 (interview_questions.txt)     : 296 questions
+  File 2 (interview_questions_extended): 342 questions
+  File 3 (this file)                   : 527 questions
+  ========================================================
+  GRAND TOTAL (all 3 files)            : 1165 questions
+  ========================================================
+
+================================================================================
+END OF FILE
+================================================================================
+"Weight your practice by topic importance — not just topic order."
+"Arrays + Trees + DP = 60% of all interview questions combined."
+"Hard problems = same patterns, more constraints. Master medium first."
+================================================================================

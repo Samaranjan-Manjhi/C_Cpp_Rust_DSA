@@ -1,0 +1,8 @@
+Starting Date: 07/04/2026 Ending Date: 00/00/0000   Done --> step_01_variables_data-types_operators
+Starting Date: 07/04/2026 Ending Date: 14/04/2026   Done --> step_02_control_flow
+Starting Date: 14/04/2026 Ending Date: 00/00/0000   Done --> step_03_function_recursion
+Starting Date: 21/04/2026 Ending Date: 00/00/0000   Done --> step_04_array
+Starting Date: 00/00/0000 Ending Date: 00/00/0000        --> step_05_pointer_reference
+Starting Date: 29/05/2026 Ending Date: 00/00/0000   Done --> step_06_string
+Starting Date: 29/06/2026 Ending Date: 00/00/0000   Done --> step_07_classes_objects
+

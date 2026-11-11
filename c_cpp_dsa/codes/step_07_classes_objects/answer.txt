@@ -1,0 +1,1379 @@
+================================================================================
+     CLASSES & OBJECTS — THEORY ANSWERS + TRICKY QUESTIONS
+================================================================================
+
+================================================================================
+SECTION 1A — CLASS & OBJECT BASICS (ANSWERS)
+================================================================================
+
+Q1. What is a class? What is an object? What is the difference?
+
+    - A class is a user-defined BLUEPRINT/TYPE that describes what data
+      (member variables) and behavior (member functions) its instances
+      will have — it doesn't itself occupy memory as "an object" until
+      instantiated.
+    - An object is a concrete INSTANCE of a class, actually existing in
+      memory with its own copy of the class's non-static member
+      variables.
+    - Difference in one line: a class is the TYPE (like `int` is a type),
+      an object is a VALUE of that type (like a particular `int`
+      variable).
+
+Q2. What are the 4 pillars of OOP? Explain each with a real-world example.
+
+    - Encapsulation: bundling data and the methods that operate on it
+      together, and restricting direct external access to internal state
+      (via private/protected). Example: a BankAccount class hides its
+      raw balance and only allows changing it through deposit()/
+      withdraw() methods that enforce rules (no negative balance).
+    - Abstraction: exposing only the essential, relevant details of
+      something while hiding the complex internal implementation.
+      Example: a car's steering wheel/pedals are the "interface" a driver
+      uses — the driver doesn't need to know the engine's internal
+      combustion details to drive.
+    - Inheritance: a new class (derived) reuses and extends the
+      properties/behavior of an existing class (base). Example: Car,
+      Truck, and Motorcycle can all inherit common fields (speed, fuel)
+      and behavior from a Vehicle base class.
+    - Polymorphism: the same interface/call behaves differently depending
+      on the actual (often runtime) type of object involved. Example:
+      calling `.sound()` on an Animal pointer produces "Woof" for a Dog
+      and "Meow" for a Cat, through the same call syntax.
+
+Q3. What is encapsulation? Why is it important?
+
+    - Encapsulation bundles an object's data together with the functions
+      that operate on it, and restricts direct outside access to that
+      data (typically via `private`/`protected` access specifiers plus
+      public getter/setter or higher-level methods).
+    - Important because it: protects internal invariants (an object can
+      enforce its own validity rules instead of trusting external code to
+      set fields correctly); reduces coupling (external code depends only
+      on the public interface, so internal implementation can change
+      freely without breaking callers); and improves maintainability/
+      debuggability (all the logic that can affect a piece of state lives
+      in one place — the class itself).
+
+Q4. What is abstraction? How is it different from encapsulation?
+
+    - Abstraction is about hiding COMPLEXITY — presenting a simplified,
+      relevant "what it does" interface while hiding "how it's
+      implemented" details.
+    - Encapsulation is about hiding DATA/state and bundling it with
+      behavior, via access control.
+    - They're related but distinct: abstraction is a DESIGN-level concept
+      (what should the interface even look like?), while encapsulation is
+      the LANGUAGE MECHANISM (private/protected/public) commonly used to
+      help achieve abstraction by preventing callers from reaching past
+      the intended interface into implementation details.
+
+Q5. What is the difference between public, private, and protected?
+
+    - public: accessible from anywhere the object itself is accessible —
+      the class's own code, derived classes, and external code.
+    - private: accessible ONLY from within the class's own member
+      functions (and its friends) — not from derived classes, not from
+      external code.
+    - protected: accessible from the class's own member functions, its
+      friends, AND from DERIVED classes — but NOT from external/unrelated
+      code. It sits "between" public and private specifically to support
+      inheritance.
+
+Q6. What is the default access specifier for a class vs struct in C++?
+
+    - class: members are `private` by default if no specifier is given.
+    - struct: members are `public` by default if no specifier is given.
+    - This is the SINGLE meaningful default-behavior difference between
+      the two keywords in C++ (unlike C, where struct has no member
+      functions/access control at all).
+
+Q7. What is the difference between struct and class in C++?
+
+    - Functionally, in modern C++, struct and class are nearly identical
+      — both can have member functions, constructors, access specifiers,
+      inheritance, virtual functions, templates, etc. The ONLY two
+      differences are:
+        1. Default member access: private for class, public for struct.
+        2. Default inheritance mode: `class B : A` defaults to PRIVATE
+           inheritance; `struct B : A` defaults to PUBLIC inheritance.
+    - By CONVENTION (not enforced by the compiler), struct is typically
+      used for simple, passive data-holding types (POD-like aggregates)
+      while class is used for types with significant behavior/invariants
+      to encapsulate — but this is a style choice, not a language rule.
+
+Q8. Can a class have another class as a member? What is this called?
+
+    - Yes — this is called COMPOSITION (or aggregation, depending on
+      ownership strength — see Q9) and represents a "has-a" relationship,
+      as opposed to inheritance's "is-a" relationship. Example: a Car
+      class having an Engine member object — the Car "has an" Engine, it
+      is not "a kind of" Engine.
+
+Q9. What is the difference between aggregation, composition, and
+    association?
+
+    - Composition: STRONG ownership — the contained object's lifetime is
+      tied to the containing object; it typically cannot exist
+      meaningfully without the owner, and is usually destroyed along with
+      it. Example: a Car "has an" Engine that is created/destroyed with
+      the Car (often stored by value or via a uniquely-owning smart
+      pointer as a direct member).
+    - Aggregation: WEAK ownership — the "contained" object can exist
+      independently of the container and may outlive it or be shared.
+      Example: a Library "has" Books, but the Books existed before being
+      added to the library and continue to exist if the Library object is
+      destroyed (often modeled as a container of pointers/references to
+      externally-owned objects).
+    - Association: a general "uses" relationship between two otherwise
+      independent classes, with no ownership implied at all in either
+      direction. Example: a Teacher "teaches" Students — Teacher and
+      Student are independent objects that merely interact/reference each
+      other.
+
+Q10. What is a member function? What is a member variable?
+
+    - A member variable (also "data member" or "field") is a variable
+      declared inside a class, representing part of the STATE that each
+      object of that class holds (each object gets its own copy, unless
+      the member is `static`).
+    - A member function (also "method") is a function declared inside a
+      class that operates on an object's data — it implicitly receives
+      access to the calling object via the hidden `this` pointer (unless
+      it's `static`), and typically manipulates or reads that object's
+      member variables.
+
+Q11. What does the scope resolution operator (::) do?
+
+    - The `::` operator specifies which SCOPE a name belongs to,
+      disambiguating names that might otherwise be ambiguous or
+      inaccessible. Common uses: defining a class's member function
+      OUTSIDE the class body (`void MyClass::myFunc() { ... }`);
+      accessing a STATIC member (`MyClass::staticVar`); explicitly calling
+      a BASE class's version of an overridden function from a derived
+      class (`Base::someFunc();`); accessing a name inside a NAMESPACE
+      (`std::cout`); and accessing the GLOBAL scope explicitly when a
+      local name shadows it (`::globalVar`).
+
+Q12. What is object slicing? When does it happen? How do you prevent it?
+
+    - Object slicing happens when a DERIVED class object is assigned (by
+      VALUE, not by pointer/reference) into a BASE class object — only
+      the base-class PORTION of the derived object is copied ("sliced
+      off"); any derived-specific data members are lost entirely, and any
+      virtual function calls made through that base object afterward will
+      resolve to the BASE class's version (since there's no longer an
+      actual derived object involved at all — the object genuinely IS
+      just a Base now, not a Derived being accessed through a Base view).
+    - It happens whenever a Derived object is: assigned directly to a
+      Base object variable (`Base b = derivedObj;`), passed BY VALUE to a
+      function expecting a Base parameter, or stored BY VALUE in a
+      container of Base objects (e.g. `std::vector<Base>` holding
+      Derived objects added directly).
+    - Prevention: use POINTERS or REFERENCES to the base class
+      (`Base* p = &derivedObj;` or `Base& r = derivedObj;`) instead of
+      by-value base objects, whenever polymorphic behavior is needed — a
+      pointer/reference doesn't copy anything, so the full derived object
+      remains intact and virtual dispatch works correctly through it.
+
+================================================================================
+SECTION 1B — CONSTRUCTORS & DESTRUCTORS (ANSWERS)
+================================================================================
+
+Q1. What is a constructor? What are the types of constructors in C++?
+
+    - A constructor is a special member function, named identically to
+      the class, automatically called when an object is created, used to
+      initialize the object's state (typically its member variables).
+    - Types: Default constructor (no parameters, or all parameters have
+      defaults), Parameterized constructor (takes arguments to initialize
+      members with caller-supplied values), Copy constructor (constructs
+      a new object as a copy of an existing object of the same type), and
+      (since C++11) Move constructor (constructs a new object by
+      "stealing" resources from a temporary/rvalue object rather than
+      copying).
+
+Q2. What is a default constructor? When does the compiler auto-generate
+    one?
+
+    - A default constructor is one that can be called with NO arguments
+      (either explicitly taking zero parameters, or having default values
+      for all its parameters).
+    - The compiler AUTOMATICALLY generates a default constructor for a
+      class ONLY IF the class defines NO constructors of its own at all
+      — the moment you define ANY constructor (even just a parameterized
+      one), the compiler stops auto-generating a default constructor, and
+      you must write your own if you still want default-construction to
+      be possible.
+
+Q3. What is a parameterized constructor?
+
+    - A constructor that accepts one or more arguments, used to
+      initialize an object's members with caller-supplied values at
+      creation time, rather than relying on default values. Example:
+      `Point(int x, int y) : x_(x), y_(y) {}` lets you write
+      `Point p(3, 4);`.
+
+Q4. What is a copy constructor? When is it called automatically?
+
+    - A copy constructor (`MyClass(const MyClass& other)`) constructs a
+      new object as a copy of an EXISTING object of the same class,
+      typically copying each member (shallow, by default, unless you
+      write custom deep-copy logic).
+    - Called automatically: (1) when an object is initialized directly
+      from another object of the same type (`MyClass b = a;` or
+      `MyClass b(a);`); (2) when an object is passed BY VALUE as a
+      function argument; (3) when an object is RETURNED by value from a
+      function — though this specific case is very often eliminated
+      entirely by (mandatory, as of C++17, for prvalues) copy elision/RVO,
+      meaning the copy constructor may not actually be invoked at all in
+      practice for a simple `return localObj;`.
+
+Q5. What is the difference between shallow copy and deep copy? When does
+    shallow copy cause problems?
+
+    - Shallow copy: copies member values AS-IS, including raw pointers —
+      the copy's pointer members end up pointing to the SAME memory as
+      the original's. This is exactly what the COMPILER-GENERATED default
+      copy constructor does.
+    - Deep copy: allocates independent memory for the copy and copies the
+      actual POINTED-TO data, so original and copy are fully independent.
+    - Shallow copy causes problems when the class owns a raw resource
+      (heap memory, a file handle) via a raw pointer: both the original
+      and the shallow copy's destructors will try to free/close the SAME
+      resource — a double-free (or double-close) — and modifying data
+      through one object's pointer silently affects the "independent"
+      copy too, since they share the same underlying memory.
+
+Q6. What is a destructor? When is it called?
+
+    - A destructor (`~MyClass()`) is a special member function
+      automatically called when an object's lifetime ends, used to
+      release any resources the object owns (free heap memory, close
+      files, unlock mutexes, etc.).
+    - Called when: a local (automatic/stack) object goes OUT OF SCOPE
+      (end of its enclosing block/function); a heap-allocated object is
+      explicitly `delete`d; a member/base subobject's destructor runs as
+      part of its owning object's destruction; or a temporary object
+      reaches the end of its (possibly extended) lifetime.
+
+Q7. Can a constructor be virtual? Can a destructor be virtual?
+
+    - Constructor: NO — a virtual call is dispatched through an object's
+      vtable, but the vtable itself is only fully set up DURING/AFTER
+      construction; there's no already-existing object with a vtable
+      pointer to dispatch through before construction even begins, so
+      "virtual constructor" is conceptually meaningless in C++ and not
+      allowed by the language.
+    - Destructor: YES, and it SHOULD be made virtual in any base class
+      that might be deleted polymorphically (through a base class
+      pointer) — see next question.
+
+Q8. What is a virtual destructor? Why is it important?
+
+    - A virtual destructor is a base class destructor marked `virtual`,
+      ensuring that deleting an object THROUGH A BASE CLASS POINTER
+      correctly calls the actual DERIVED class's destructor first (then
+      the base's, in the normal destruction order), rather than only
+      calling the base's destructor.
+    - Importance: WITHOUT a virtual destructor, `delete basePtr;` (where
+      basePtr actually points to a Derived object) is UNDEFINED BEHAVIOR
+      — in practice, typically only the Base destructor runs, and any
+      resources the Derived part of the object owned are NEVER released
+      (a resource/memory leak, and potentially worse UB depending on the
+      class hierarchy). Rule of thumb: if a class has ANY virtual
+      function, or is intended to be used polymorphically via base
+      pointers at all, its destructor should be virtual.
+
+Q9. What is an initializer list? Why is it preferred over assignment in
+    constructor body?
+
+    - A constructor initializer list (`MyClass(int x) : member_(x) {}`,
+      the part after the `:` and before the `{`) initializes member
+      variables (and base class subobjects) DIRECTLY, before the
+      constructor's body even begins to execute.
+    - Preferred over assignment in the body because: (1) it's more
+      EFFICIENT for class-type members — assignment in the body first
+      DEFAULT-CONSTRUCTS the member, then ASSIGNS a new value to it (two
+      operations), whereas the initializer list constructs it directly
+      with the desired value (one operation); (2) it's REQUIRED (not just
+      preferred) for `const` members, REFERENCE members, and base class
+      subobjects that don't have an accessible default constructor —
+      none of these can be "default-constructed then assigned" at all,
+      since const/reference members can't be reassigned after
+      construction, and a base class without a default constructor has no
+      way to be implicitly constructed in the body.
+
+Q10. What is delegating constructor (C++11)?
+
+    - A delegating constructor is a constructor that calls ANOTHER
+      constructor of the SAME class (instead of a base class) as part of
+      its own initialization, to avoid duplicating common initialization
+      logic. Example:
+          class Rect {
+              int w, h;
+          public:
+              Rect(int w, int h) : w(w), h(h) {}
+              Rect() : Rect(1, 1) {}   // delegates to the two-arg ctor
+          };
+
+Q11. What is the order of constructor and destructor calls in
+     inheritance?
+
+    - Construction order: BASE class constructor(s) run FIRST (in the
+      order bases are listed, for multiple inheritance), THEN member
+      subobjects are constructed (in declaration order, not initializer-
+      list order), THEN finally the DERIVED class's own constructor body
+      runs.
+    - Destruction order is the exact REVERSE: the derived class's
+      destructor body runs first, then member subobjects are destroyed
+      (reverse declaration order), then base class destructor(s) run
+      last (reverse of construction order for multiple bases). This
+      mirrors the general C++ principle that destruction always undoes
+      construction in the opposite order.
+
+Q12. What is the Rule of Three? When do you need all three?
+
+    - If a class needs to define ANY ONE of: the destructor, the copy
+      constructor, or the copy assignment operator, it very likely needs
+      to define ALL THREE — because all three exist to handle the same
+      underlying concern (a resource the class owns/manages directly). If
+      the compiler-generated default for one of them would be wrong
+      (e.g., a shallow-copy default copy constructor for a class managing
+      a raw pointer), the defaults for the other two are almost certainly
+      wrong as well.
+    - Needed specifically when a class directly manages a raw resource
+      (raw `new`/`delete`, a raw file handle, a raw OS handle) rather than
+      relying on RAII wrapper members that already handle this correctly
+      (see Rule of Zero).
+
+Q13. What is the Rule of Five (C++11)?
+
+    - Extends the Rule of Three to FIVE special member functions by
+      adding the MOVE CONSTRUCTOR and MOVE ASSIGNMENT OPERATOR — since
+      C++11 introduced move semantics, and defining any of the "big
+      three" SUPPRESSES the compiler's automatic generation of the move
+      operations (the compiler falls back to using the copy operations
+      instead, silently losing the performance benefit of moving). A
+      resource-managing class should generally define (or explicitly
+      `= default`/`= delete`) all five together.
+
+Q14. What is the Rule of Zero?
+
+    - The Rule of Zero says: if a class does NOT directly own a raw
+      resource — because all of its members are already RAII types that
+      correctly manage their own resources (std::string, std::vector,
+      std::unique_ptr, std::shared_ptr, etc.) — then the class should
+      define NONE of the five special member functions at all. The
+      compiler-generated defaults will correctly call each member's own
+      copy/move/destructor logic, giving correct behavior "for free."
+      This is the modern, preferred style; the Rule of Three/Five is
+      reserved for the rare low-level classes that actually wrap a raw
+      resource directly (i.e., the resource-managing wrapper classes
+      themselves, like writing your own smart pointer).
+
+Q15. What is the explicit keyword on constructors? Why use it?
+
+    - `explicit` on a constructor PREVENTS the compiler from using that
+      constructor for IMPLICIT conversions — i.e., it can still be called
+      directly (`MyClass obj(42);`), but cannot be used to silently
+      convert an argument of the constructor's parameter type into a
+      MyClass when a MyClass is expected elsewhere (`void f(MyClass x);
+      f(42);` would fail to compile if the single-argument constructor
+      taking an int is marked explicit).
+    - Used to prevent ACCIDENTAL/surprising implicit conversions that can
+      lead to confusing bugs or unintended function calls — best practice
+      is to mark ANY single-argument (or effectively single-argument,
+      with defaulted trailing params) constructor `explicit` UNLESS you
+      specifically WANT it to support implicit conversion (e.g., you
+      might intentionally leave a converting constructor to std::string
+      from const char* non-explicit, since that conversion is expected
+      and convenient).
+
+Q16. Can you call a virtual function from a constructor? What happens?
+
+    - Yes, it compiles and runs, but does NOT dispatch polymorphically as
+      you might expect: it calls the BASE class's version of the virtual
+      function, even if the actual object being constructed is of a
+      derived type — because during the BASE class's constructor
+      execution, the object's vtable pointer is still set up for the
+      BASE class (the derived part of the object doesn't exist/isn't
+      initialized yet). Only once the derived class's OWN constructor
+      begins running does the vtable get updated to point to the derived
+      class's overrides. This is a classic C++ gotcha, and relying on
+      virtual dispatch inside constructors (or destructors) is generally
+      considered an anti-pattern.
+
+Q17. What is a conversion constructor? What is a converting constructor?
+
+    - Both terms refer to the same thing: a constructor that can be
+      invoked with a SINGLE argument (or effectively single, if trailing
+      parameters have defaults) of some other type, which the compiler
+      can therefore use to IMPLICITLY convert a value of that other type
+      into an object of the class — unless the constructor is marked
+      `explicit`, which disables this implicit-conversion behavior while
+      still allowing direct/explicit construction.
+
+Q18. What is the difference between = default and = delete?
+
+    - `= default` explicitly asks the COMPILER to generate the default
+      implementation of a special member function (constructor,
+      destructor, copy/move operations) — useful when you want the
+      default behavior back after it would otherwise have been suppressed
+      (e.g., you defined a custom constructor, which suppresses the
+      default constructor, but you still want a default constructor
+      available too: `MyClass() = default;`), or simply to be explicit
+      about your intent in the code.
+    - `= delete` explicitly FORBIDS a particular function from being used
+      at all — calling it (or having the compiler try to
+      implicitly generate/use it) becomes a COMPILE ERROR. Common uses:
+      preventing copying entirely for a non-copyable resource-owning class
+      (`MyClass(const MyClass&) = delete;`), or deleting a specific
+      overload to block an unwanted implicit conversion (e.g. deleting a
+      constructor overload for a type you don't want to silently accept).
+
+================================================================================
+SECTION 1C — 'THIS' POINTER (ANSWERS)
+================================================================================
+
+Q1. What is the 'this' pointer? What does it point to?
+
+    - `this` is an IMPLICIT pointer, automatically available inside every
+      NON-STATIC member function, that points to the specific object
+      instance the member function was called ON (i.e., the object whose
+      method you invoked, `obj.method()` sets `this` to `&obj` inside
+      `method`). Its type is `ClassName*` (or `const ClassName*` inside a
+      const member function).
+
+Q2. When would you explicitly use 'this' pointer?
+
+    - To disambiguate when a PARAMETER NAME SHADOWS a member variable
+      name of the same name: `void setName(string name) { this->name =
+      name; }` — without `this->`, `name = name;` would just assign the
+      parameter to itself, leaving the member unchanged.
+    - To RETURN A REFERENCE TO THE CURRENT OBJECT for method chaining:
+      `MyClass& setX(int x) { this->x = x; return *this; }` enabling
+      `obj.setX(1).setY(2).setZ(3);`.
+    - To pass the current object (by pointer) to another function that
+      expects a pointer to this type.
+
+Q3. Is 'this' available in static member functions? Why not?
+
+    - No. A `static` member function is NOT tied to any particular object
+      instance at all — it can be called without ever creating an object
+      (`ClassName::staticFunc();`), so there's no "current object" for
+      `this` to meaningfully refer to; the language simply doesn't provide
+      it inside static member functions. Consequently, static member
+      functions also cannot directly access non-static (instance) member
+      variables, for the same underlying reason.
+
+Q4. Can you delete 'this' inside a member function?
+
+    - Yes, technically — but ONLY IF the object was originally allocated
+      on the HEAP via `new` (deleting a stack/automatic object's `this` is
+      undefined behavior, since the stack object wasn't heap-allocated at
+      all). After `delete this;`, the object is destroyed, and you must
+      be EXTREMELY careful not to access `this`, any member variable, or
+      call any further member function afterward — doing so is undefined
+      behavior (use-after-free), since the memory has been freed. This
+      pattern is rare and generally considered risky/an anti-pattern
+      (occasionally used in certain reference-counted or self-managing
+      object designs, but requires great care).
+
+Q5. What is method chaining? How is 'this' used to implement it?
+
+    - Method chaining is a coding style where multiple method calls are
+      strung together in a single expression (`obj.setA(1).setB(2)
+      .setC(3);`), because each method RETURNS A REFERENCE to the object
+      itself, allowing the next call to be made directly on that returned
+      reference.
+    - Implemented by having each chainable method return `*this` (a
+      reference to the current object, obtained by dereferencing the
+      `this` pointer): `MyClass& setA(int a) { this->a = a; return
+      *this; }` — the caller then has a reference to the same object to
+      call the next method on.
+
+================================================================================
+SECTION 1D — STATIC MEMBERS (ANSWERS)
+================================================================================
+
+Q1. What is a static member variable? How is it different from a regular
+    member?
+
+    - A static member variable is SHARED across ALL instances of a
+      class — there is exactly ONE copy of it, no matter how many objects
+      of the class are created (or even if NONE are created — it exists
+      as soon as the program starts, since it's essentially a special
+      kind of global variable scoped to the class).
+    - A regular (non-static) member variable gets its OWN separate copy
+      in EVERY object — changing it in one object has no effect on any
+      other object's copy.
+
+Q2. How do you define and initialize a static member variable?
+
+    - You DECLARE it inside the class body: `static int count;` — this
+      is only a declaration, not a definition (no storage is actually
+      allocated yet).
+    - You must separately DEFINE (and typically initialize) it OUTSIDE
+      the class, usually once in a single .cpp file:
+      `int MyClass::count = 0;` — this is where actual storage is
+      allocated. Forgetting this out-of-class definition causes a linker
+      error ("undefined reference") the moment the static member is
+      actually used/referenced anywhere in the program. (Since C++17,
+      `inline static` members can be defined and initialized directly
+      inside the class body instead — see Q6.)
+
+Q3. What is a static member function?
+
+    - A member function that can be called WITHOUT any object instance
+      at all, using the class name and scope resolution operator
+      (`ClassName::staticFunc();`), OR through an object (`obj.
+      staticFunc();`, though this is just a convenience — it doesn't use
+      the specific object at all). It has NO `this` pointer.
+
+Q4. Can a static member function access non-static members?
+
+    - No — since a static member function has no `this` pointer (it's
+      not tied to any particular object instance), it has no way to
+      identify WHICH object's non-static (instance) member to access. It
+      can only access other STATIC members (variables and functions) of
+      the class directly, or access a non-static member if it's given an
+      explicit object/reference/pointer to operate on as a parameter.
+
+Q5. What is the difference between static local variable and static
+    member variable?
+
+    - Static LOCAL variable: declared inside a FUNCTION; retains its
+      value between successive calls to that function (persists for the
+      whole program's lifetime), but its NAME/scope is still limited to
+      that one function — nothing outside the function can name or
+      access it directly.
+    - Static MEMBER variable: declared inside a CLASS; shared across ALL
+      instances of that class, and accessible (subject to normal access
+      specifiers) via the class name or any instance, from anywhere the
+      class itself is visible — a much broader scope than a static local.
+
+Q6. What is an inline static member variable (C++17)?
+
+    - Since C++17, a static member variable can be marked `inline` and
+      given its definition (with initializer) DIRECTLY INSIDE the class
+      body, e.g. `static inline int count = 0;` — eliminating the need
+      for a separate out-of-class definition line in a .cpp file. This
+      solves a longstanding annoyance (and a common source of linker
+      errors from forgetting the separate definition) and is especially
+      useful for header-only libraries/classes, since `inline` here
+      permits the same definition to appear in multiple translation
+      units without a "multiple definition" linker error (the linker
+      merges them into one).
+
+Q7. What is the Meyers Singleton? Why is the local static version
+    thread-safe in C++11?
+
+    - The Meyers Singleton (named after Scott Meyers) implements the
+      Singleton pattern using a STATIC LOCAL VARIABLE inside a function:
+          static MyClass& getInstance() {
+              static MyClass instance;
+              return instance;
+          }
+      The instance is constructed the FIRST time getInstance() is called,
+      and that same instance is returned on every subsequent call.
+    - It is thread-safe as of C++11 because the C++11 standard added a
+      GUARANTEE that if multiple threads attempt to initialize the same
+      function-local static variable concurrently, exactly ONE of them
+      performs the actual initialization while all OTHERS BLOCK/wait
+      until that initialization completes — the compiler inserts the
+      necessary synchronization automatically. Before C++11, this was
+      NOT guaranteed by the standard, and a naive implementation could
+      suffer a race condition where the object was constructed twice (or
+      partially constructed and used) under concurrent first-time calls.
+
+================================================================================
+END OF PART 1 — CONTINUED IN NEXT FILE SECTION
+     (Friend Functions, Const/Mutable, Operator Overloading, Inheritance
+      & Polymorphism, OOP Design Principles, Tricky Questions)
+================================================================================
+================================================================================
+SECTION 1E — FRIEND FUNCTIONS & CLASSES (ANSWERS)
+================================================================================
+
+Q1. What is a friend function? When would you use it?
+
+    - A friend function is a NON-MEMBER function that is explicitly
+      granted access to a class's `private` and `protected` members,
+      declared inside the class with the `friend` keyword (e.g.
+      `friend void printDetails(const MyClass& obj);`) even though the
+      function itself is defined outside the class and is not a member.
+    - Used when: you need a function to access private data but it
+      genuinely doesn't belong as a member (e.g. an operator that needs
+      to work with the class NOT as its left operand — like `operator<<`
+      for `std::cout`, see 1G Q3), or when two closely related classes
+      need mutual access to each other's internals without exposing that
+      access to the rest of the program.
+
+Q2. What is a friend class?
+
+    - A friend class declaration (`friend class OtherClass;` inside
+      MyClass) grants ALL member functions of OtherClass access to
+      MyClass's private and protected members — as if every method of
+      OtherClass were itself a friend function of MyClass.
+
+Q3. Is friendship transitive? Is it inherited?
+
+    - No to both. Friendship is NOT transitive: if class A declares class
+      B as a friend, and class B declares class C as a friend, class C
+      does NOT automatically get access to class A's private members —
+      each friendship must be declared explicitly and directly.
+    - Friendship is NOT inherited: if a base class declares some class or
+      function as a friend, that friendship does NOT automatically extend
+      to derived classes — a derived class must separately grant its own
+      friendships if needed.
+
+Q4. When would you use a friend function vs a member function?
+
+    - Use a MEMBER function when the class itself is naturally the
+      "subject" of the operation, and especially when the LEFT operand of
+      an operator is always your class type (most operators fit this).
+    - Use a friend (non-member) function specifically when the operation
+      needs SYMMETRIC or "reversed" access — the classic example being
+      `operator<<` for output streams: `cout << myObject;` requires the
+      LEFT operand to be `ostream` (cout), not MyClass — you cannot make
+      this a member of MyClass (a member function's implicit left operand
+      is always `*this`, i.e., would require `myObject << cout` instead),
+      so it must be a free function, and it needs `friend` status to
+      reach MyClass's private data to print it.
+
+================================================================================
+SECTION 1F — CONST MEMBER FUNCTIONS & MUTABLE (ANSWERS)
+================================================================================
+
+Q1. What is a const member function?
+
+    - A member function marked `const` (e.g. `void show() const { ... }`)
+      PROMISES not to modify the object it's called on — the compiler
+      enforces this by treating `this` as a pointer-to-const inside the
+      function (`const MyClass* const this`), making any attempt to
+      modify a non-mutable member a compile error. Because of this
+      guarantee, const member functions can be called on `const` objects
+      (and through const references/pointers), whereas non-const member
+      functions cannot.
+
+Q2. Can a const member function call a non-const member function?
+
+    - No — doing so would violate the const guarantee the function made
+      (a non-const member function might modify the object, which a const
+      function has promised not to allow to happen through it). This is a
+      compile error. A const member function can only call OTHER const
+      member functions (and static/free functions) on the same object.
+
+Q3. What is a mutable member variable? When would you use it?
+
+    - A member variable marked `mutable` CAN be modified even from inside
+      a `const` member function — it's the one designated exception to
+      the const-correctness rule, letting specific fields be changed
+      while the object is still logically treated as unmodified from the
+      OUTSIDE's perspective.
+    - Common use case: CACHING/MEMOIZATION inside a function that is
+      logically const from the caller's point of view — e.g. a
+      `getExpensiveValue() const` method that computes a result once and
+      caches it in a `mutable` member for future calls; the object's
+      OBSERVABLE state (the value returned) never changes, even though
+      internal bookkeeping does. Also used for things like mutex members
+      that need to be locked even inside const methods (to make the
+      const method thread-safe).
+
+Q4. What is the difference between const object and const member
+    function?
+
+    - A `const` OBJECT (`const MyClass obj;`) is an object that cannot
+      have any of its members modified through IT — as a consequence, you
+      can only call const member functions on it (calling a non-const
+      method on a const object is a compile error, since the compiler
+      can't guarantee that method won't try to modify the object).
+    - A const MEMBER FUNCTION is a promise made by a particular METHOD
+      that it won't modify `*this` — it CAN be called on both const AND
+      non-const objects (a const method never modifies the object, so
+      it's always safe to call), but it specifically cannot modify
+      non-mutable members while running.
+
+Q5. What is const correctness? Why is it important?
+
+    - Const correctness is the practice of marking EVERYTHING that should
+      not be modified as `const` throughout your code — const member
+      functions for methods that don't modify state, const parameters/
+      references for data that shouldn't be changed by a function, const
+      local variables/pointers where applicable, and so on.
+    - Important because: it PREVENTS BUGS (the compiler catches accidental
+      modification attempts at compile time, rather than a bug surfacing
+      at runtime); it DOCUMENTS INTENT clearly (a function signature with
+      `const` parameters/methods tells callers exactly what will and
+      won't be modified, without needing to read the implementation);
+      it enables certain COMPILER OPTIMIZATIONS (knowing something won't
+      change can allow more aggressive caching of values in registers);
+      and it allows const objects/references to actually be usable at all
+      (a const object can ONLY call const methods, so a class without any
+      const methods becomes largely unusable when accessed through a
+      const reference).
+
+================================================================================
+SECTION 1G — OPERATOR OVERLOADING (ANSWERS)
+================================================================================
+
+Q1. What is operator overloading? Which operators can and cannot be
+    overloaded?
+
+    - Operator overloading lets you define CUSTOM BEHAVIOR for existing
+      C++ operators (`+`, `-`, `==`, `<<`, `[]`, `()`, etc.) when applied
+      to objects of your own class types, giving user-defined types
+      syntax that reads naturally like built-in types (e.g. `c3 = c1 +
+      c2;` for a Complex number class).
+    - CANNOT be overloaded: `::` (scope resolution), `.` (member access),
+      `.*` (pointer-to-member access), `?:` (ternary/conditional), and
+      `sizeof`, `typeid`, `alignof` — these are fixed by the language and
+      not overloadable, generally because their meaning is too
+      fundamental to the language's syntax/semantics to allow user
+      redefinition.
+
+Q2. What is the difference between overloading as member function vs
+    friend function?
+
+    - As a MEMBER function, the LEFT operand of the operator is implicitly
+      `*this` — e.g. `MyClass operator+(const MyClass& rhs) const;`
+      handles `a + b` by treating `a` as the object the method is called
+      on and `b` as the explicit parameter. This means the left operand
+      MUST be of your class type.
+    - As a FRIEND (or plain non-member) function, BOTH operands are
+      explicit parameters — `friend MyClass operator+(const MyClass& lhs,
+      const MyClass& rhs);` — giving symmetric treatment to both sides.
+    - Prefer the non-member/friend form specifically when the LEFT
+      operand isn't (or might not always be) your class type — e.g.
+      allowing `5 + myComplexNumber` in addition to `myComplexNumber + 5`
+      requires a non-member overload, since a member function can't be
+      invoked with a plain `int` as the implicit left operand.
+
+Q3. How do you overload operator<< for cout?
+
+    - It MUST be a non-member function (see 1E Q4's explanation of why),
+      typically declared as a `friend` to access private data:
+          friend std::ostream& operator<<(std::ostream& os,
+                                           const MyClass& obj) {
+              os << obj.someField;   // access to private data via friend
+              return os;
+          }
+      Returning the stream by reference (`ostream&`) allows chaining
+      (`cout << obj1 << obj2;`).
+
+Q4. How do you overload the assignment operator (=)?
+
+    - `MyClass& operator=(const MyClass& other) { ... return *this; }`
+      Key requirements: return `*this` by reference (to support chaining
+      like `a = b = c;`); handle SELF-ASSIGNMENT safely (`if (this ==
+      &other) return *this;` is a common guard, especially important if
+      the assignment first frees existing resources before copying new
+      ones — freeing your own resource then trying to copy from the
+      now-freed "other" [which is actually the same object] would be a
+      bug without this check); and perform a DEEP copy of any owned
+      resources (freeing old ones first) if the class manages raw
+      resources directly.
+
+Q5. How do you overload prefix ++ vs postfix ++?
+
+    - Prefix: `MyClass& operator++();` — increments the object, then
+      returns a reference to itself (the NEW/incremented value).
+    - Postfix: `MyClass operator++(int);` — the DUMMY, unused `int`
+      parameter exists purely to give the compiler a way to distinguish
+      this overload from the prefix version syntactically (it's never
+      actually passed a meaningful value by the caller). Postfix must
+      return a COPY of the OLD value (by value, not reference) since
+      conceptually it needs to hand back what the object was BEFORE
+      incrementing, typically implemented as: save a copy, call the
+      prefix `++*this` internally to do the actual increment, then return
+      the saved copy — which is exactly why prefix is generally preferred
+      when the return value isn't needed (postfix requires an extra copy).
+
+Q6. How do you overload the [] (subscript) operator?
+
+    - `T& operator[](size_t index) { return data[index]; }` for
+      read/write access, PLUS a separate CONST version:
+      `const T& operator[](size_t index) const { return data[index]; }`
+      for read-only access on const objects. Providing BOTH overloads is
+      important — without the const version, you couldn't use `[]` at all
+      on a const instance of your class (since only const member
+      functions can be called on const objects).
+
+Q7. How do you overload the () (function call) operator? What is a
+    functor?
+
+    - `ReturnType operator()(ArgTypes... args) { ... }` — once defined,
+      objects of the class can be "called" like a function:
+      `MyFunctor f; f(args...);`.
+    - A FUNCTOR (function object) is simply any object of a class that
+      overloads `operator()` this way. Functors are heavily used in STL
+      algorithms as custom comparators/predicates (e.g.
+      `std::sort(v.begin(), v.end(), MyComparator());`) because — unlike a
+      raw function pointer — a functor's `operator()` can be INLINED
+      directly by the compiler at each call site in template code (since
+      the functor is a distinct, concrete TYPE known at compile time),
+      often making functor-based generic code noticeably faster than the
+      equivalent function-pointer-based code.
+
+Q8. What is the spaceship operator <=> (three-way comparison, C++20)?
+
+    - `<=>` is a single operator that performs a THREE-WAY comparison,
+      returning an ordering category value (commonly
+      `std::strong_ordering`, or `std::weak_ordering`/`std::partial_
+      ordering` depending on the semantics needed) that indicates
+      less-than, equal, or greater-than in one call.
+    - Its major benefit: defining `operator<=>` for a class lets the
+      compiler AUTOMATICALLY GENERATE all six relational operators
+      (`<`, `<=`, `>`, `>=`, `==`, `!=`) from that single definition —
+      eliminating the tedious, error-prone boilerplate of writing all six
+      comparison operators by hand for every comparable class, which was
+      previously required in C++.
+
+Q9. Should operator== be a member or non-member function?
+
+    - Prefer a NON-MEMBER (or friend) function for SYMMETRY — this allows
+      IMPLICIT CONVERSIONS to apply to BOTH operands equally. If
+      `operator==` is a member function, the LEFT operand must already be
+      exactly your class type (no conversion applied to it), but the
+      RIGHT operand (the explicit parameter) can undergo an implicit
+      conversion — creating an asymmetry where `myObj == 5` might compile
+      (5 converts to MyClass) but `5 == myObj` would not (since a member
+      function requires the left operand to already be the right type).
+      A non-member function treats both sides as ordinary parameters,
+      allowing conversions symmetrically on either side.
+
+Q10. What is a conversion operator? Give an example.
+
+    - A conversion operator is a member function that defines how an
+      object of your class can be implicitly (or, if marked `explicit`,
+      only explicitly) converted INTO another type. Syntax:
+      `operator TargetType() const { ... }` — notably, it has no
+      explicit return type written before `operator` (the "return type"
+      IS the target type itself, taken from the name).
+    - Example: `explicit operator bool() const { return isValid; }` lets
+      you write `if (myObj) { ... }` (using myObj directly in a boolean
+      context), converting the object to a bool based on some internal
+      validity flag — a common pattern for "optional-like" or
+      resource-wrapper classes (marking it `explicit`, as here, prevents
+      the conversion from firing in unintended, non-boolean contexts,
+      like accidentally allowing `myObj + 5` to compile via an implicit
+      bool-to-int promotion).
+
+================================================================================
+SECTION 1H — INHERITANCE (ANSWERS)
+================================================================================
+
+Q1. What is inheritance? What are the types of inheritance in C++?
+
+    - Inheritance lets a new class (the DERIVED/child class) reuse and
+      extend the members and behavior of an existing class (the BASE/
+      parent class), modeling an "is-a" relationship.
+    - Types: Single (one base, one derived), Multiple (a derived class
+      inherits from more than one base class directly), Multilevel (a
+      chain: A -> B -> C, where C derives from B which derives from A),
+      Hierarchical (multiple derived classes all inherit from the SAME
+      single base class), and Hybrid (some combination of the above,
+      e.g. multiple + multilevel together) — hybrid inheritance is
+      exactly where the diamond problem (see Q2) can arise.
+
+Q2. What is the diamond problem? How is it solved in C++?
+
+    - The diamond problem arises with MULTIPLE inheritance in a
+      "diamond" shape: classes B and C both inherit from a common base A,
+      and class D inherits from BOTH B and C. Without special handling, D
+      ends up containing TWO SEPARATE COPIES of A's data (one via the B
+      path, one via the C path), and any reference to a member of A
+      through D becomes AMBIGUOUS (the compiler doesn't know which copy
+      you mean) — a compile error.
+    - Solved with VIRTUAL INHERITANCE: declaring B and C's inheritance
+      from A as `virtual` (`class B : virtual public A { ... }; class C :
+      virtual public A { ... };`) ensures that D contains only ONE SHARED
+      copy of A, regardless of how many paths lead to it, eliminating the
+      ambiguity.
+
+Q3. What is the difference between public, private, and protected
+    inheritance?
+
+    - Public inheritance: base class's `public` members stay `public` in
+      the derived class, and `protected` members stay `protected` — this
+      preserves the natural "is-a" relationship (a Derived IS-A Base, and
+      external code can treat it as one).
+    - Protected inheritance: base's `public` members become `protected` in
+      the derived class, and `protected` stays `protected` — external
+      code can no longer treat Derived as a Base through inherited
+      members.
+    - Private inheritance: base's `public` AND `protected` members BOTH
+      become `private` in the derived class — the "is-a" relationship is
+      effectively hidden from the outside entirely; often used to express
+      "implemented in terms of" rather than a true is-a relationship
+      (though composition is generally preferred for that purpose in
+      modern C++).
+    - (In all three modes, the base's own `private` members are never
+      directly accessible in the derived class regardless — they're
+      simply inaccessible, though they still exist as part of the
+      object's memory layout.)
+
+Q4. What is the difference between overloading, overriding, and hiding?
+
+    - Overloading: multiple functions with the SAME NAME but DIFFERENT
+      PARAMETER LISTS, within the SAME class/scope — resolved at COMPILE
+      TIME based on the arguments used at the call site.
+    - Overriding: a DERIVED class redefines a BASE class's VIRTUAL
+      function with the EXACT SAME signature — resolved at RUNTIME
+      (dynamic dispatch via the vtable) based on the ACTUAL object type,
+      when called through a base pointer/reference.
+    - Hiding: a derived class defines a function with the SAME NAME as a
+      base class function, but the base version is NOT virtual (or the
+      signatures differ in a way that doesn't count as a proper
+      override) — this HIDES (makes inaccessible by simple name lookup)
+      ALL overloads of that name from the base class within the derived
+      class's scope, even ones with different parameter lists, unless
+      explicitly brought back into scope with a `using Base::funcName;`
+      declaration — a common, confusing gotcha distinct from true
+      overriding.
+
+Q5. What is a virtual function? Why do we need it?
+
+    - A virtual function is a member function declared with the
+      `virtual` keyword in a base class, allowing DERIVED classes to
+      OVERRIDE it — and crucially, when called through a BASE CLASS
+      POINTER or REFERENCE, the ACTUAL (most-derived) overriding version
+      is invoked at RUNTIME, based on the real object's type, not the
+      static type of the pointer/reference used to call it.
+    - Needed for RUNTIME POLYMORPHISM — writing generic code that
+      operates on a Base* (or Base&) and automatically gets the CORRECT,
+      type-specific behavior for whatever actual derived object is being
+      pointed to, without the calling code needing to know (or check) the
+      concrete type itself.
+
+Q6. What is a pure virtual function? What is an abstract class?
+
+    - A pure virtual function is declared with `= 0` at the end:
+      `virtual void draw() = 0;` — it has NO required implementation in
+      the base class (though it CAN still have one, see Q7), and any
+      class that fails to override it remains ABSTRACT.
+    - An abstract class is any class containing AT LEAST ONE pure virtual
+      function — such a class CANNOT be instantiated directly
+      (`AbstractClass obj;` is a compile error); it can only be used via
+      pointers/references, and only concrete DERIVED classes that
+      override ALL of its pure virtual functions can actually be
+      instantiated.
+
+Q7. Can a pure virtual function have a body?
+
+    - YES — somewhat counterintuitively, a pure virtual function CAN have
+      a default implementation defined (either inline or out-of-class,
+      e.g. `void Base::draw() { /* default drawing logic */ }` even
+      though `draw` was declared `virtual void draw() = 0;` in the class).
+      Derived classes are still REQUIRED to override it to become
+      concrete/instantiable, but they can explicitly choose to call the
+      base's default implementation from within their own override
+      (`Base::draw();`) if they want to reuse/extend that shared logic
+      rather than reimplementing it entirely from scratch.
+
+Q8. What is early binding vs late binding (static vs dynamic dispatch)?
+
+    - Early (static) binding: the specific function to call is determined
+      at COMPILE TIME, based on the STATIC (declared) type of the
+      pointer/reference/object — this is what happens for NON-VIRTUAL
+      function calls, and is generally faster (a direct call, potentially
+      inlinable).
+    - Late (dynamic) binding: the specific function to call is determined
+      at RUNTIME, based on the ACTUAL (dynamic) type of the object —
+      this is what happens for VIRTUAL function calls made through a
+      base pointer/reference, resolved via the object's vtable at the
+      moment of the call, with a small runtime overhead (an extra
+      indirection through the vtable) compared to early binding.
+
+Q9. What is the vtable (virtual function table)? What is a vptr?
+
+    - A vtable (virtual table) is a table, generated ONCE PER CLASS (not
+      per object) that has any virtual functions, containing POINTERS TO
+      the actual (most-derived, overriding) implementations of each
+      virtual function for that class.
+    - A vptr (virtual pointer) is a HIDDEN POINTER stored inside EVERY
+      OBJECT of a class with virtual functions, added automatically by
+      the compiler, pointing to that object's CLASS's vtable. When a
+      virtual function is called through a base pointer, the runtime
+      follows the object's vptr to find the correct vtable, then looks up
+      the appropriate function pointer in that table and calls it — this
+      indirection is exactly what enables dynamic dispatch.
+
+Q10. What is the overhead of a virtual function call?
+
+    - An extra memory INDIRECTION: instead of a direct call to a known
+      function address (as with a non-virtual call), the CPU must first
+      dereference the object's vptr to find its vtable, then index into
+      the vtable to find the correct function pointer, and only then jump
+      to that address — one or two extra memory accesses/dereferences
+      per call compared to a direct call.
+    - It also generally PREVENTS INLINING — since the compiler usually
+      cannot know at compile time which override will actually be called
+      (that's determined at runtime, through the vtable), it typically
+      can't inline the call the way it could for a known, direct function
+      call — this loss of inlining opportunity is often a bigger real-
+      world performance cost than the indirection itself, especially for
+      small/hot functions called extremely frequently (relevant in
+      HFT/embedded/systems contexts).
+
+Q11. What is devirtualization? When can the compiler do it?
+
+    - Devirtualization is a compiler optimization where a virtual function
+      call is resolved and converted into a DIRECT (non-virtual, and
+      potentially inlinable) call, when the compiler can PROVE at compile
+      time exactly which override will actually be invoked — eliminating
+      the vtable indirection (and enabling inlining) for that specific
+      call site.
+    - This can happen when: the object's EXACT static type is known at
+      the call site (e.g. calling a virtual method directly on a local
+      object of a concrete, non-polymorphically-used type, rather than
+      through a base pointer); the class (or the specific method) is
+      marked `final`, guaranteeing no further overriding is possible; or
+      through more advanced whole-program/link-time optimization (LTO)
+      analysis that can sometimes prove a base pointer's actual runtime
+      type in more contexts than a naive per-translation-unit compile
+      could.
+
+Q12. What is RTTI (Run Time Type Information)? What is dynamic_cast? What
+     is typeid?
+
+    - RTTI is a C++ feature that allows querying an object's ACTUAL type
+      INFORMATION AT RUNTIME, primarily used with polymorphic
+      (virtual-function-containing) class hierarchies.
+    - `dynamic_cast<Derived*>(basePtr)` attempts to safely convert a
+      base-class pointer/reference to a derived-class pointer/reference,
+      using RTTI at runtime to verify the object ACTUALLY IS (or derives
+      from) that target type — returning `nullptr` (for pointers) or
+      throwing `std::bad_cast` (for references) if the cast is invalid,
+      unlike a `static_cast` which performs no such runtime check at all
+      and is undefined behavior if wrong.
+    - `typeid(obj)` returns a `std::type_info` object describing an
+      object's ACTUAL runtime type (for polymorphic types) or its STATIC
+      type (for non-polymorphic types) — commonly used to compare two
+      objects' types (`typeid(a) == typeid(b)`) or print a type's name
+      for debugging.
+    - RTTI has a real runtime/memory COST (the type information itself,
+      plus the lookup work done by dynamic_cast/typeid), which is why
+      performance-critical code (and some embedded toolchains) sometimes
+      disables RTTI entirely (`-fno-rtti`) and relies on alternative
+      designs (like the visitor pattern, or explicit type tags) instead.
+
+Q13. What is covariant return type? Give an example.
+
+    - A covariant return type allows an OVERRIDING virtual function in a
+      derived class to return a MORE DERIVED pointer/reference type than
+      the base class version declared, while STILL counting as a valid
+      override.
+    - Example:
+          class Animal {
+          public:
+              virtual Animal* clone() { return new Animal(*this); }
+          };
+          class Dog : public Animal {
+          public:
+              Dog* clone() override { return new Dog(*this); }  // valid!
+          };
+      `Dog::clone()` returns `Dog*` instead of `Animal*`, which is allowed
+      specifically because Dog* "is-a" Animal* (a pointer to a more
+      derived type can always safely be used where the base pointer type
+      was expected) — this lets calling code that already knows it's
+      working with a Dog get a properly-typed Dog* back directly, without
+      needing to manually cast the result.
+
+Q14. What is the override keyword (C++11)? What about final?
+
+    - `override`, written after a derived class's function declaration
+      (`void draw() override { ... }`), explicitly tells the compiler
+      "this is INTENDED to override a base class virtual function" — the
+      compiler then VERIFIES this is actually true (the base has a
+      matching virtual function with the exact same signature), and
+      produces a COMPILE ERROR if not (e.g. catching a typo in the
+      function name, a mismatched parameter list, or a missing `const`
+      that would otherwise silently create an unrelated new function
+      instead of overriding — a notoriously easy mistake to make
+      silently without `override`).
+    - `final` prevents further overriding of a specific virtual function
+      in any FURTHER derived class (`void draw() final;`), or prevents an
+      ENTIRE CLASS from being derived from at all
+      (`class MyClass final { ... };`) — useful both for design intent
+      (explicitly closing off further extension) and, in some cases, as
+      a hint that can help the compiler with devirtualization (see Q11).
+
+Q15. What is the difference between function overloading and function
+     overriding?
+
+    - Overloading: happens within the SAME class (or scope), multiple
+      functions sharing a name but differing in PARAMETER LIST, resolved
+      at COMPILE TIME.
+    - Overriding: happens ACROSS a base/derived class relationship, the
+      derived class redefines a base class's VIRTUAL function with the
+      IDENTICAL signature, resolved at RUNTIME through the vtable when
+      called via a base pointer/reference.
+
+Q16. Can you call a non-virtual function polymorphically?
+
+    - No — a call to a non-virtual function is resolved via EARLY (static)
+      BINDING, based purely on the STATIC/declared type of the
+      pointer/reference used to make the call, NOT the actual runtime
+      type of the object. So calling a non-virtual function through a
+      `Base*` that actually points to a `Derived` object will ALWAYS
+      invoke `Base`'s version of that function, even if Derived defines
+      its own function with the same name (which, per 1H Q4, would be
+      HIDING the base version rather than overriding it) — there is no
+      "polymorphic" dispatch happening at all for non-virtual functions.
+
+================================================================================
+SECTION 1I — OOP DESIGN PRINCIPLES (ANSWERS)
+================================================================================
+
+Q1. What are the SOLID principles? Explain each briefly.
+
+    - S — Single Responsibility Principle: a class should have only ONE
+      reason to change — it should be responsible for one, well-defined
+      piece of functionality, not multiple unrelated concerns bundled
+      together.
+    - O — Open/Closed Principle: classes should be OPEN FOR EXTENSION
+      (you can add new behavior) but CLOSED FOR MODIFICATION (you
+      shouldn't need to edit existing, already-tested code to do so) —
+      typically achieved via inheritance/polymorphism or composition with
+      injected behavior, rather than adding more `if`/`switch` branches to
+      existing code for every new case.
+    - L — Liskov Substitution Principle: objects of a derived class
+      should be usable ANYWHERE an object of the base class is expected,
+      WITHOUT breaking the correctness of the program — a derived class
+      should honor the base class's behavioral CONTRACT, not just its
+      interface signature (see Q2 for a concrete violation example).
+    - I — Interface Segregation Principle: prefer several small, focused
+      interfaces over one large, monolithic interface — clients shouldn't
+      be forced to depend on (or implement) methods they don't actually
+      use.
+    - D — Dependency Inversion Principle: high-level modules should
+      depend on ABSTRACTIONS (interfaces/abstract base classes), not on
+      concrete, low-level implementation details — this decouples code
+      and makes it easier to swap implementations (e.g. for testing with
+      mocks) without changing the high-level logic that depends on them.
+
+Q2. What is the Liskov Substitution Principle? Give a violation example.
+
+    - (See Q1's summary above for the core definition.) Classic
+      violation example: making `Square` inherit from `Rectangle`, with
+      `Rectangle` exposing independent `setWidth()`/`setHeight()` methods.
+      A Rectangle's CONTRACT implies width and height can be set
+      independently of each other. But a Square must ALWAYS have equal
+      width and height, so `Square::setWidth(w)` must ALSO silently change
+      the height (to keep it a square) — this breaks any code written
+      against the general Rectangle contract that assumes setting width
+      alone doesn't affect height (e.g. a test that sets width to 5,
+      height to 10, and expects area = 50 — but gets 25 if a Square object
+      was substituted in). The Square "is-a" Rectangle geometrically, but
+      NOT behaviorally, in terms of the Rectangle class's actual
+      programmatic contract — a textbook illustration of why LSP is about
+      BEHAVIORAL substitutability, not just structural/conceptual "is-a."
+
+Q3. What is DRY (Don't Repeat Yourself) principle?
+
+    - DRY states that every piece of KNOWLEDGE or LOGIC in a system
+      should have a single, unambiguous, authoritative representation —
+      avoid duplicating the same logic/data in multiple places, since
+      duplicated logic must be found and updated consistently EVERYWHERE
+      it appears whenever requirements change, which is error-prone (easy
+      to update one copy and forget another, introducing inconsistent
+      bugs). Achieved through techniques like extracting shared logic
+      into functions/classes, using inheritance/composition to reuse
+      behavior, and configuration/constants instead of repeated
+      magic values.
+
+Q4. What is the difference between IS-A and HAS-A relationships?
+
+    - IS-A relationship: modeled via INHERITANCE — a Derived class "is a
+      kind of" Base class (e.g. a Dog IS-A Animal). Implies the derived
+      type should be substitutable wherever the base type is expected
+      (see LSP, Q2).
+    - HAS-A relationship: modeled via COMPOSITION or AGGREGATION — a
+      class CONTAINS another class as a member, without being a "kind
+      of" it (e.g. a Car HAS-A Engine — a Car is not a "kind of" Engine).
+
+Q5. When should you prefer composition over inheritance?
+
+    - Prefer composition when the relationship is genuinely "HAS-A"
+      rather than "IS-A" (using inheritance for a HAS-A relationship, just
+      to reuse some code, is a common design smell called "inheritance
+      for implementation reuse" rather than true is-a modeling); when you
+      want LOOSER coupling and more FLEXIBILITY to change behavior at
+      RUNTIME (composition lets you swap out a contained object/strategy
+      dynamically, whereas inheritance fixes the relationship at compile
+      time); or when you want to AVOID the fragility of deep inheritance
+      hierarchies (changes to a base class can have wide-reaching,
+      sometimes surprising effects on all its derived classes — a
+      well-known issue called "the fragile base class problem"). The
+      general modern guideline, often summarized as "favor composition
+      over inheritance," is to default to composition unless there's a
+      clear, behaviorally-honored IS-A relationship (per LSP) that
+      inheritance genuinely models well.
+
+================================================================================
+END OF PART 2 — CONTINUED IN NEXT FILE SECTION (TRICKY / GOTCHA QUESTIONS)
+================================================================================
+================================================================================
+SECTION 2 — TRICKY / GOTCHA QUESTIONS
+     (Sound right but aren't, or vice versa — classic Classes & Objects /
+      OOP interview traps, matching the style of your "new + free"
+      example.)
+================================================================================
+
+1. "Since struct defaults to public and class defaults to private, structs
+   in C++ can't have member functions, constructors, or inheritance like
+   classes can." TRICKY: FALSE — in modern C++, struct and class are
+   functionally identical in capability (both can have constructors,
+   destructors, member functions, virtual functions, templates,
+   inheritance, etc.). The ONLY differences are the default member access
+   specifier (public vs private) and the default inheritance mode (public
+   vs private) — everything else is purely a stylistic/conventional
+   choice, not a language restriction.
+
+2. "A destructor should always be virtual, just to be safe, even for
+   classes that are never used polymorphically." TRICKY: Overstated/not
+   quite right as an absolute — a virtual destructor adds a vptr to every
+   object of the class (memory overhead) and a small runtime cost to
+   destruction, which is wasted if the class is NEVER deleted through a
+   base pointer (e.g., a simple value-type utility class with no
+   inheritance hierarchy at all). The correct guideline is narrower: make
+   the destructor virtual specifically if the class has ANY virtual
+   function already, or is explicitly DESIGNED to be a polymorphic base
+   class meant to be deleted via base pointers — not as a blanket rule for
+   every single class.
+
+3. "Calling a virtual function from inside a base class constructor will
+   correctly call the derived class's override, since the object being
+   constructed really is a Derived object." TRICKY: FALSE — during the
+   base class's OWN constructor execution, the object's vtable pointer is
+   still set up for the BASE class (the derived portion hasn't been
+   constructed yet), so the call resolves to the BASE class's version,
+   not the derived override — regardless of what the object will
+   "really" be once construction fully completes.
+
+4. "A pure virtual function (= 0) can never have an implementation body —
+   that's the whole point of making it 'pure.'" TRICKY: FALSE — a pure
+   virtual function CAN have a default body defined (even though it's
+   still `= 0` and still forces derived classes to override it to become
+   concrete) — derived classes can even explicitly call that base default
+   implementation from within their own override if they choose to.
+
+5. "Object slicing causes a compile error, so the compiler protects you
+   from accidentally losing derived-class data." TRICKY: FALSE — object
+   slicing compiles perfectly fine and runs without any error or warning
+   by default; it SILENTLY discards the derived-specific data, which is
+   exactly what makes it a dangerous, easy-to-miss bug rather than a
+   caught mistake.
+
+6. "Copy assignment operator (operator=) and copy constructor do the same
+   thing, so you only need to define one of them." TRICKY: FALSE — the
+   copy CONSTRUCTOR initializes a brand-NEW object from an existing one
+   (no prior state to clean up); the copy ASSIGNMENT operator assigns
+   into an ALREADY-EXISTING object (which may already own resources that
+   need to be released/replaced first, and must handle self-assignment
+   safely). They serve related but distinct purposes and, per the Rule of
+   Three/Five, generally both need to be defined together (along with the
+   destructor) for a class managing its own resources — defining only one
+   correctly is usually a sign the other was overlooked, not "not needed."
+
+7. "A static member function has access to the this pointer, just like
+   any other member function, since it's part of the class." TRICKY:
+   FALSE — static member functions have NO `this` pointer at all, because
+   they aren't tied to any particular object instance; this is exactly
+   why they cannot directly access non-static (instance) member variables
+   either.
+
+8. "Since a const member function promises not to modify the object, you
+   can always safely call it on a const object even if it internally
+   modifies a mutable member." TRICKY: Actually TRUE, but for a subtle
+   reason worth understanding — `mutable` members are DELIBERATELY exempt
+   from the const-correctness check specifically so this is allowed; the
+   "constness" promise only covers non-mutable members. This is by
+   design (e.g. for internal caching), not a loophole/bug — but it DOES
+   mean "const" doesn't always mean "the object's bits truly never
+   change," which surprises people who assume const is an absolute,
+   bitwise guarantee.
+
+9. "operator== should always be implemented as a member function for
+   consistency with other operators like operator+=." TRICKY: FALSE as a
+   blanket rule — while some operators (like compound assignment
+   `+=`, which modifies `*this`) are naturally suited to being member
+   functions, `operator==` (and most binary comparison/arithmetic
+   operators) are generally BETTER as non-member (or friend) functions
+   specifically to allow implicit conversions to apply symmetrically to
+   BOTH operands, not just the right-hand one.
+
+10. "Multiple inheritance in C++ always causes the diamond problem, so it
+    should never be used." TRICKY: FALSE (overstated) — the diamond
+    problem specifically arises when TWO base classes SHARE A COMMON
+    ANCESTOR and a further class inherits from both of them without
+    virtual inheritance — plain multiple inheritance from UNRELATED base
+    classes (no shared ancestor) causes no such ambiguity at all and is a
+    perfectly normal, useful pattern (e.g. inheriting from two independent
+    "interface-like" abstract classes). The diamond problem is a specific
+    scenario, solvable with virtual inheritance when it does occur, not
+    an indictment of multiple inheritance as a whole.
+
+11. "Marking a base class destructor virtual is enough to guarantee
+    correct cleanup — you don't need to worry about the derived class's
+    destructor at all." TRICKY: Misleading — marking the BASE destructor
+    virtual ensures the DERIVED destructor actually GETS CALLED when
+    deleting through a base pointer (that's the whole point), but it's
+    still the DERIVED class's own destructor's RESPONSIBILITY to properly
+    clean up whatever resources IT specifically owns — a virtual base
+    destructor doesn't automatically know about or free derived-class-
+    specific resources; it just ensures the derived destructor runs so
+    THAT destructor can do its own cleanup correctly.
+
+12. "The order of member initialization in a constructor's initializer
+    list is determined by the order you write them in the list, e.g.
+    `MyClass() : b(1), a(2) {}` initializes b before a." TRICKY: FALSE —
+    member initialization order is ALWAYS determined by the ORDER MEMBERS
+    ARE DECLARED IN THE CLASS, completely ignoring the order they're
+    written in the initializer list. If `a` is declared before `b` in the
+    class body, `a` is ALWAYS initialized first regardless of writing
+    `b(1), a(2)` in that order in the initializer list — some compilers
+    even warn about this exact mismatch (-Wreorder), since it's a classic
+    source of subtle bugs when one member's initializer depends on
+    another's already-initialized value.
+
+13. "Since Rule of Zero says to avoid defining special member functions,
+    it means you should never write a destructor for any of your
+    classes." TRICKY: FALSE (overgeneralized) — Rule of Zero applies
+    specifically to classes that DON'T directly own a raw resource
+    (because their members are already RAII types that manage themselves)
+    — such classes genuinely don't need a custom destructor (or any of
+    the five). But a class that DOES directly manage a raw resource (the
+    rare low-level wrapper classes, like implementing your own smart
+    pointer or file handle wrapper) absolutely still needs a real,
+    hand-written destructor (and, per Rule of Three/Five, the
+    corresponding copy/move operations too) — Rule of Zero doesn't mean
+    "destructors are bad," it means "most ordinary classes shouldn't need
+    to write one because they should be built out of things that already
+    handle it."
+
+14. "typeid and dynamic_cast have no runtime cost, they're just compile-
+    time syntax like static_cast." TRICKY: FALSE — both `typeid` and
+    `dynamic_cast` are RTTI (Run-Time Type Information) features that
+    perform actual work AT RUNTIME (traversing type hierarchy information
+    to verify a cast, or to compare/report actual types) — unlike
+    `static_cast`, which performs no runtime type verification at all and
+    compiles down to a simple, free reinterpretation/adjustment. This
+    runtime cost is exactly why some performance-critical or embedded
+    codebases disable RTTI entirely.
+
+15. "final on a class or virtual function is purely a stylistic/
+    documentation marker with no effect on generated code." TRICKY:
+    FALSE, or at least incomplete — while `final`'s PRIMARY purpose is to
+    express design intent (and get a compile error if violated), it can
+    also ENABLE devirtualization in some compilers/scenarios — since the
+    compiler now knows for certain no further override of that function
+    (or class) is possible, it can sometimes convert what would otherwise
+    be a virtual (indirect, non-inlinable) call into a direct, inlinable
+    one at compile time, a genuine (if compiler-dependent) performance
+    benefit beyond documentation.
+
+================================================================================
+END OF FILE
+================================================================================
